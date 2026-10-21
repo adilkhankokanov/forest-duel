@@ -763,7 +763,7 @@ function bounceText(txt,x,y,size,fill,t){
 }
 function drawFX(){
   const now=performance.now(),dt=Math.min(.05,(now-(drawFX.t||now))/1000);drawFX.t=now;
-  for(const f of FX){if(!paused)f.t+=dt;const k=f.t/f.life,sc=f.big?1.5:1;
+  for(const f of FX){if(!paused)f.t+=dt;if(f.t<0)continue;const k=f.t/f.life,sc=f.big?1.5:1;
     ctx.globalAlpha=Math.max(0,1-k);
     ctx.strokeStyle='rgba(255,210,90,.9)';ctx.lineWidth=2.5*(1-k)+.5;ctx.beginPath();ctx.arc(f.x,f.y,(5+14*k)*sc,0,7);ctx.stroke();
     if(k<.5){const q=1-k/.5;drawStar(f.x,f.y,10*sc*q+3,4*sc*q+1.5,6,f.rot,'#ffb21a');drawStar(f.x,f.y,6*sc*q+2,2.5*sc*q+1,6,f.rot+.3,'#fff6d0')}
@@ -961,6 +961,6 @@ function updateLoops(){
   for(const[o,k]of want)if(!LOOPS.has(o)){const l=loopStart(k);if(l)LOOPS.set(o,l)}
   for(const[o,l]of LOOPS)if(!want.has(o)){l.stop();LOOPS.delete(o)}
 }
-function loop(now){const d=Math.min(.1,(now-last)/1000);last=now;if(G.shake>0&&!paused)G.shake=Math.max(0,G.shake-d);updateLoops();if(!paused&&started)frame(d);draw();requestAnimationFrame(loop)}
+function loop(now){const d=Math.min(.1,(now-last)/1000);last=now;if(G.shake>0&&!paused)G.shake=Math.max(0,G.shake-d);requestAnimationFrame(loop);try{updateLoops()}catch(e){console.error(e)}try{if(!paused&&started)frame(d)}catch(e){console.error(e)}try{draw()}catch(e){console.error(e);ctx.restore&&ctx.setTransform(1,0,0,1,0,0)}}
 requestAnimationFrame(loop);
 </script>
