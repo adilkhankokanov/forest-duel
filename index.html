@@ -179,13 +179,17 @@ function goFull(){try{const el=document.documentElement,r=el.requestFullscreen||
   if(r&&!isFS()){const pr=r.call(el,{navigationUI:'hide'});pr&&pr.then&&pr.then(()=>{try{screen.orientation.lock('portrait').catch(()=>{})}catch(e){}}).catch(()=>{})}}catch(e){}}
 function exitFull(){try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}}
 document.addEventListener('fullscreenchange',()=>setTimeout(resize,60));document.addEventListener('webkitfullscreenchange',()=>setTimeout(resize,60));
+['touchend','click'].forEach(ev=>document.addEventListener(ev,()=>{if(started)audioInit()},{passive:true}));
 cv.addEventListener('pointerdown',e=>{
   audioInit();
   if(!started){started=true;goFull();return}
   const p=toScreen(e),B=UI.pause;
   if(fsOK()&&Math.abs(p.x-FS.x)<FS.s/2+4&&Math.abs(p.y-FS.y)<FS.s/2+4){isFS()?exitFull():goFull();return}
   if(Math.abs(p.x-B.x)<B.s/2+6&&Math.abs(p.y-B.y)<B.s/2+6){if(G.state==='play')paused=!paused;return}
-  if(paused){paused=false;return}
+  if(paused){
+    if(Math.abs(p.x-W/2)<95&&Math.abs(p.y-(H/2+10))<24){paused=false;return}
+    if(Math.abs(p.x-W/2)<95&&Math.abs(p.y-(H/2+70))<24){reset();started=true;return}
+    return}
   G.P.tx=wx(p.x);if(G.state!=='play'&&G.endT>.6)reset();
 });
 addEventListener('keydown',e=>{audioInit();if(e.key==='m'||e.key==='M')SND.on=!SND.on;if(e.key==='ArrowLeft'||e.key==='a')keyL=true;if(e.key==='ArrowRight'||e.key==='d')keyR=true;if(e.key==='p'||e.key==='Escape')paused=!paused});
@@ -283,8 +287,22 @@ function damageBase(s,v,X){sfx('hitBase',.09);s.hp=Math.max(0,s.hp-v);s.hitT=.12
 //  SOUND — synthesized with Web Audio, starts on first tap (M = mute)
 // =====================================================================
 const SND={ac:null,on:true,last:{}};
+// iOS: the ringer switch mutes Web Audio unless the page plays as "media".
+// A silent looping <audio> started from a tap switches the session to playback.
+function unlockIOS(){
+  try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+  if(SND.tag)return;
+  try{const n=800,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i))};
+    w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+    v.setUint32(24,8000,true);v.setUint32(28,16000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+    const a=document.createElement('audio');a.src=URL.createObjectURL(new Blob([b],{type:'audio/wav'}));a.loop=true;a.setAttribute('playsinline','');a.volume=.01;
+    const p=a.play();p&&p.catch&&p.catch(()=>{});SND.tag=a}catch(e){}
+}
 function audioInit(){
-  if(SND.ac){if(SND.ac.state==='suspended')SND.ac.resume();return}
+  unlockIOS();
+  if(SND.ac){if(SND.ac.state!=='running')SND.ac.resume();
+    if(!SND.primed){try{const o=SND.ac.createBufferSource();o.buffer=SND.ac.createBuffer(1,1,22050);o.connect(SND.ac.destination);o.start(0);SND.primed=true}catch(e){}}
+    return}
   try{const ac=new(window.AudioContext||window.webkitAudioContext)();SND.ac=ac;
     SND.out=ac.createGain();SND.out.gain.value=.55;
     const comp=ac.createDynamicsCompressor();SND.out.connect(comp);comp.connect(ac.destination);
@@ -887,7 +905,10 @@ function draw(){
     outlined('на весь экран и со звуком',W/2,H/2+50,13,'#e8efe9');return}
   if(G.state!=='play'||paused){
     ctx.fillStyle='rgba(20,22,28,.6)';ctx.fillRect(0,0,W,H);
-    if(paused){outlined('ПАУЗА',W/2,H/2-10,40,'#fff');outlined('Нажми, чтобы продолжить',W/2,H/2+30,15,'#fff')}
+    if(paused){outlined('ПАУЗА',W/2,H/2-60,40,'#fff');
+      const btn=(y,txt,c1,c2)=>{ctx.fillStyle='#22252c';rr(W/2-95,y-24,190,48,14);ctx.fill();ctx.fillStyle=c1;rr(W/2-92,y-21,184,40,11);ctx.fill();
+        ctx.fillStyle=c2;rr(W/2-92,y-21,184,14,11);ctx.fill();outlined(txt,W/2,y,18,'#fff')};
+      btn(H/2+10,'Продолжить','#2f9b3f','#45c457');btn(H/2+70,'Заново','#c9452f','#ec6a4f')}
     else{outlined(G.state==='win'?'ПОБЕДА':'ПОРАЖЕНИЕ',W/2,H/2-14,42,G.state==='win'?'#ffd21f':'#ff5a5a','#22252c',6);
       outlined('Нажми, чтобы сыграть ещё',W/2,H/2+30,15,'#fff')}
   }
