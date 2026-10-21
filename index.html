@@ -712,7 +712,7 @@ function step(dt){
     s.comeback=true;G.cb={side:s.id,t:0};haptic('banner');sfx('rush');sfx('wave');
     G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:1,hit:new Set(),trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}
   if(G.cb)G.cb.t+=dt;
-  if(G.E.hp<=0){G.state='win';sfx('win');G.shake=.8;haptic('rocket')}else if(G.P.hp<=0){G.state='lose';sfx('lose');G.shake=.8;haptic('rocket')}
+  if(G.state!=='play'){}else if(G.E.hp<=0){G.state='win';sfx('win');G.shake=.8;haptic('rocket')}else if(G.P.hp<=0){G.state='lose';sfx('lose');G.shake=.8;haptic('rocket')}
 }
 function frame(realDt){
   for(const t of G.texts)t.t+=realDt;G.texts=G.texts.filter(t=>t.t<1.2);
