@@ -261,7 +261,7 @@ function makeUnit(s,spec){
   return{side:s.id,giant:false,x:Math.cos(a)*rr,z:z0+Math.sin(a)*rr,vx:0,vz:0,r:S.radius,m:S.mass,hp:S.hp,max:S.hp,
     atk:S.atkInterval,spd:S.speed,cd:0,dmgAcc:0,slow:0,walk:Math.random()*6,hit:0,killer:null};
 }
-function applyUpg(s,type){
+function applyUpg(s,type,at){
   const info=upgInfo(s,type);
   sfx(type==='squad'?'squad':type==='giant'?'giant':type==='wave'?'wave':type==='fence'?'fence':s===G.P?'upgrade':'_',.05);
   if(type==='dmg'){s.dmgMul+=upInc(CFG.dmgUp,s.dmgPicks);s.dmgPicks++}
@@ -281,7 +281,8 @@ function applyUpg(s,type){
     s.rank.fence++;
   }
   const yy=s===G.P?UI.pWall-36:UI.eWall+UI.wallH+26;
-  floatPx(W/2,yy,(s===G.E?'Враг: ':'')+info.t+' '+info.v,UPG[type].col,s===G.P?15:12);
+  if(at&&s===G.P)floatPx(clamp(sx(at.x),75,W-75),UI.flaskY-34,info.t+' '+info.v,UPG[type].col,16);
+  else floatPx(W/2,yy,(s===G.E?'Враг: ':'')+info.t+' '+info.v,UPG[type].col,s===G.P?15:12);
 }
 function damageBase(s,v,X){sfx('hitBase',.09);s.hp=Math.max(0,s.hp-v);s.hitT=.12;burst(X,s.front,s===G.P?'#4aa8ff':'#ff4d4d',3)}
 
@@ -490,7 +491,7 @@ function stepBullets(dt){
       case'flask':o.hp-=b.dmg;o.hit=.12;if(owner===G.P)sfx(o.hp<=0?'flask':'flaskHit',.02);
         if(o.hp<=0){const t=o.type;
           if(owner===G.P){haptic('flask');burst(o.x,o.z,UPG[t].col,22);for(const f of owner.flasks)if(f!==o)burst(f.x,f.z,'#9aa0aa',10)}
-          owner.flasks=[];applyUpg(owner,t)}
+          owner.flasks=[];applyUpg(owner,t,o)}
         break;
       case'tree':o.hp-=b.dmg;o.hit=.12;if(o.hp<=0){if(owner===G.P)sfx(o.g?'goldTree':'tree',.05)}else if(owner===G.P)sfx('treeHit',.06);
         if(o.hp<=0){o.dead=true;const v=o.g?T.golden.gold:T.green.gold;addGold(owner,v);
@@ -845,7 +846,7 @@ function drawFlask(f){
   ctx.save();ctx.translate(x,y+bob);ctx.scale(k,k);
   ctx.fillStyle='rgba(60,55,45,.15)';ctx.beginPath();ctx.ellipse(0,20,15,4,0,0,7);ctx.fill();
   FLASH=f.hit>0?f.hit/.12:0;spr(u.img,0,0,CFG.flask.drawPx);FLASH=0;if(u.icon==='barrel')drawBarrelShape(0,3,15,0,'#fff',true);ctx.restore();
-  const by=y+24,bw=40;bar(x-bw/2,by,bw,7,f.hp/CFG.flask.hp,'#45d04a');
+  const by=y+24,bw=40;if(f.hp<CFG.flask.hp)bar(x-bw/2,by,bw,7,f.hp/CFG.flask.hp,'#45d04a');
   const info=upgInfo(s,f.type);outlined(info.t,x,y-42,12,'#fff');outlined(info.v,x,y-28,12,u.col==='#c9c2b4'?'#fff':u.col);
 }
 function drawUnit(u){
@@ -983,7 +984,7 @@ function draw(){
     ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);
     bounceText(me?'ВАШ КАМБЭК':'КАМБЭК ВРАГА',0,0,40,me?'#4aa8ff':'#ff4d3a',t);ctx.restore();ctx.globalAlpha=1}
   if(G.rush&&G.rushT<2.6&&!(G.cb&&G.cb.t<2.6)){const a=G.rushT<.25?G.rushT/.25:G.rushT>2.1?(2.6-G.rushT)/.5:1,sc=1+Math.max(0,.35-G.rushT)*1.5;
-    ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);bounceText('НАТИСК',0,0,48,'#ff4d3a',G.rushT);outlined('Усиленные улучшения',0,40,17,'#fff','#22252c',5);ctx.restore();ctx.globalAlpha=1}
+    ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);bounceText('НАТИСК',0,0,48,'#ff4d3a',G.rushT);ctx.restore();ctx.globalAlpha=1}
   spr('pause',UI.pause.x,UI.pause.y,UI.pause.s);
   if(fsOK()){const b=FS,h=b.s/2;ctx.fillStyle='#22252c';rr(b.x-h,b.y-h,b.s,b.s,10);ctx.fill();ctx.fillStyle='#f6e7c8';rr(b.x-h+2.5,b.y-h+2.5,b.s-5,b.s-7,8);ctx.fill();
     ctx.strokeStyle='#1f6fd6';ctx.lineWidth=3.2;ctx.lineCap='round';const o=isFS()?4:9,i=isFS()?9:4,c=(sx_,sy_)=>{ctx.beginPath();ctx.moveTo(b.x+sx_*o,b.y+sy_*i);ctx.lineTo(b.x+sx_*o,b.y+sy_*o);ctx.lineTo(b.x+sx_*i,b.y+sy_*o);ctx.stroke()};
