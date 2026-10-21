@@ -22,10 +22,10 @@ body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-c
 // =====================================================================
 const CFG={
   baseHp:3500,
-  cannon:{dmg:7.5,interval:0.44/2.25,bulletSpeed:12.6,range:30,jitter:0.04,xLimit:3.15,playerSpeed:60,edgeGain:0.35},
+  cannon:{dmg:7.5,interval:0.44/2.25,bulletSpeed:12.6,range:30,jitter:0.04,xLimit:3.35,playerSpeed:60,edgeGain:0.15},
   tree:{
     green:{hp:40,gold:8},golden:{hp:66.6667,gold:39},
-    max:800,xMin:-3.45,xMax:3.45,zMin:-3.25,zMax:2.5,minDist:0.21,roadHalf:0.9,radius:0.155,
+    max:800,xMin:-3.35,xMax:3.35,zMin:-3.25,zMax:2.5,minDist:0.21,roadHalf:0.9,radius:0.155,
     pedestalClear:0.275,densityFreq:0.65,goldFreq:1.25,densityCut:-0.42,midZ:-0.375,
     centerSpan:2.875,beltGold:[0.28,0.45,0.65,0.85]
   },
@@ -43,7 +43,7 @@ const CFG={
     gun:{interval:2,speed:9,range:30,hitPad:0.05,dmgMul:4},hitScale:0.96},  // tank gun: hits only enemy tanks and base; crushes units in front with the melee attack
   army:{spawnOffset:0.6,spiralAngle:2.39996,spiralR:0.19,baseGap:0.22,limit:100,releasePerStep:4,sepIters:3},
   wave:{comebackHp:0.5,pushFrac:0.4,dmg:24,speed:1.6,width:3.025,length:1.625,hitHalf:1.5125,push:0.8,pushFMax:2,slow:0.55,slowDur:1.5,knockDecay:6},
-  fence:{hp:280,width:2.1,widthMax:5.4,maxAlive:2,zPlayer:3.1,zBot:-3.85,secondLine:0.4,speed:1.8,thick:0.12},
+  fence:{hp:280,width:2.5,widthMax:5.4,maxAlive:2,zPlayer:3.1,zBot:-3.85,secondLine:0.4,speed:1.8,thick:0.12},
   pedestal:{x:1.65,z:-0.375,hp:100,radius:0.17},
   rocket:{visScale:0.65,hp:12.75,dmg:875,speed:3,w:1.05,h:2.25,halfLen:0.65,radius:0.4,wobble:0.28,wobbleFreq:4.5},
   bag:{dmg:1,rate:1,doubles:1,squad:2,giant:2,fence:1,barrel:1},
@@ -75,7 +75,7 @@ function resize(){
 addEventListener('resize',resize);window.visualViewport&&visualViewport.addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,200));resize();
 
 // ---------- screen layout (unchanged UI) and world mapping ----------
-const UI={wallX:-4,wallW:401,wallH:42,eWall:86,pWall:572,eTankY:54,pTankY:652,flaskY:536,pause:{x:356,y:44,s:40}};
+const UI={wallX:-4,wallW:401,wallH:42,eWall:86,pWall:572,eTankY:54,pTankY:652,flaskY:542,pause:{x:356,y:44,s:40}};
 // field between the walls is squeezed to fit; world units stay the same (base-to-base = 9.4)
 const PX=55,CX=W/2,PZ=50*(UI.pWall-(UI.eWall+UI.wallH))/470,ZY0=(UI.eWall+UI.wallH+UI.pWall)/2-CFG.tree.midZ*PZ;
 const sx=X=>CX+X*PX, sy=Z=>ZY0+Z*PZ, wx=x=>(x-CX)/PX, wz=y=>(y-ZY0)/PZ;
@@ -173,7 +173,7 @@ if(window.claude?.hot?.ready)window.claude.hot.ready(start);else start(window.cl
 let keyL=false,keyR=false;
 function toScreen(e){const b=cv.getBoundingClientRect();return{x:(e.clientX-b.left)/b.width*W,y:(e.clientY-b.top)/b.height*H}}
 // finger near the edges pushes the cannon a bit further than the finger, so the edges are reachable
-const aimX=px=>{const w=wx(px),n=Math.min(1,Math.abs(w)/wx(W));return Math.sign(w)*Math.abs(w)*(1+CFG.cannon.edgeGain*n)};
+const aimX=px=>{const n=clamp((px-CX)/(W/2),-1,1);return clamp(n*(1+CFG.cannon.edgeGain),-1,1)*CFG.cannon.xLimit};
 cv.addEventListener('pointermove',e=>{if(!paused)G.P.tx=aimX(toScreen(e).x)});
 const FS={x:308,y:44,s:40};
 const fsOK=()=>!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);
@@ -193,7 +193,7 @@ cv.addEventListener('pointerdown',e=>{
     if(Math.abs(p.x-W/2)<95&&Math.abs(p.y-(H/2+10))<24){paused=false;return}
     if(Math.abs(p.x-W/2)<95&&Math.abs(p.y-(H/2+70))<24){reset();started=true;return}
     return}
-  G.P.tx=aimX(p.x);if(G.state!=='play'&&G.endT>.6)reset();
+  G.P.tx=aimX(p.x);if(G.state!=='play'&&G.endT>1.5){reset();CONF.length=0}
 });
 addEventListener('keydown',e=>{audioInit();if(e.key==='m'||e.key==='M')SND.on=!SND.on;if(e.key==='ArrowLeft'||e.key==='a')keyL=true;if(e.key==='ArrowRight'||e.key==='d')keyR=true;if(e.key==='p'||e.key==='Escape')paused=!paused});
 addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a')keyL=false;if(e.key==='ArrowRight'||e.key==='d')keyR=false});
@@ -311,9 +311,6 @@ function audioInit(){
     // softer, less 8-bit: gentle top-end roll-off plus a short room reverb
     const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;lp.Q.value=.5;
     const comp=ac.createDynamicsCompressor();SND.out.connect(lp);lp.connect(comp);comp.connect(ac.destination);
-    const rl=Math.floor(ac.sampleRate*.9),ir=ac.createBuffer(2,rl,ac.sampleRate);
-    for(let ch=0;ch<2;ch++){const dd=ir.getChannelData(ch);for(let i=0;i<rl;i++)dd[i]=(Math.random()*2-1)*Math.pow(1-i/rl,3)}
-    const cvb=ac.createConvolver(),wet=ac.createGain();cvb.buffer=ir;wet.gain.value=.16;lp.connect(cvb);cvb.connect(wet);wet.connect(comp);
     const n=ac.sampleRate,b=ac.createBuffer(1,n,n),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;SND.noise=b;
   }catch(e){SND.ac=null}
 }
@@ -357,7 +354,7 @@ function sfx(name,gap=.03){
     case'level':[523,659,784,1047,1319].forEach((f,i)=>{tone(f,f,.22,'triangle',.11,i*.07);tone(f*2,f*2,.08,'sine',.04,i*.07)});
       [1047,1319,1568].forEach(f=>tone(f,f*1.005,.6,'triangle',.07,.38));for(let i=0;i<6;i++){const f=2500+Math.random()*2500;tone(f,f,.06,'sine',.035,.4+i*.06)}break;
     case'unitDie':voice(560*r(),240,.16,'o',.09);break;
-    case'hup':{const p=380+Math.random()*260;voice(p,p*1.35,.09,Math.random()<.5?'u':'a',.07);voice(p*1.3,p*1.6,.08,'i',.05,.08);break}
+    case'hup':{const p=380+Math.random()*260;voice(p,p*1.5,.12,Math.random()<.5?'u':'i',.07);break}
     case'hya':{const p=440+Math.random()*240;voice(p*1.2,p*.8,.11,Math.random()<.5?'a':'e',.06);hiss(.04,.03,3500,1500,'bandpass');break}
     case'tankSpawn':{const ac=SND.ac,t=ac.currentTime,o=ac.createOscillator(),ws=ac.createWaveShaper(),g=ac.createGain(),lp=ac.createBiquadFilter();
       o.type='sawtooth';o.frequency.setValueAtTime(38,t);o.frequency.linearRampToValueAtTime(95,t+.45);o.frequency.linearRampToValueAtTime(55,t+1);
@@ -530,11 +527,25 @@ function stepRockets(dt){
 }
 
 // ---- armies ----
+// spatial grid (1×1 world cells) so units only look at their neighbours, not at every unit on the field
+const UG=new Map(),NB=[];
+function buildUG(units){UG.clear();for(let i=0;i<units.length;i++){const u=units[i];u._i=i;const k=((Math.floor(u.x)+16)<<8)|(Math.floor(u.z)+32);let a=UG.get(k);if(!a)UG.set(k,a=[]);a.push(u)}}
+function nearUnits(x,z,rad,out){out.length=0;const r=Math.ceil(rad),cx=Math.floor(x),cz=Math.floor(z);
+  for(let i=-r;i<=r;i++)for(let j=-r;j<=r;j++){const a=UG.get(((cx+i+16)<<8)|(cz+j+32));if(a)for(const o of a)out.push(o)}return out}
+function sepPair(a,b){const rr=a.r+b.r,dx=b.x-a.x,dz=b.z-a.z;if(dx>rr||dx<-rr||dz>rr||dz<-rr)return;
+  const d2=dx*dx+dz*dz;if(d2>=rr*rr)return;const d=Math.sqrt(d2)||.001,o=(rr-d)*.5,nx=dx/d,nz=dz/d,ms=a.m+b.m;
+  a.x-=nx*o*b.m/ms;a.z-=nz*o*b.m/ms;b.x+=nx*o*a.m/ms;b.z+=nz*o*a.m/ms}
+const SG=new Map(),SOFF=[[1,0],[1,1],[0,1],[-1,1]];
+function separate(units){const C=.8;SG.clear();
+  for(const u of units){const k=((Math.floor(u.x/C)+20)<<9)|(Math.floor(u.z/C)+40);let a=SG.get(k);if(!a)SG.set(k,a=[]);a.push(u)}
+  for(const[k,a]of SG){const cx=k>>9,cz=k&511;
+    for(let i=0;i<a.length;i++){const p=a[i];for(let j=i+1;j<a.length;j++)sepPair(p,a[j]);
+      for(const[ox,oz]of SOFF){const b=SG.get(((cx+ox)<<9)|(cz+oz));if(b)for(const q of b)sepPair(p,q)}}}}
 function stepArmies(dt){
   const S=CFG.soldier,Gc=CFG.giant,A=CFG.army,FC=CFG.fence;
   // release reserve
-  for(const s of[G.P,G.E]){let n=0;while(s.reserve.length&&n<A.releasePerStep&&aliveUnits(s.id)<A.limit){const nu=makeUnit(s,s.reserve.shift());G.units.push(nu);n++;sfx(nu.giant?'tankSpawn':'hup',nu.giant?.1:.045)}}
-  const units=G.units;
+  for(const s of[G.P,G.E]){let n=0,cnt=s.reserve.length?aliveUnits(s.id):0;while(s.reserve.length&&n<A.releasePerStep&&cnt+n<A.limit){const nu=makeUnit(s,s.reserve.shift());G.units.push(nu);n++;sfx(nu.giant?'tankSpawn':'hup',nu.giant?.1:.09)}}
+  const units=G.units;buildUG(units);
   // phase 1: decide from one snapshot
   const baseHits=[];
   for(const u of units){
@@ -544,18 +555,18 @@ function stepArmies(dt){
     if(u.giant){
       // tank-giant: crushes up to 4 enemies right in front (slow melee), gun fires every 2 s
       const tg=[];
-      for(const o of units)if(o.side!==u.side){const fw=(o.z-u.z)*dir,dx=Math.abs(o.x-u.x);
+      for(const o of nearUnits(u.x,u.z,2,NB))if(o.side!==u.side){const fw=(o.z-u.z)*dir,dx=Math.abs(o.x-u.x);
         if(fw>=Gc.frontMin&&fw<=Gc.frontMax+o.r&&dx<Gc.side+o.r)tg.push([Math.hypot(o.x-u.x,o.z-u.z),o])}
       if(tg.length){tg.sort((a,b)=>a[0]-b[0]);u.act={units:tg.slice(0,Gc.maxTargets).map(t=>t[1])}}
       u.gunCd=(u.gunCd??Gc.gun.interval*.5)-dt;
       if(u.gunCd<=0){u.gunCd+=Gc.gun.interval;u.fire=.2;sfx('tankShot',.05);
         G.shells.push({side:u.side,dir,x:u.x,z:u.z+dir*u.r,dmg:u.dmg*Gc.gun.dmgMul,dist:0})}
     }else{
-      let best=null,bd=1e9;
-      for(const o of units)if(o.side!==u.side){const fw=(o.z-u.z)*dir;if(fw<-u.r)continue;
+      let best=null,bd=1e9;nearUnits(u.x,u.z,1,NB);
+      for(const o of NB)if(o.side!==u.side){const fw=(o.z-u.z)*dir;if(fw<-u.r)continue;
         const d=Math.hypot(o.x-u.x,o.z-u.z);if(d<=u.r+o.r+S.engage&&d<bd){bd=d;best=o}}
       if(best)u.act={units:[best]};
-      else{let c=null,cd=S.aggro;for(const o of units)if(o.side!==u.side&&Math.abs(o.x)<CFG.tree.roadHalf+.15&&(o.z-u.z)*dir>-.05){const d=Math.hypot(o.x-u.x,o.z-u.z);if(d<cd){cd=d;c=o}}u.chase=c}
+      else{let c=null,cd=S.aggro;for(const o of NB)if(o.side!==u.side&&Math.abs(o.x)<CFG.tree.roadHalf+.15&&(o.z-u.z)*dir>-.05){const d=Math.hypot(o.x-u.x,o.z-u.z);if(d<cd){cd=d;c=o}}u.chase=c}
     }
     if(!u.act)for(const f of G.fences)if(f.side!==u.side&&Math.abs(u.x-f.x)<f.w/2+u.r){
       const gap=(f.z-u.z)*dir-u.r-FC.thick;if(gap<=S.engage&&gap>-FC.thick*2){u.act={fence:f};break}}
@@ -567,7 +578,7 @@ function stepArmies(dt){
         else if(u.act.fence){u.act.fence.dmgAcc+=u.dmg;u.act.fence.hitT=.1}
         else if(u.act.base)baseHits.push([u.act.base,u.dmg,u.x]);
       }else{
-        const t=u.act.units?u.act.units[0]:null;u.atkT=.2;sfx('hya',.07);
+        const t=u.act.units?u.act.units[0]:null;u.atkT=.2;sfx('hya',.13);
         if(t){const d=Math.hypot(t.x-u.x,t.z-u.z)||1;u.ax=(t.x-u.x)/d;u.az=(t.z-u.z)/d}else{u.ax=0;u.az=dir}
       if(u.act.units)for(const o of u.act.units){o.dmgAcc+=u.giant?u.dmg:S.dmgUnit;o.killer=u.side;o.hit=.1}
       else if(u.act.fence){u.act.fence.dmgAcc+=u.giant?u.dmg:S.dmgFence;u.act.fence.hitT=.1}
@@ -616,13 +627,7 @@ function stepArmies(dt){
   // fences slide into place
   for(const f of G.fences){const d=f.tz-f.z;f.z+=clamp(d,-FC.speed*dt,FC.speed*dt);if(f.hitT>0)f.hitT-=dt}
   // phase 2: soft separation
-  for(let it=0;it<A.sepIters;it++){
-    for(let i=0;i<units.length;i++){const a=units[i];
-      for(let j=i+1;j<units.length;j++){const b=units[j],rr=a.r+b.r,dx=b.x-a.x,dz=b.z-a.z;
-        if(dx>rr||dx<-rr||dz>rr||dz<-rr)continue;const d=Math.hypot(dx,dz)||.001;
-        if(d<rr){const o=(rr-d)*.5,nx=dx/d,nz=dz/d,ms=a.m+b.m;
-          a.x-=nx*o*b.m/ms;a.z-=nz*o*b.m/ms;b.x+=nx*o*a.m/ms;b.z+=nz*o*a.m/ms}}}
-  }
+  for(let it=0;it<A.sepIters;it++)separate(units);
   // phase 3: obstacles, fences, bounds
   for(const u of units){
     const dir=u.side==='p'?-1:1;
@@ -697,13 +702,13 @@ function step(dt){
   G.time+=dt;
   for(const r of G.trees)if(r.hit>0)r.hit-=dt;
   for(const p of G.peds)if(p.hit>0)p.hit-=dt;
-  stepCannon(G.P,dt);stepCannon(G.E,dt);
+  if(G.state==='play'){stepCannon(G.P,dt);stepCannon(G.E,dt)}
   stepBullets(dt);stepRockets(dt);stepShells(dt);stepBarrels(dt);stepArmies(dt);
   const R=CFG.rush;
-  if(!G.rush){const alive=G.trees.reduce((a,t)=>a+(t.dead?0:1),0);
+  if(G.state!=='play'){}else if(!G.rush){const alive=G.trees.reduce((a,t)=>a+(t.dead?0:1),0);
     if(G.time>=R.time||G.P.hp<=R.baseHp||G.E.hp<=R.baseHp||alive<=R.treesLeft*G.treesInit){G.rush=true;G.rushT=0;sfx('rush');haptic('banner')}}
   else if(!(G.cb&&G.cb.t<2.6))G.rushT+=dt; // one banner at a time
-  for(const s of[G.P,G.E])if(!s.comeback&&s.hp<CFG.baseHp*CFG.wave.comebackHp&&s.hp>0){
+  if(G.state==='play')for(const s of[G.P,G.E])if(!s.comeback&&s.hp<CFG.baseHp*CFG.wave.comebackHp&&s.hp>0){
     s.comeback=true;G.cb={side:s.id,t:0};haptic('banner');sfx('rush');sfx('wave');
     G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:1,hit:new Set(),trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}
   if(G.cb)G.cb.t+=dt;
@@ -712,9 +717,9 @@ function step(dt){
 function frame(realDt){
   for(const t of G.texts)t.t+=realDt;G.texts=G.texts.filter(t=>t.t<1.2);
   for(const p of G.parts){p.t+=realDt;p.x+=p.vx*realDt;p.y+=p.vy*realDt;p.vx*=.92;p.vy*=.92}G.parts=G.parts.filter(p=>p.t<p.life);
-  if(G.state!=='play'){G.endT+=realDt;return}
+  if(G.state!=='play')G.endT+=realDt;
   acc+=realDt;let n=0;const dt=CFG.sim.dt;
-  while(acc>=dt&&n<CFG.sim.maxSteps){step(dt);acc-=dt;n++;if(G.state!=='play')break}
+  while(acc>=dt&&n<CFG.sim.maxSteps){step(dt);acc-=dt;n++}
   if(n===CFG.sim.maxSteps)acc=0;
 }
 
@@ -722,7 +727,7 @@ function frame(realDt){
 //  DRAW
 // =====================================================================
 const FONT='"Rubik","Arial Rounded MT Bold",system-ui,sans-serif';
-let FLASH=0;const WHITE={};const FOREST={c:document.createElement('canvas'),sig:''};
+let FLASH=0;const WHITE={};const FOREST={L:[document.createElement('canvas'),document.createElement('canvas')],sig:''};
 function whiteImg(k){if(WHITE[k])return WHITE[k];const i=IMG[k];const c=document.createElement('canvas');c.width=i.naturalWidth;c.height=i.naturalHeight;
   const x=c.getContext('2d');x.drawImage(i,0,0);x.globalCompositeOperation='source-in';x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);return WHITE[k]=c}
 function spr(k,x,y,w,ax=.5,ay=.5,rot=0,sy_=1){const i=IMG[k];if(!i.complete||!i.naturalWidth)return;
@@ -742,6 +747,12 @@ const BG=document.createElement('canvas');BG.width=W;BG.height=H;
 
 function drawWall(s){
   const y=s===G.P?UI.pWall:UI.eWall,sh=s.hitT>0?rnd(-1.5,1.5):0,i=IMG.wall,X=UI.wallX,Wd=UI.wallW,Hh=UI.wallH;
+  if(s.hp<=0&&G.state!=='play'){if(!i.complete)return;const t=G.endT,seg=Wd/8;
+    for(let k=0;k<16;k++){const col=k%8,row=k>>3,sd=Math.sin(k*12.9898)*43758.5453,rn=sd-Math.floor(sd);
+      const fall=Math.min(1,t*1.4),dx=(rn-.5)*40*fall,dy=(row?14:6)*fall,rot=(rn-.5)*1.2*fall;
+      ctx.save();ctx.globalAlpha=Math.max(.35,1-t*.25);ctx.translate(X+col*seg+seg/2+dx,y+row*(Hh/2)+Hh/4+dy+rn*8*fall);ctx.rotate(rot);
+      ctx.drawImage(i,col*i.naturalWidth/8,0,i.naturalWidth/8,i.naturalHeight,-seg/2,-Hh/4,seg-2,Hh/2);ctx.restore()}
+    if(t<1.2&&Math.random()<.5)burst(rnd(-3,3),s.front,'#9aa0aa',3);return}
   if(i.complete&&i.naturalWidth){const half=Hh/2+1;
     ctx.drawImage(i,X+sh,y,Wd,half);
     ctx.save();ctx.beginPath();ctx.rect(X,y+half-2,Wd,half+2);ctx.clip();
@@ -834,7 +845,7 @@ function drawFlask(f){
   ctx.save();ctx.translate(x,y+bob);ctx.scale(k,k);
   ctx.fillStyle='rgba(60,55,45,.15)';ctx.beginPath();ctx.ellipse(0,20,15,4,0,0,7);ctx.fill();
   FLASH=f.hit>0?f.hit/.12:0;spr(u.img,0,0,CFG.flask.drawPx);FLASH=0;if(u.icon==='barrel')drawBarrelShape(0,3,15,0,'#fff',true);ctx.restore();
-  const by=y+23,bw=34;bar(x-bw/2,by,bw,4,f.hp/CFG.flask.hp,'#45d04a');
+  const by=y+24,bw=40;bar(x-bw/2,by,bw,7,f.hp/CFG.flask.hp,'#45d04a');
   const info=upgInfo(s,f.type);outlined(info.t,x,y-42,12,'#fff');outlined(info.v,x,y-28,12,u.col==='#c9c2b4'?'#fff':u.col);
 }
 function drawUnit(u){
@@ -854,6 +865,7 @@ function drawUnit(u){
     if(u.atkT>0){ph=1-u.atkT/.2;const k=ph<.3?ph/.3:Math.max(0,1-(ph-.3)/.7);
       x-=ax*(ph<.12?ph/.12:0)*2;x+=ax*k*8;y+=az*k*8*PZ/PX;
       tilt=ax*k*.7+(Math.abs(ax)<.3?(u.side==='p'?.35:-.35)*k:0);sc*=1+k*.22;slash=ph>.2&&ph<.75?1-Math.abs(ph-.45)/.3:0}
+    if(G.state!=='play'&&((G.state==='win')===(u.side==='p'))){const hop=Math.abs(Math.sin(G.time*7+(u.walk||0)));y-=hop*7;tilt=Math.sin(G.time*9+(u.walk||0))*.25;sc*=1+hop*.06}
     FLASH=u.hit>0?Math.min(1,u.hit/.1):0;spr(u.side==='p'?'manB':'manR',x,y+5,SOLDIER_PX*sc,.5,1,tilt);FLASH=0;
     if(slash>0){const cx=x+ax*9,cy=y-6+az*9*PZ/PX,a0=Math.atan2(az*PZ/PX,ax);ctx.globalAlpha=Math.min(1,slash*1.4);
       ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.arc(cx,cy,8,a0-1.3+ph*1.2,a0+.2+ph*1.4);ctx.stroke();
@@ -862,12 +874,13 @@ function drawUnit(u){
   }
 }
 function drawFence(f){
-  const x=sx(f.x),y=sy(f.z),w=f.w*PX,h=13,i=IMG.wall,sh=f.hitT>0?rnd(-1,1):0;
+  const x=sx(f.x),y=sy(f.z),w=f.w*PX,h=16,i=IMG.wall,sh=f.hitT>0?rnd(-1,1):0;
   ctx.fillStyle='rgba(60,55,45,.2)';rr(x-w/2+2,y-h/2+3,w,h,4);ctx.fill();
   if(i.complete&&i.naturalWidth){ctx.save();ctx.beginPath();ctx.rect(x-w/2,y-h/2-2,w,h+4);ctx.clip();
     const tile=WALLTILE;for(let xx=x-w/2;xx<x+w/2;xx+=tile)ctx.drawImage(i,0,0,i.naturalWidth/8,i.naturalHeight,xx+sh,y-h/2,tile,h);ctx.restore()}
   ctx.fillStyle=f.side==='p'?'#1f8ef0':'#e8323a';ctx.fillRect(x-w/2,y+h/2-1,w,2);
-  bar(x-18,y-h/2-8,36,4,f.hp/f.max,f.side==='p'?'#1f8ef0':'#e8323a');
+  {const bw=Math.min(90,w*.7),bx=x-bw/2,by=y-h/2-12,ff=clamp(f.hp/f.max,0,1);ctx.fillStyle='#262a33';rr(bx-2,by-2,bw+4,10,5);ctx.fill();
+    ctx.fillStyle='#3a404d';rr(bx,by,bw,6,3);ctx.fill();if(ff>0){ctx.fillStyle=f.side==='p'?'#1f8ef0':'#e8323a';rr(bx,by,Math.max(4,bw*ff),6,3);ctx.fill();ctx.fillStyle='rgba(255,255,255,.35)';rr(bx+1.5,by+1,Math.max(1,bw*ff-3),2,1);ctx.fill()}}
 }
 const WALLTILE=22;
 function drawWave(w){
@@ -905,23 +918,26 @@ function draw(){
     if(p.dead)return;
     const sq=p.hit>0?1.06:1;FLASH=p.hit>0?p.hit/.12:0;spr('rocket',x,y+10,32*sq,.5,.84);FLASH=0;
     if(p.hp<CFG.pedestal.hp)bar(x-15,y-58,30,4,p.hp/CFG.pedestal.hp,'#45d04a')};
-  // the whole forest is cached in one image and redrawn only when a tree falls; trees being hit are drawn live on top
+  // forest cached in two images (behind / in front of the rocket pedestals); only a small patch is repainted when a tree falls
+  const PZc=CFG.pedestal.z,layerOf=t=>t.z<PZc?0:1,drawT=t=>spr(t.g?'treeY':'treeG',sx(t.x),sy(t.z)+7,21,.5,.85);
   const sig=K+':'+G.treesInit+':'+G.trees.length;
-  if(FOREST.g!==G||FOREST.sig!==sig){ // full build: new match, resize
+  if(FOREST.g!==G||FOREST.sig!==sig){
     if(IMG.treeG.complete&&IMG.treeY.complete){
-      FOREST.c.width=cv.width;FOREST.c.height=cv.height;const fc=FOREST.c.getContext('2d');fc.setTransform(K,0,0,K,0,0);
-      const keep=ctx;ctx=fc;for(const t of G.trees){t.gone=t.dead;if(!t.dead)spr(t.g?'treeY':'treeG',sx(t.x),sy(t.z)+7,21,.5,.85)}ctx=keep;FOREST.sig=sig;FOREST.g=G}
-  }else{ // a tree fell: repaint only the small patch around it
+      const fcs=FOREST.L.map(c=>{c.width=cv.width;c.height=cv.height;const x=c.getContext('2d');x.setTransform(K,0,0,K,0,0);return x});
+      const keep=ctx;for(const t of G.trees){t.gone=t.dead;if(!t.dead){ctx=fcs[layerOf(t)];drawT(t)}}ctx=keep;FOREST.sig=sig;FOREST.g=G}
+  }else{
     for(const d of G.trees)if(d.dead&&!d.gone){d.gone=true;
-      const fc=FOREST.c.getContext('2d'),x0=sx(d.x)-14,y0=sy(d.z)-18,w=28,h=32;
-      fc.save();fc.beginPath();fc.rect(x0,y0,w,h);fc.clip();fc.clearRect(x0,y0,w,h);
-      const keep=ctx;ctx=fc;for(const t of G.trees)if(!t.dead){const tx=sx(t.x),ty=sy(t.z);if(tx>x0-14&&tx<x0+w+14&&ty>y0-12&&ty<y0+h+30)spr(t.g?'treeY':'treeG',tx,ty+7,21,.5,.85)}
-      ctx=keep;fc.restore()}
+      const x0=sx(d.x)-14,y0=sy(d.z)-18,w=28,h=32,keep=ctx;
+      FOREST.L.forEach((c,li)=>{const fc=c.getContext('2d');fc.save();fc.beginPath();fc.rect(x0,y0,w,h);fc.clip();fc.clearRect(x0,y0,w,h);ctx=fc;
+        for(const t of G.trees)if(!t.dead&&layerOf(t)===li){const tx=sx(t.x),ty=sy(t.z);if(tx>x0-14&&tx<x0+w+14&&ty>y0-12&&ty<y0+h+30)drawT(t)}
+        fc.restore()});ctx=keep}
   }
-  ctx.drawImage(FOREST.c,0,0,W,H);
+  ctx.drawImage(FOREST.L[0],0,0,W,H);
+  while(pi<peds.length){drawPed(peds[pi]);pi++}
+  ctx.drawImage(FOREST.L[1],0,0,W,H);
   for(const t of G.trees)if(!t.dead&&t.hit>0){const sq=Math.sin(t.hit*60)*.08;
     FLASH=t.hit/.12;spr(t.g?'treeY':'treeG',sx(t.x),sy(t.z)+7,21*(1+sq),.5,.85,0,1-sq);FLASH=0}
-  while(pi<peds.length){drawPed(peds[pi]);pi++}
+
   drawWall(G.E);drawWall(G.P);drawExp();
   for(const f of G.fences)drawFence(f);
   for(const w of G.waves)drawWave(w);
@@ -976,17 +992,29 @@ function draw(){
     outlined('ЛЕСНАЯ ДУЭЛЬ',W/2,H/2-40,38,'#ffd21f','#22252c',7);
     const pulse=1+Math.sin(performance.now()/250)*.05;ctx.save();ctx.translate(W/2,H/2+20);ctx.scale(pulse,pulse);outlined('Нажми, чтобы играть',0,0,20,'#fff');ctx.restore();
     outlined('на весь экран и со звуком',W/2,H/2+50,13,'#e8efe9');return}
-  if(G.state!=='play'||paused){
+  if(G.state!=='play')drawEnd();
+  if(paused){
     ctx.fillStyle='rgba(20,22,28,.6)';ctx.fillRect(0,0,W,H);
-    if(paused){outlined('ПАУЗА',W/2,H/2-60,40,'#fff');
+    {outlined('ПАУЗА',W/2,H/2-60,40,'#fff');
       const btn=(y,txt,c1,c2)=>{ctx.fillStyle='#22252c';rr(W/2-95,y-24,190,48,14);ctx.fill();ctx.fillStyle=c1;rr(W/2-92,y-21,184,40,11);ctx.fill();
         ctx.fillStyle=c2;rr(W/2-92,y-21,184,14,11);ctx.fill();outlined(txt,W/2,y,18,'#fff')};
       btn(H/2+10,'Продолжить','#2f9b3f','#45c457');btn(H/2+70,'Заново','#c9452f','#ec6a4f')}
-    else{outlined(G.state==='win'?'ПОБЕДА':'ПОРАЖЕНИЕ',W/2,H/2-14,42,G.state==='win'?'#ffd21f':'#ff5a5a','#22252c',6);
-      outlined('Нажми, чтобы сыграть ещё',W/2,H/2+30,15,'#fff')}
   }
 }
 
+// ---- end of match: confetti and banner, the game keeps running underneath ----
+const CONF=[];const CCOL=['#ff4d4d','#ffd21f','#4aa8ff','#45d04a','#b46bff','#ff9a3a','#fff'];
+function drawEnd(){
+  const now=performance.now(),dt=Math.min(.05,(now-(drawEnd.t||now))/1000);drawEnd.t=now;
+  if(G.endT<3.5&&!paused){const n=G.endT<.1&&CONF.length<70?70:(Math.random()<.7?1:0);for(let i=0;i<n;i++)CONF.push({x:Math.random()*W,y:CONF.length<70?-Math.random()*H*.6:-10,vy:60+Math.random()*90,vx:(Math.random()-.5)*40,
+    r:Math.random()*6.28,vr:(Math.random()-.5)*10,w:5+Math.random()*5,h:3+Math.random()*4,c:CCOL[Math.floor(Math.random()*CCOL.length)],ph:Math.random()*6})}
+  for(const c of CONF){if(!paused){c.y+=c.vy*dt;c.x+=(c.vx+Math.sin(now/300+c.ph)*25)*dt;c.r+=c.vr*dt}
+    ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.r);ctx.scale(1,Math.abs(Math.cos(now/200+c.ph))+.2);ctx.fillStyle=c.c;ctx.fillRect(-c.w/2,-c.h/2,c.w,c.h);ctx.restore()}
+  for(let i=CONF.length-1;i>=0;i--)if(CONF[i].y>H+20)CONF.splice(i,1);
+  const win=G.state==='win';ctx.save();ctx.translate(W/2,H*.42);const sc=1+Math.max(0,.3-G.endT)*2;ctx.scale(sc,sc);
+  bounceText(win?'ПОБЕДА':'ПОРАЖЕНИЕ',0,0,46,win?'#ffd21f':'#ff5a5a',G.endT%2.4);ctx.restore();
+  if(G.endT>1.5){ctx.globalAlpha=Math.min(1,(G.endT-1.5)*3);outlined('Нажми, чтобы сыграть ещё',W/2,H*.42+44,16,'#fff');ctx.globalAlpha=1}
+}
 let last=performance.now();
 // continuous sounds while rockets fly, waves roll and fences slide
 const LOOPS=new Map();
