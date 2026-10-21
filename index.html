@@ -43,10 +43,10 @@ const CFG={
     gun:{interval:2,speed:5,range:30,hitPad:0.05,dmgMul:4},hitScale:0.96},  // tank gun: hits only enemy tanks and base; crushes units in front with the melee attack
   army:{spawnOffset:0.6,spiralAngle:2.39996,spiralR:0.19,baseGap:0.22,limit:100,releasePerStep:4,sepIters:3},
   wave:{comebackHp:0.4,pushFrac:0.4,dmg:24,speed:1.6,width:3.025,length:1.625,hitHalf:1.5125,push:0.8,pushFMax:2,slow:0.55,slowDur:1.5,knockDecay:6},
-  fence:{hp:280,width:2.5,widthMax:5.4,maxAlive:2,zPlayer:3.1,zBot:-3.85,secondLine:0.4,speed:1.8,thick:0.12},
+  fence:{hp:700,width:2.5,widthMax:5.4,maxAlive:2,zPlayer:3.1,zBot:-3.85,secondLine:0.4,speed:1.8,thick:0.12},
   pedestal:{x:1.65,z:-0.375,hp:100,radius:0.17},
   rocket:{visScale:0.65,hp:12.75,dmg:875,speed:3,w:1.05,h:2.25,halfLen:0.65,radius:0.4,wobble:0.28,wobbleFreq:4.5},
-  bag:{dmg:1,rate:1,doubles:1,squad:2,giant:2,fence:0,barrel:1},
+  bag:{dmg:1,rate:1,doubles:1,squad:2,giant:2,fence:1,barrel:1},
   barrel:{speed:4.8,radius:0.44,spawnOffset:0.3,blastDmg:20,blastR:0.6,slickR:1.0,slickTime:5,slowMul:0.25,hp:15,burnDmg:4,burnInterval:0.5},
   bot:{retarget:0.35,aimErr:0.1,smooth:4,threatDist:3.5,pedestalValue:60,baseValue:1.2,movePenalty:0.35,
     score:{cannon:4,other:3,favorite:2,styleFit:1,wave6:4,fence3:3,squad3:2,squadLow:1},nearDist:3,bestChance:0.85},
@@ -231,7 +231,7 @@ function available(s,type){
   if(type==='dmg')return s.dmgPicks<CFG.dmgUp.maxPicks;
   if(type==='rate')return s.ratePicks<CFG.rateUp.maxPicks;
   if(type==='wave')return false; // wave is now the comeback mechanic, not a flask
-  if(type==='fence')return false&&aliveUnits(foeId)>0&&fencesOf(s.id)<CFG.fence.maxAlive;
+  if(type==='fence')return aliveUnits(foeId)>0&&fencesOf(s.id)<CFG.fence.maxAlive;
   return true;
 }
 function fillBag(s){s.bag=[];for(const k in CFG.bag)for(let i=0;i<CFG.bag[k];i++)s.bag.push(k);shuffle(s.bag)}
