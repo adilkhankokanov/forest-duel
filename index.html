@@ -31,7 +31,7 @@ const CFG={
   },
   level:{first:20,second:40,step:5},
   killGold:{soldier:2,giant:8},
-  flask:{hp:24,radius:0.31,side:1.365,xLimit:2.75,minGap:1.5,drawPx:40},
+  flask:{hp:24,radius:0.37,side:1.365,xLimit:2.75,minGap:1.5,drawPx:48},
   rankStep:0.20,
   dmgUp:{first:0.20,step:0.04,maxPicks:5},
   rateUp:{first:0.20,step:0.04,maxPicks:5},
@@ -75,8 +75,9 @@ function resize(){
 addEventListener('resize',resize);window.visualViewport&&visualViewport.addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,200));resize();
 
 // ---------- screen layout (unchanged UI) and world mapping ----------
-const UI={wallX:-4,wallW:401,wallH:42,eWall:86,pWall:598,eTankY:54,pTankY:678,flaskY:546,pause:{x:356,y:44,s:40}};
-const PX=55,CX=W/2,PZ=50,ZY0=363-CFG.tree.midZ*PZ;   // forest midline sits halfway between the walls
+const UI={wallX:-4,wallW:401,wallH:42,eWall:86,pWall:572,eTankY:54,pTankY:652,flaskY:536,pause:{x:356,y:44,s:40}};
+// field between the walls is squeezed to fit; world units stay the same (base-to-base = 9.4)
+const PX=55,CX=W/2,PZ=50*(UI.pWall-(UI.eWall+UI.wallH))/470,ZY0=(UI.eWall+UI.wallH+UI.pWall)/2-CFG.tree.midZ*PZ;
 const sx=X=>CX+X*PX, sy=Z=>ZY0+Z*PZ, wx=x=>(x-CX)/PX, wz=y=>(y-ZY0)/PZ;
 const P_FRONT=wz(UI.pWall), E_FRONT=wz(UI.eWall+UI.wallH);      // base front lines
 const P_MUZZLE=wz(UI.pTankY-30), E_MUZZLE=wz(UI.eTankY+30);
@@ -590,7 +591,8 @@ function stepArmies(dt){
   // phase 3: obstacles, fences, bounds
   for(const u of units){
     const dir=u.side==='p'?-1:1;
-    for(let ix=-1;ix<=1;ix++)for(let iz=-1;iz<=1;iz++){const a=G.grid.get(cellKey(u.x+ix*.5,u.z+iz*.5));if(!a)continue;
+    // trees only block units on the road; a unit that got shoved into the forest walks out through it
+    if(Math.abs(u.x)<CFG.tree.roadHalf+.12)for(let ix=-1;ix<=1;ix++)for(let iz=-1;iz<=1;iz++){const a=G.grid.get(cellKey(u.x+ix*.5,u.z+iz*.5));if(!a)continue;
       for(const t of a){if(t.dead)continue;const dx=u.x-t.x,dz=u.z-t.z,rr=u.r+CFG.tree.radius;
         if(dx>rr||dx<-rr||dz>rr||dz<-rr)continue;const d=Math.hypot(dx,dz)||.001;if(d<rr){u.x+=dx/d*(rr-d);u.z+=dz/d*(rr-d)}}}
     for(const p of G.peds)if(!p.dead){const dx=u.x-p.x,dz=u.z-p.z,rr=u.r+CFG.pedestal.radius,d=Math.hypot(dx,dz)||.001;if(d<rr){u.x+=dx/d*(rr-d);u.z+=dz/d*(rr-d)}}
