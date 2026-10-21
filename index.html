@@ -75,7 +75,7 @@ function resize(){
 addEventListener('resize',resize);window.visualViewport&&visualViewport.addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,200));resize();
 
 // ---------- screen layout (unchanged UI) and world mapping ----------
-const UI={wallX:-4,wallW:401,wallH:42,eWall:86,pWall:598,eTankY:54,pTankY:786,flaskY:664,pause:{x:356,y:44,s:40}};
+const UI={wallX:-4,wallW:401,wallH:42,eWall:86,pWall:598,eTankY:54,pTankY:678,flaskY:568,pause:{x:356,y:44,s:40}};
 const PX=55,CX=W/2,PZ=50,ZY0=363-CFG.tree.midZ*PZ;   // forest midline sits halfway between the walls
 const sx=X=>CX+X*PX, sy=Z=>ZY0+Z*PZ, wx=x=>(x-CX)/PX, wz=y=>(y-ZY0)/PZ;
 const P_FRONT=wz(UI.pWall), E_FRONT=wz(UI.eWall+UI.wallH);      // base front lines
@@ -775,8 +775,8 @@ function drawFlask(f){
   ctx.save();ctx.translate(x,y+bob);ctx.scale(k,k);
   ctx.fillStyle='rgba(60,55,45,.15)';ctx.beginPath();ctx.ellipse(0,20,15,4,0,0,7);ctx.fill();
   FLASH=f.hit>0?f.hit/.12:0;spr(u.img,0,0,36);FLASH=0;if(u.icon==='barrel')drawBarrelShape(0,3,15,0,'#fff',true);ctx.restore();
-  const by=y+26,bw=34;bar(x-bw/2,by,bw,4,f.hp/CFG.flask.hp,'#45d04a');
-  const info=upgInfo(s,f.type);outlined(info.t,x,by+16,12,'#fff');outlined(info.v,x,by+30,12,u.col==='#c9c2b4'?'#fff':u.col);
+  const by=y+23,bw=34;bar(x-bw/2,by,bw,4,f.hp/CFG.flask.hp,'#45d04a');
+  const info=upgInfo(s,f.type);outlined(info.t,x,y-42,12,'#fff');outlined(info.v,x,y-28,12,u.col==='#c9c2b4'?'#fff':u.col);
 }
 function drawUnit(u){
   let x=sx(u.x),y=sy(u.z);const pop=u.hit>0?(u.giant?CFG.giant.hitScale:1.15):1;
