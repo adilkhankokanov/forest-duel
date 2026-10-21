@@ -22,7 +22,7 @@ body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-c
 // =====================================================================
 const CFG={
   baseHp:3500,
-  cannon:{dmg:7.5,interval:0.44/2.25,bulletSpeed:12.6,range:30,jitter:0.04,xLimit:2.9,playerSpeed:7.3},
+  cannon:{dmg:7.5,interval:0.44/2.25,bulletSpeed:12.6,range:30,jitter:0.04,xLimit:2.9,playerSpeed:60},
   tree:{
     green:{hp:40,gold:8},golden:{hp:66.6667,gold:39},
     max:600,xMin:-2.85,xMax:2.85,zMin:-3.25,zMax:2.5,minDist:0.21,roadHalf:0.9,radius:0.155,
@@ -42,11 +42,11 @@ const CFG={
     maxTargets:4,frontMin:-0.03,frontMax:1.0,side:0.52,
     gun:{interval:2,speed:9,range:30,hitPad:0.05,dmgMul:4},hitScale:0.96},  // tank gun: hits only enemy tanks and base; crushes units in front with the melee attack
   army:{spawnOffset:0.6,spiralAngle:2.39996,spiralR:0.19,baseGap:0.22,limit:100,releasePerStep:4,sepIters:3},
-  wave:{dmg:24,speed:4,width:3.025,length:1.625,hitHalf:1.5125,push:0.8,pushFMax:2,slow:0.55,slowDur:1.5,knockDecay:6},
+  wave:{comebackHp:0.5,pushFrac:0.4,dmg:24,speed:1.6,width:3.025,length:1.625,hitHalf:1.5125,push:0.8,pushFMax:2,slow:0.55,slowDur:1.5,knockDecay:6},
   fence:{hp:280,width:2.1,widthMax:5.4,maxAlive:2,zPlayer:3.1,zBot:-3.85,secondLine:0.4,speed:1.8,thick:0.12},
   pedestal:{x:1.65,z:-0.375,hp:100,radius:0.17},
   rocket:{visScale:0.65,hp:12.75,dmg:250,speed:3,w:1.05,h:2.25,halfLen:0.65,radius:0.4,wobble:0.28,wobbleFreq:4.5},
-  bag:{dmg:1,rate:1,doubles:1,squad:2,giant:2,wave:1,fence:1,barrel:1},
+  bag:{dmg:1,rate:1,doubles:1,squad:2,giant:2,fence:1,barrel:1},
   barrel:{speed:4.8,radius:0.44,spawnOffset:0.3,blastDmg:20,blastR:0.6,slickR:1.0,slickTime:5,slowMul:0.25,hp:15,burnDmg:4,burnInterval:0.5},
   bot:{retarget:0.6,aimErr:0.325,smooth:1.5,threatDist:3,
     score:{cannon:4,other:3,favorite:2,styleFit:1,wave6:4,fence3:3,squad3:2,squadLow:1},nearDist:3,bestChance:0.5},
@@ -227,7 +227,7 @@ function available(s,type){
   const foeId=s.id==='p'?'e':'p';
   if(type==='dmg')return s.dmgPicks<CFG.dmgUp.maxPicks;
   if(type==='rate')return s.ratePicks<CFG.rateUp.maxPicks;
-  if(type==='wave')return aliveUnits(foeId)>0;
+  if(type==='wave')return false; // wave is now the comeback mechanic, not a flask
   if(type==='fence')return aliveUnits(foeId)>0&&fencesOf(s.id)<CFG.fence.maxAlive;
   return true;
 }
@@ -560,11 +560,17 @@ function stepArmies(dt){
   }
   // waves
   for(const w of G.waves){
-    const Wc=CFG.wave;w.z+=w.dir*Wc.speed*dt;
-    for(const u of units)if(u.side!==w.side&&!w.hit.has(u)&&Math.abs(u.z-w.z)<Wc.length/2+u.r&&Math.abs(u.x)<Wc.hitHalf+u.r){
-      w.hit.add(u);u.dmgAcc+=Wc.dmg*w.F;u.killer=w.side;u.hit=.15;u.kz=(u.kz||0)+w.dir*Wc.push*Math.min(Wc.pushFMax,w.F)*Wc.knockDecay/u.m;u.slow=Wc.slowDur}
+    // slow bulldozer: every enemy it reaches is carried along in front of it
+    const Wc=CFG.wave,st=Wc.speed*dt;w.z+=w.dir*st;w.trav=(w.trav||0)+st;
+    const front=w.z+w.dir*Wc.length/2,maxD=w.maxDist||Wc.pushFrac*(P_FRONT-E_FRONT);
+    for(const u of units)if(u.side!==w.side&&Math.abs(u.x)<Wc.hitHalf+u.r){
+      const ahead=(u.z-front)*w.dir;
+      if(ahead<u.r&&ahead>-Wc.length){
+        if(!w.hit.has(u)){w.hit.add(u);u.dmgAcc+=Wc.dmg*w.F;u.killer=w.side;u.hit=.15;u.slow=Wc.slowDur}
+        u.z=front+w.dir*u.r;u.vz=0;u.kz=0}}
     const foe=w.side==='p'?G.E:G.P;
-    if((foe.front-w.z)*w.dir<=Wc.length/2){baseHits.push([foe,Wc.dmg*w.F,0]);w.done=true}
+    if((foe.front-front)*w.dir<=0){baseHits.push([foe,Wc.dmg*w.F,0]);w.done=true}
+    else if(w.trav>=maxD){w.fade=(w.fade||0)+dt;if(w.fade>.4)w.done=true}
   }
   G.waves=G.waves.filter(w=>!w.done);
   // fences slide into place
@@ -658,6 +664,10 @@ function step(dt){
   if(!G.rush){const alive=G.trees.reduce((a,t)=>a+(t.dead?0:1),0);
     if(G.time>=R.time||G.P.hp<=R.baseHp||G.E.hp<=R.baseHp||alive<=R.treesLeft*G.treesInit){G.rush=true;G.rushT=0;sfx('rush')}}
   else G.rushT+=dt;
+  for(const s of[G.P,G.E])if(!s.comeback&&s.hp<CFG.baseHp*CFG.wave.comebackHp&&s.hp>0){
+    s.comeback=true;G.cb={side:s.id,t:0};sfx('rush');sfx('wave');
+    G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:1,hit:new Set(),trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}
+  if(G.cb)G.cb.t+=dt;
   if(G.E.hp<=0){G.state='win';sfx('win')}else if(G.P.hp<=0){G.state='lose';sfx('lose')}
 }
 function frame(realDt){
@@ -813,7 +823,7 @@ function drawFence(f){
 const WALLTILE=22;
 function drawWave(w){
   const C=CFG.wave,x=sx(0),y=sy(w.z),hw=C.width*PX/2,hl=C.length*PZ/2,d=w.dir,col=w.side==='p'?'90,170,255':'255,90,80';
-  ctx.save();ctx.translate(x,y);
+  ctx.save();ctx.translate(x,y);ctx.globalAlpha=Math.max(0,1-(w.fade||0)/.4);
   const g=ctx.createLinearGradient(0,-d*hl,0,d*hl);g.addColorStop(0,`rgba(${col},0)`);g.addColorStop(1,`rgba(${col},.55)`);
   ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(-hw,-d*hl);ctx.quadraticCurveTo(0,d*hl*1.6,hw,-d*hl);ctx.quadraticCurveTo(0,d*hl*.2,-hw,-d*hl);ctx.fill();
   ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-hw,-d*hl);ctx.quadraticCurveTo(0,d*hl*1.6,hw,-d*hl);ctx.stroke();
@@ -893,6 +903,9 @@ function draw(){
   ctx.globalAlpha=1;
   for(const t of G.texts){ctx.globalAlpha=1-Math.max(0,t.t-.6)/.6;outlined(t.txt,t.x,t.y-t.t*30,t.size,t.col)}
   ctx.globalAlpha=1;
+  if(G.cb&&G.cb.t<2.6){const t=G.cb.t,a=t<.25?t/.25:t>2.1?(2.6-t)/.5:1,sc=1+Math.max(0,.35-t)*1.5,me=G.cb.side==='p';
+    ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ)+(G.rush&&G.rushT<2.6?60:0));ctx.scale(sc,sc);
+    outlined(me?'КАМБЭК!':'КАМБЭК ВРАГА!',0,0,me?46:36,me?'#4aa8ff':'#ff4d3a','#22252c',8);ctx.restore();ctx.globalAlpha=1}
   if(G.rush&&G.rushT<2.6){const a=G.rushT<.25?G.rushT/.25:G.rushT>2.1?(2.6-G.rushT)/.5:1,sc=1+Math.max(0,.35-G.rushT)*1.5;
     ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);outlined('НАТИСК',0,0,48,'#ff4d3a','#22252c',8);ctx.restore();ctx.globalAlpha=1}
   spr('pause',UI.pause.x,UI.pause.y,UI.pause.s);
