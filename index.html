@@ -383,6 +383,16 @@ function sfx(name,gap=.03){
     case'lose':[392,349,311,262].forEach((f,i)=>tone(f,f*.98,.35,'triangle',.13,i*.16));break;
   }
 }
+
+// haptics: Android uses vibrate(); iPhone Safari has no vibrate, but toggling a native "switch" checkbox gives a tap
+const HAPTIC={sw:null};
+function haptic(kind){
+  const pat={tap:18,flask:[25,30,35],rocket:[70,40,110,40,60],banner:[40,40,40,40,90]}[kind]||20;
+  try{if(navigator.vibrate&&navigator.vibrate(pat))return}catch(e){}
+  try{if(!HAPTIC.sw){const l=document.createElement('label'),i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');
+      l.appendChild(i);l.style.cssText='position:fixed;left:-99px;top:0;opacity:0;pointer-events:none';document.body.appendChild(l);HAPTIC.sw=l}
+    const n=Array.isArray(pat)?Math.ceil(pat.length/2):1;for(let k=0;k<n;k++)setTimeout(()=>HAPTIC.sw.click(),k*90)}catch(e){}
+}
 // =====================================================================
 //  SIMULATION STEP (fixed 1/60)
 // =====================================================================
@@ -482,7 +492,7 @@ function stepBullets(dt){
     switch(best.kind){
       case'flask':o.hp-=b.dmg;o.hit=.12;if(owner===G.P)sfx(o.hp<=0?'flask':'flaskHit',.02);
         if(o.hp<=0){const t=o.type;
-          if(owner===G.P){burst(o.x,o.z,UPG[t].col,22);for(const f of owner.flasks)if(f!==o)burst(f.x,f.z,'#9aa0aa',10)}
+          if(owner===G.P){haptic('flask');burst(o.x,o.z,UPG[t].col,22);for(const f of owner.flasks)if(f!==o)burst(f.x,f.z,'#9aa0aa',10)}
           owner.flasks=[];applyUpg(owner,t)}
         break;
       case'tree':o.hp-=b.dmg;o.hit=.12;if(o.hp<=0){if(owner===G.P)sfx(o.g?'goldTree':'tree',.05)}else if(owner===G.P)sfx('treeHit',.06);
@@ -513,7 +523,7 @@ function stepRockets(dt){
     r.ang=Math.atan2((r.x-ox)*PX,-(r.dir*R.speed*dt)*PZ);
     const foe=r.side==='p'?G.E:G.P;
     if((foe.front-r.z)*r.dir<=R.halfLen){damageBase(foe,R.dmg,r.x);sfx('bigBoom',.05);burst(r.x,foe.front,'#ff8a3a',40);burst(r.x,foe.front,'#ffd23a',30);burst(r.x,foe.front,'#333',24);
-      G.shake=.6;for(let k=0;k<4;k++)FX.push({x:sx(r.x)+rnd(-40,40),y:sy(foe.front)+rnd(-10,10),t:-k*.07,life:.5,rot:Math.random()*6,big:true});G.booms.push({x:r.x,z:foe.front,r:1.6,t:0});
+      G.shake=.6;haptic('rocket');for(let k=0;k<4;k++)FX.push({x:sx(r.x)+rnd(-40,40),y:sy(foe.front)+rnd(-10,10),t:-k*.07,life:.5,rot:Math.random()*6,big:true});G.booms.push({x:r.x,z:foe.front,r:1.6,t:0});
       floatPx(sx(r.x),sy(foe.front)+(r.dir>0?-20:20),'-'+R.dmg,'#ff8a3a',20);r.dead=true}
   }
   G.rockets=G.rockets.filter(r=>!r.dead);
@@ -636,7 +646,7 @@ function stepArmies(dt){
   for(const u of units)if(u.hp<=0&&!u.gone){u.gone=true;
     const killer=sideById(u.killer||(u.side==='p'?'e':'p'));
     addGold(killer,u.giant?CFG.killGold.giant:CFG.killGold.soldier);
-    burst(u.x,u.z,u.side==='p'?'#6cc4ff':'#ff4d4d',u.giant?24:7);sfx(u.giant?'giantDie':'unitDie',u.giant?.05:.04)}
+    burst(u.x,u.z,u.side==='p'?'#6cc4ff':'#ff4d4d',u.giant?24:7);if(u.giant){G.shake=Math.max(G.shake||0,.2);FX.push({x:sx(u.x),y:sy(u.z),t:0,life:.35,rot:Math.random()*6,big:true})}sfx(u.giant?'giantDie':'unitDie',u.giant?.05:.04)}
   G.units=units.filter(u=>!u.gone);
 }
 
@@ -691,13 +701,13 @@ function step(dt){
   stepBullets(dt);stepRockets(dt);stepShells(dt);stepBarrels(dt);stepArmies(dt);
   const R=CFG.rush;
   if(!G.rush){const alive=G.trees.reduce((a,t)=>a+(t.dead?0:1),0);
-    if(G.time>=R.time||G.P.hp<=R.baseHp||G.E.hp<=R.baseHp||alive<=R.treesLeft*G.treesInit){G.rush=true;G.rushT=0;sfx('rush')}}
+    if(G.time>=R.time||G.P.hp<=R.baseHp||G.E.hp<=R.baseHp||alive<=R.treesLeft*G.treesInit){G.rush=true;G.rushT=0;sfx('rush');haptic('banner')}}
   else if(!(G.cb&&G.cb.t<2.6))G.rushT+=dt; // one banner at a time
   for(const s of[G.P,G.E])if(!s.comeback&&s.hp<CFG.baseHp*CFG.wave.comebackHp&&s.hp>0){
-    s.comeback=true;G.cb={side:s.id,t:0};sfx('rush');sfx('wave');
+    s.comeback=true;G.cb={side:s.id,t:0};haptic('banner');sfx('rush');sfx('wave');
     G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:1,hit:new Set(),trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}
   if(G.cb)G.cb.t+=dt;
-  if(G.E.hp<=0){G.state='win';sfx('win')}else if(G.P.hp<=0){G.state='lose';sfx('lose')}
+  if(G.E.hp<=0){G.state='win';sfx('win');G.shake=.8;haptic('rocket')}else if(G.P.hp<=0){G.state='lose';sfx('lose');G.shake=.8;haptic('rocket')}
 }
 function frame(realDt){
   for(const t of G.texts)t.t+=realDt;G.texts=G.texts.filter(t=>t.t<1.2);
@@ -957,7 +967,7 @@ function draw(){
     ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);
     bounceText(me?'ВАШ КАМБЭК':'КАМБЭК ВРАГА',0,0,40,me?'#4aa8ff':'#ff4d3a',t);ctx.restore();ctx.globalAlpha=1}
   if(G.rush&&G.rushT<2.6&&!(G.cb&&G.cb.t<2.6)){const a=G.rushT<.25?G.rushT/.25:G.rushT>2.1?(2.6-G.rushT)/.5:1,sc=1+Math.max(0,.35-G.rushT)*1.5;
-    ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);bounceText('НАТИСК',0,0,48,'#ff4d3a',G.rushT);ctx.restore();ctx.globalAlpha=1}
+    ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);bounceText('НАТИСК',0,0,48,'#ff4d3a',G.rushT);outlined('Усиленные улучшения',0,40,17,'#fff','#22252c',5);ctx.restore();ctx.globalAlpha=1}
   spr('pause',UI.pause.x,UI.pause.y,UI.pause.s);
   if(fsOK()){const b=FS,h=b.s/2;ctx.fillStyle='#22252c';rr(b.x-h,b.y-h,b.s,b.s,10);ctx.fill();ctx.fillStyle='#f6e7c8';rr(b.x-h+2.5,b.y-h+2.5,b.s-5,b.s-7,8);ctx.fill();
     ctx.strokeStyle='#1f6fd6';ctx.lineWidth=3.2;ctx.lineCap='round';const o=isFS()?4:9,i=isFS()?9:4,c=(sx_,sy_)=>{ctx.beginPath();ctx.moveTo(b.x+sx_*o,b.y+sy_*i);ctx.lineTo(b.x+sx_*o,b.y+sy_*o);ctx.lineTo(b.x+sx_*i,b.y+sy_*o);ctx.stroke()};
