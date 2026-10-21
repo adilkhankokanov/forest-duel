@@ -42,11 +42,11 @@ const CFG={
     maxTargets:4,frontMin:-0.03,frontMax:1.0,side:0.52,
     gun:{interval:2,speed:5,range:30,hitPad:0.05,dmgMul:4},hitScale:0.96},  // tank gun: hits only enemy tanks and base; crushes units in front with the melee attack
   army:{spawnOffset:0.6,spiralAngle:2.39996,spiralR:0.19,baseGap:0.22,limit:100,releasePerStep:4,sepIters:3},
-  wave:{comebackHp:0.5,pushFrac:0.4,dmg:24,speed:1.6,width:3.025,length:1.625,hitHalf:1.5125,push:0.8,pushFMax:2,slow:0.55,slowDur:1.5,knockDecay:6},
+  wave:{comebackHp:0.4,pushFrac:0.4,dmg:24,speed:1.6,width:3.025,length:1.625,hitHalf:1.5125,push:0.8,pushFMax:2,slow:0.55,slowDur:1.5,knockDecay:6},
   fence:{hp:280,width:2.5,widthMax:5.4,maxAlive:2,zPlayer:3.1,zBot:-3.85,secondLine:0.4,speed:1.8,thick:0.12},
   pedestal:{x:1.65,z:-0.375,hp:100,radius:0.17},
   rocket:{visScale:0.65,hp:12.75,dmg:875,speed:3,w:1.05,h:2.25,halfLen:0.65,radius:0.4,wobble:0.28,wobbleFreq:4.5},
-  bag:{dmg:1,rate:1,doubles:1,squad:2,giant:2,fence:1,barrel:1},
+  bag:{dmg:1,rate:1,doubles:1,squad:2,giant:2,fence:0,barrel:1},
   barrel:{speed:4.8,radius:0.44,spawnOffset:0.3,blastDmg:20,blastR:0.6,slickR:1.0,slickTime:5,slowMul:0.25,hp:15,burnDmg:4,burnInterval:0.5},
   bot:{retarget:0.35,aimErr:0.1,smooth:4,threatDist:3.5,pedestalValue:60,baseValue:1.2,movePenalty:0.35,
     score:{cannon:4,other:3,favorite:2,styleFit:1,wave6:4,fence3:3,squad3:2,squadLow:1},nearDist:3,bestChance:0.85},
@@ -231,7 +231,7 @@ function available(s,type){
   if(type==='dmg')return s.dmgPicks<CFG.dmgUp.maxPicks;
   if(type==='rate')return s.ratePicks<CFG.rateUp.maxPicks;
   if(type==='wave')return false; // wave is now the comeback mechanic, not a flask
-  if(type==='fence')return aliveUnits(foeId)>0&&fencesOf(s.id)<CFG.fence.maxAlive;
+  if(type==='fence')return false&&aliveUnits(foeId)>0&&fencesOf(s.id)<CFG.fence.maxAlive;
   return true;
 }
 function fillBag(s){s.bag=[];for(const k in CFG.bag)for(let i=0;i<CFG.bag[k];i++)s.bag.push(k);shuffle(s.bag)}
@@ -308,40 +308,59 @@ function audioInit(){
     if(!SND.primed){try{const o=SND.ac.createBufferSource();o.buffer=SND.ac.createBuffer(1,1,22050);o.connect(SND.ac.destination);o.start(0);SND.primed=true}catch(e){}}
     return}
   try{const ac=new(window.AudioContext||window.webkitAudioContext)();SND.ac=ac;
-    SND.out=ac.createGain();SND.out.gain.value=.55;
+    SND.out=ac.createGain();SND.out.gain.value=.55;setTimeout(prerender,50);
     // softer, less 8-bit: gentle top-end roll-off plus a short room reverb
     const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;lp.Q.value=.5;
     const comp=ac.createDynamicsCompressor();SND.out.connect(lp);lp.connect(comp);comp.connect(ac.destination);
     const n=ac.sampleRate,b=ac.createBuffer(1,n,n),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;SND.noise=b;
   }catch(e){SND.ac=null}
 }
+let A_CTX=null,A_OUT=null;
 function tone(f0,f1,dur,type,vol,delay=0){
-  const ac=SND.ac,t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();
+  const ac=A_CTX||SND.ac,t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain();
   o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
   g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.008);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-  o.connect(g);g.connect(SND.out);o.start(t);o.stop(t+dur+.02);
+  o.connect(g);g.connect(A_OUT||SND.out);o.start(t);o.stop(t+dur+.02);
 }
 function hiss(dur,vol,f0,f1,kind='lowpass',delay=0){
-  const ac=SND.ac,t=ac.currentTime+delay,s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();
+  const ac=A_CTX||SND.ac,t=ac.currentTime+delay,s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();
   s.buffer=SND.noise;s.playbackRate.value=.6+Math.random()*.8;f.type=kind;f.Q.value=1.2;
   f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(Math.max(30,f1),t+dur);
   g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-  s.connect(f);f.connect(g);g.connect(SND.out);s.start(t,Math.random()*.5);s.stop(t+dur+.02);
+  s.connect(f);f.connect(g);g.connect(A_OUT||SND.out);s.start(t,Math.random()*.5);s.stop(t+dur+.02);
 }
 // cartoon voice: a buzzy source through two vowel formants, with a pitch glide and a little vibrato
 const VOW={a:[850,1250],i:[320,2300],o:[520,900],u:[350,800],e:[550,1900]};
 function voice(f0,f1,dur,vow,vol,delay=0){
-  const ac=SND.ac,t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain(),vib=ac.createOscillator(),vg=ac.createGain();
+  const ac=A_CTX||SND.ac,t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain(),vib=ac.createOscillator(),vg=ac.createGain();
   o.type='sawtooth';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur);
   vib.frequency.value=18;vg.gain.value=f0*.04;vib.connect(vg);vg.connect(o.frequency);
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   const[F1,F2]=VOW[vow];for(const[F,k]of[[F1,1],[F2,.6]]){const b=ac.createBiquadFilter();b.type='bandpass';b.frequency.value=F*(f0/450);b.Q.value=6;const bg=ac.createGain();bg.gain.value=k;o.connect(b);b.connect(bg);bg.connect(g)}
-  g.connect(SND.out);o.start(t);vib.start(t);o.stop(t+dur+.02);vib.stop(t+dur+.02);
+  g.connect(A_OUT||SND.out);o.start(t);vib.start(t);o.stop(t+dur+.02);vib.stop(t+dur+.02);
 }
 function distort(amount){const n=1024,c=new Float32Array(n);for(let i=0;i<n;i++){const x=i*2/n-1;c[i]=(1+amount)*x/(1+amount*Math.abs(x))}return c}
+// Frequent sounds are rendered once into small audio buffers (a few variants each) and then played as a
+// single buffer node; everything goes through a voice limit so big fights can't flood the audio thread.
+const PRE=['shot','treeHit','hup','hya','unitDie','flaskHit','hitBase','tankShot','blast','tree','goldTree'],BUF={};let ACTIVE=0;const MAX_VOICES=14;
+async function prerender(){
+  if(!SND.ac||SND.pre)return;SND.pre=true;const sr=SND.ac.sampleRate;
+  for(const name of PRE){BUF[name]=[];
+    for(let v=0;v<3;v++){try{const oc=new OfflineAudioContext(1,Math.ceil(sr*.7),sr);A_CTX=oc;A_OUT=oc.destination;synth(name);A_CTX=null;A_OUT=null;
+      BUF[name].push(await oc.startRendering())}catch(e){A_CTX=null;A_OUT=null}}}
+}
 function sfx(name,gap=.03){
   if(!SND.ac||!SND.on||paused)return;
   const now=SND.ac.currentTime;if(now-(SND.last[name]||0)<gap)return;SND.last[name]=now;
+  const big=name==='bigBoom'||name==='win'||name==='lose'||name==='rush'||name==='level'||name==='tankSpawn';
+  if(ACTIVE>=MAX_VOICES&&!big)return;
+  ACTIVE++;setTimeout(()=>ACTIVE--,name in BUF?400:900);
+  const bs=BUF[name];
+  if(bs&&bs.length){const src=SND.ac.createBufferSource();src.buffer=bs[Math.floor(Math.random()*bs.length)];src.playbackRate.value=.96+Math.random()*.08;src.connect(SND.out);src.start();return}
+  if(PRE.includes(name))return; // not rendered yet: skip rather than build a live graph
+  synth(name);
+}
+function synth(name){
   const r=()=>1+Math.random()*.12-.06;
   switch(name){
     case'shot':hiss(.06,.06,6000*r(),1800,'bandpass');tone(900*r(),320,.04,'triangle',.022);break;
