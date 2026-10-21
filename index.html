@@ -22,7 +22,7 @@ body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-c
 // =====================================================================
 const CFG={
   baseHp:3500,
-  cannon:{dmg:7.5,interval:0.44/2.25,bulletSpeed:12.6,range:30,jitter:0.04,xLimit:3.35,playerSpeed:60,edgeGain:0.15},
+  cannon:{dmg:7.5,interval:0.44/2.25,bulletSpeed:12.6,range:30,jitter:0.04,xLimit:3.35,playerSpeed:60,edgeGain:0.15,vsSoldier:2,vsGiant:1.5},
   tree:{
     green:{hp:40,gold:8},golden:{hp:66.6667,gold:39},
     max:800,xMin:-3.35,xMax:3.35,zMin:-3.25,zMax:2.5,minDist:0.21,roadHalf:0.9,radius:0.155,
@@ -37,8 +37,8 @@ const CFG={
   rateUp:{first:0.20,step:0.04,maxPicks:5},
   doubles:{offset:0.12,dmgMul:0.75,dur:4,durStep:0.8},
   squad:{base:15},
-  soldier:{aggro:1.0,hp:40,speed:0.825,radius:0.16,mass:1,atkInterval:0.25,dmgUnit:2,dmgFence:2,dmgBase:4,engage:0.08},
-  giant:{hp:180,dmg:20,atkInterval:1,speed:0.5775,radius:0.40,mass:3,sizeStep:0.025,sizeMax:0.25,
+  soldier:{aggro:1.0,hp:50,speed:0.825,radius:0.16,mass:1,atkInterval:0.25,dmgUnit:2,dmgFence:2,dmgBase:4,engage:0.08},
+  giant:{hp:220,dmg:20,atkInterval:1,speed:0.5775,radius:0.40,mass:3,sizeStep:0.025,sizeMax:0.25,
     maxTargets:4,frontMin:-0.03,frontMax:1.0,side:0.52,
     gun:{interval:2,speed:5,range:30,hitPad:0.05,dmgMul:4},hitScale:0.96},  // tank gun: hits only enemy tanks and base; crushes units in front with the melee attack
   army:{spawnOffset:0.6,spiralAngle:2.39996,spiralR:0.19,baseGap:0.22,limit:100,releasePerStep:4,sepIters:3},
@@ -525,7 +525,7 @@ function stepBullets(dt){
           burst(o.x,o.z,o.g?'#ffb21a':'#45b142',o.g?16:10);
           if(owner===G.P)float(o.x,o.z,'+'+v,o.g?'#ffb21a':'#45b142',o.g?15:12)}
         break;
-      case'unit':o.dmgAcc+=b.dmg;o.killer=b.side;o.hit=.1;break;
+      case'unit':o.dmgAcc+=b.dmg*(o.giant?CFG.cannon.vsGiant:CFG.cannon.vsSoldier);o.killer=b.side;o.hit=.1;break;
       case'rocket':o.hp-=b.dmg;o.hit=.1;if(o.hp<=0){o.dead=true;sfx('pop',.05);burst(o.x,o.z,'#ff8a3a',20)}break;
       case'barrel':if(o.hp===undefined)o.hp=CFG.barrel.hp;o.hp-=b.dmg;o.hit=.12;if(o.hp<=0){o.done=true;burst(o.x,o.z,'#a8462a',14);burst(o.x,o.z,'#222',8);sfx('pop',.05)}break;
       case'ped':o.hp-=b.dmg;o.hit=.12;if(o.hp<=0){o.dead=true;burst(o.x,o.z,'#c33',20);launchRocket(owner,o)}break;
