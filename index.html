@@ -25,9 +25,9 @@ const CFG={
   cannon:{dmg:7.5,interval:0.44/2.25,bulletSpeed:12.6,range:30,jitter:0.04,xLimit:2.9,playerSpeed:7.3},
   tree:{
     green:{hp:40,gold:8},golden:{hp:66.6667,gold:39},
-    max:600,xMin:-2.85,xMax:2.85,zMin:-3.75,zMax:3.0,minDist:0.21,roadHalf:0.9,radius:0.155,
+    max:600,xMin:-2.85,xMax:2.85,zMin:-3.25,zMax:2.5,minDist:0.21,roadHalf:0.9,radius:0.155,
     pedestalClear:0.275,densityFreq:0.65,goldFreq:1.25,densityCut:-0.18,midZ:-0.375,
-    centerSpan:3.375,beltGold:[0.28,0.45,0.65,0.85]
+    centerSpan:2.875,beltGold:[0.28,0.45,0.65,0.85]
   },
   level:{first:20,second:40,step:5},
   killGold:{soldier:2,giant:8},
@@ -75,7 +75,7 @@ function resize(){
 addEventListener('resize',resize);window.visualViewport&&visualViewport.addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,200));resize();
 
 // ---------- screen layout (unchanged UI) and world mapping ----------
-const UI={wallX:-4,wallW:401,wallH:42,eWall:86,pWall:598,eTankY:54,pTankY:678,flaskY:568,pause:{x:356,y:44,s:40}};
+const UI={wallX:-4,wallW:401,wallH:42,eWall:86,pWall:598,eTankY:54,pTankY:678,flaskY:546,pause:{x:356,y:44,s:40}};
 const PX=55,CX=W/2,PZ=50,ZY0=363-CFG.tree.midZ*PZ;   // forest midline sits halfway between the walls
 const sx=X=>CX+X*PX, sy=Z=>ZY0+Z*PZ, wx=x=>(x-CX)/PX, wz=y=>(y-ZY0)/PZ;
 const P_FRONT=wz(UI.pWall), E_FRONT=wz(UI.eWall+UI.wallH);      // base front lines
@@ -853,7 +853,6 @@ function draw(){
   }
   while(pi<peds.length){drawPed(peds[pi]);pi++}
   drawWall(G.E);drawWall(G.P);drawExp();
-  for(const f of G.P.flasks)drawFlask(f);
   for(const f of G.fences)drawFence(f);
   for(const w of G.waves)drawWave(w);
   for(const b of G.barrels){const x=sx(b.x),y=sy(b.z),bob=Math.abs(Math.sin(b.roll*7))*2;
@@ -889,6 +888,7 @@ function draw(){
     if(k<.35){ctx.fillStyle=`rgba(255,250,210,${1-k/.35})`;ctx.beginPath();ctx.arc(x,y,10*(1-k),0,7);ctx.fill()}}
   for(const r of G.rockets)drawRocket(r);
   drawTank(G.E);drawTank(G.P);
+  for(const f of G.P.flasks)drawFlask(f); // flasks always on top
   for(const p of G.parts){ctx.globalAlpha=Math.max(0,1-p.t/p.life);ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill()}
   ctx.globalAlpha=1;
   for(const t of G.texts){ctx.globalAlpha=1-Math.max(0,t.t-.6)/.6;outlined(t.txt,t.x,t.y-t.t*30,t.size,t.col)}
