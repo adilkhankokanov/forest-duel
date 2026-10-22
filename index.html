@@ -33,17 +33,18 @@ const CFG={
   killGold:{soldier:2,giant:8},
   flask:{hp:24,radius:0.3,side:1.365,xLimit:2.75,minGap:1.5,drawPx:38},
   rankStep:0.20,
+  tempo:{interval:15,step:0.5,start:8/15,cannonStart:0.4}, // every 15 s all flask effects grow by +50% of the starting value
   dmgUp:{first:0.20,step:0.04,maxPicks:5},
   rateUp:{first:0.20,step:0.04,maxPicks:5},
   doubles:{offset:0.12,dmgMul:0.75,dur:4,durStep:0.8},
   squad:{base:15},
   soldier:{aggro:1.0,vsSoldierMul:2,vsTankMul:2,retaliate:4,hp:50,speed:0.825,radius:0.16,mass:1,atkInterval:0.25,dmgUnit:4,dmgFence:4,dmgBase:8,engage:0.08},
-  giant:{hw:0.4,hl:0.5,hp:440,dmg:20,atkInterval:1,barrelMul:1,speed:0.75,radius:0.4,mass:5,shotBasePct:0.05,shellHp:30,shellR:0.1,sizeStep:0.025,sizeMax:0.25,
+  giant:{hw:0.4,hl:0.5,hp:440,dmg:20,atkInterval:1,barrelMul:1,speed:0.75,radius:0.4,mass:5,shotBasePct:0.025,shellHp:30,shellR:0.15,sizeStep:0.025,sizeMax:0.25,
     maxTargets:4,frontMin:-0.03,frontMax:1.0,side:0.52,
-    gun:{interval:2.25,speed:6.67,range:30,hitPad:0.05,dmgMul:4},hitScale:0.96},  // rolling cannon: ignores soldiers, shoves them aside, shells hit fences, enemy cannons and the base
+    gun:{interval:2,firstShot:1,blastR:0.45,unitDmg:60,speed:4,range:30,hitPad:0.05,dmgMul:4},hitScale:0.96},  // rolling cannon: ignores soldiers, shoves them aside, shells hit fences, enemy cannons and the base
   army:{spawnOffset:0.6,spiralAngle:2.39996,spiralR:0.19,baseGap:0.22,limit:200,releasePerStep:4,sepIters:3},
   wave:{comebackHp:0.4,pushFrac:0.4,dmg:24,speed:1.6,width:3.025,length:1.625,hitHalf:1.5125,push:0.8,pushFMax:2,slow:0.55,slowDur:1.5,knockDecay:6},
-  fence:{hp:700,width:2.5,widthMax:5.4,maxAlive:2,zPlayer:3.1,zBot:-3.85,secondLine:0.4,speed:1.8,thick:0.12},
+  fence:{hp:1050,width:2.5,widthMax:5.4,maxAlive:2,zPlayer:3.1,zBot:-3.85,secondLine:0.4,speed:1.8,thick:0.12},
   pedestal:{x:1.65,z:-0.375,hp:400,radius:0.17},
   rocket:{visScale:0.65,hp:12.75,dmg:875,speed:3,w:1.05,h:2.25,halfLen:0.65,radius:0.4,wobble:0.28,wobbleFreq:4.5},
   bag:{dmg:1,rate:1,doubles:1,squad:2,giant:2,fence:1,barrel:1},
@@ -118,7 +119,7 @@ const cellKey=(x,z)=>(Math.floor(x/0.5)+20)*1000+(Math.floor(z/0.5)+40);
 function mkSide(id){
   const p=id==='p';
   return{id,dir:p?-1:1,x:0,tx:0,cd:CFG.cannon.interval,dmgMul:1,rateMul:1,dmgPicks:0,ratePicks:0,
-    rank:{doubles:1,squad:1,giant:1,wave:1,fence:1},gold:0,lvl:1,pending:0,flasks:[],bag:[],
+    rank:{dmg:1,rate:1,doubles:1,squad:1,giant:1,wave:1,fence:1,barrel:1},gold:0,lvl:1,pending:0,flasks:[],bag:[],
     buff:0,buffQ:[],hp:CFG.baseHp,hitT:0,reserve:[],recoil:0,
     front:p?P_FRONT:E_FRONT,foeFront:p?E_FRONT:P_FRONT,muzzle:p?P_MUZZLE:E_MUZZLE,flaskZ:p?P_FLASK_Z:E_FLASK_Z,
     aiT:0,choice:-1,style:['squad','giant','defense','economy'][Math.floor(Math.random()*4)]};
@@ -230,16 +231,17 @@ const fencesOf=id=>G.fences.filter(f=>f.side===id).length;
 
 // --- upgrade values (labels read the same numbers that are applied) ---
 const upInc=(c,picks)=>c.first+c.step*picks;
+function tempoF(cannon){return (cannon?CFG.tempo.cannonStart:CFG.tempo.start)*(1+CFG.tempo.step*((G&&G.tempoN)||0))}
 function upgInfo(s,type){
   switch(type){
-    case'dmg':return{t:'Урон',v:'+'+Math.round(upInc(CFG.dmgUp,s.dmgPicks)*100)+'%'};
-    case'rate':return{t:'Скорость',v:'+'+Math.round(upInc(CFG.rateUp,s.ratePicks)*100)+'%'};
-    case'doubles':return{t:'Двойные',v:fmt(CFG.doubles.dur+CFG.doubles.durStep*(s.rank.doubles-1))+' с'};
-    case'squad':return{t:'Отряд',v:'×'+Math.round(CFG.squad.base*Fr(s.rank.squad))};
-    case'giant':return{t:'Танк',v:Math.round(CFG.giant.hp*Math.sqrt(Fr(s.rank.giant)))+' HP'};
-    case'wave':return{t:'Волна',v:fmt(CFG.wave.dmg*Fr(s.rank.wave))+' урона'};
-    case'barrel':return{t:'Бочка',v:'лужа и огонь ×'+fmt(1+CFG.barrel.growPerRank*((s.rank.barrel||1)-1))};
-    case'fence':return{t:'Забор',v:'шир. '+fmt(Math.min(CFG.fence.widthMax,CFG.fence.width*Fr(s.rank.fence)))};
+    case'dmg':return{t:'Урон',v:'+'+Math.round(CFG.dmgUp.first*tempoF(1)*100)+'%'};
+    case'rate':return{t:'Скорость',v:'+'+Math.round(CFG.rateUp.first*tempoF(1)*100)+'%'};
+    case'doubles':return{t:'Двойные',v:fmt(CFG.doubles.dur*tempoF())+' с'};
+    case'squad':return{t:'Отряд',v:'×'+Math.round(CFG.squad.base*tempoF())};
+    case'giant':return{t:'Танк',v:Math.round(CFG.giant.hp*tempoF())+' HP'};
+    case'wave':return{t:'Волна',v:fmt(CFG.wave.dmg*tempoF())+' урона'};
+    case'barrel':return{t:'Бочка',v:'огонь ×'+fmt(tempoF()/CFG.tempo.start)};
+    case'fence':return{t:'Забор',v:Math.round(CFG.fence.hp*tempoF())+' HP'};
   }
 }
 function available(s,type){
@@ -269,11 +271,11 @@ function placeFlasks(s){
 }
 
 // --- applying upgrades ---
-function spawnArmy(s,giant,n){for(let i=0;i<n;i++)s.reserve.push({giant,i,rank:s.rank.giant})}
+function spawnArmy(s,giant,n){for(let i=0;i<n;i++)s.reserve.push({giant,i,F:tempoF()})}
 function makeUnit(s,spec){
   const S=CFG.soldier,Gc=CFG.giant,z0=s.front+s.dir*CFG.army.spawnOffset;
-  if(spec.giant){const F=Fr(spec.rank),k=Math.sqrt(F);
-    return{side:s.id,giant:true,x:0,z:z0,vx:0,vz:0,r:Gc.radius,m:Gc.mass,hp:Gc.hp*k,max:Gc.hp*k,dmg:Gc.dmg*k,
+  if(spec.giant){const F=spec.F||1,k=F;
+    return{side:s.id,giant:true,F,x:0,z:z0,vx:0,vz:0,r:Gc.radius,m:Gc.mass,hp:Gc.hp*k,max:Gc.hp*k,dmg:Gc.dmg*k,
       atk:Gc.atkInterval,spd:Gc.speed,cd:0,dmgAcc:0,slow:0,walk:0,hit:0,vis:1,killer:null};}
   const a=spec.i*CFG.army.spiralAngle,rr=CFG.army.spiralR*Math.sqrt(spec.i);
   return{side:s.id,giant:false,x:Math.cos(a)*rr,z:z0+Math.sin(a)*rr,vx:0,vz:0,r:S.radius,m:S.mass,hp:S.hp,max:S.hp,
@@ -282,21 +284,20 @@ function makeUnit(s,spec){
 function applyUpg(s,type,at){
   const info=upgInfo(s,type);
   sfx(type==='squad'?'squad':type==='giant'?'giant':type==='wave'?'wave':type==='fence'?'fence':s===G.P?'upgrade':'_',.05);
-  if(type==='dmg'){s.dmgMul+=upInc(CFG.dmgUp,s.dmgPicks);s.dmgPicks++}
-  else if(type==='rate'){s.rateMul+=upInc(CFG.rateUp,s.ratePicks);s.ratePicks++}
-  else if(type==='doubles'){const d=CFG.doubles.dur+CFG.doubles.durStep*(s.rank.doubles-1);if(s.buff>0)s.buffQ.push(d);else{s.buff=d;s.buffMax=d}s.rank.doubles++}
-  else if(type==='squad'){spawnArmy(s,false,Math.round(CFG.squad.base*Fr(s.rank.squad)));s.rank.squad++}
-  else if(type==='giant'){spawnArmy(s,true,1);s.rank.giant++}
-  else if(type==='wave'){const F=Fr(s.rank.wave);G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*.4,F,hit:new Set(),done:false});s.rank.wave++}
-  else if(type==='barrel'){const rk=s.rank.barrel||1;G.barrels.push({side:s.id,dir:s.dir,x:0,z:s.front+s.dir*CFG.barrel.spawnOffset,roll:0,age:0,hp:CFG.barrel.hp,hit:0,sc:1+CFG.barrel.growPerRank*(rk-1)});s.rank.barrel=rk+1}
+  if(type==='dmg'){s.dmgMul+=CFG.dmgUp.first*tempoF(1);s.dmgPicks++}
+  else if(type==='rate'){s.rateMul+=CFG.rateUp.first*tempoF(1);s.ratePicks++}
+  else if(type==='doubles'){const d=CFG.doubles.dur*tempoF();if(s.buff>0)s.buffQ.push(d);else{s.buff=d;s.buffMax=d}}
+  else if(type==='squad'){spawnArmy(s,false,Math.round(CFG.squad.base*tempoF()))}
+  else if(type==='giant'){spawnArmy(s,true,1)}
+  else if(type==='wave'){const F=tempoF();G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*.4,F,hit:new Set(),done:false})}
+  else if(type==='barrel'){const TF=tempoF()/CFG.tempo.start;G.barrels.push({side:s.id,dir:s.dir,x:0,z:s.front+s.dir*CFG.barrel.spawnOffset,roll:0,age:0,hp:CFG.barrel.hp,hit:0,sc:Math.sqrt(TF),dmgK:tempoF()})}
   else if(type==='fence'){
     if(fencesOf(s.id)<CFG.fence.maxAlive){
       const C=CFG.fence,z1=s.id==='p'?C.zPlayer:C.zBot,z2=z1-s.dir*C.secondLine;
       const used=G.fences.filter(f=>f.side===s.id).map(f=>f.tz);
       const tz=used.includes(z1)?z2:z1;
-      G.fences.push({side:s.id,dir:s.dir,x:0,z:s.front,tz,w:Math.min(C.widthMax,C.width*Fr(s.rank.fence)),hp:C.hp,max:C.hp,dmgAcc:0,hitT:0});
+      G.fences.push({side:s.id,dir:s.dir,x:0,z:s.front,tz,w:C.width,hp:C.hp*tempoF(),max:C.hp*tempoF(),dmgAcc:0,hitT:0});
     }
-    s.rank.fence++;
   }
   const yy=s===G.P?UI.pWall-36:UI.eWall+UI.wallH+26;
   if(at&&s===G.P)floatPx(clamp(sx(at.x),75,W-75),UI.flaskY-34,info.t+' '+info.v,UPG[type].col,16);
@@ -540,7 +541,7 @@ function stepBullets(dt){
           owner.flasks=[];applyUpg(owner,t,o)}
         break;
       case'tree':o.hp-=b.dmg;o.hit=.32;o.sw=Math.random()<.5?-1:1;if(o.hp<=0){if(owner===G.P)sfx(o.g?'goldTree':'tree',.05)}else if(owner===G.P)sfx('treeHit',.06);
-        if(o.hp<=0){o.dead=true;const v=(o.g?T.golden.gold:T.green.gold)*(G.rush?CFG.rush.farmMul:1);addGold(owner,v);
+        if(o.hp<=0){o.dead=true;const v=o.g?T.golden.gold:T.green.gold;addGold(owner,v);
           burst(o.x,o.z,o.g?'#ffb21a':'#45b142',o.g?16:10);
           if(owner===G.P)float(o.x,o.z,'+'+v,o.g?'#ffb21a':'#45b142',o.g?15:12)}
         break;
@@ -610,9 +611,9 @@ function stepArmies(dt){
     u.act=null;
     if(u.giant){
       // tank: drives forward, doesn't fight soldiers in melee; every 1.5 s fires a heavy shell at the first enemy in its lane
-      u.gunCd=(u.gunCd??Gc.gun.interval)-dt; // first shot only after a full reload
+      u.gunCd=(u.gunCd??Gc.gun.firstShot)-dt; // first shot 1 s after spawning, then every 2 s
       if(u.gunCd<=0){u.gunCd+=Gc.gun.interval;u.fire=.2;sfx('tankShot',.05);
-        G.shells.push({side:u.side,dir,x:u.x,z:u.z+dir*u.r,dmg:CFG.baseHp*Gc.shotBasePct,dist:0,hp:Gc.shellHp,hit:0})}
+        G.shells.push({side:u.side,dir,x:u.x,z:u.z+dir*u.r,dmg:CFG.baseHp*Gc.shotBasePct*(u.F||1),dist:0,hp:Gc.shellHp,hit:0})}
     }else{
       let best=null,bd=1e9;nearUnits(u.x,u.z,1,NB);
       for(const o of NB)if(o.side!==u.side){const fw=(o.z-u.z)*dir;if(fw<-u.r)continue;
@@ -712,14 +713,17 @@ function stepShells(dt){
   for(const sh of G.shells){
     if(sh.tx!==undefined){sh.done=true;continue} // drop old splash shells from before the update
     const st=g.speed*dt;sh.z+=sh.dir*st;sh.dist+=st;
-    for(const o of G.units)if(o.giant&&o.side!==sh.side&&Math.abs(o.x-sh.x)<o.r+g.hitPad&&Math.abs(o.z-sh.z)<o.r+st){
-      o.dmgAcc+=sh.dmg;o.killer=sh.side;o.hit=.12;sh.done=true;burst(sh.x,sh.z,'#ffd21f',8);sfx('blast',.04);break}
-    if(sh.done)continue;
-    for(const f of G.fences)if(f.side!==sh.side&&Math.abs(sh.x-f.x)<f.w/2){const p=(f.z-sh.dir*CFG.fence.thick-sh.z)*sh.dir;
-      if(p<=0&&p>-st-CFG.fence.thick*2){f.dmgAcc+=sh.dmg;f.hitT=.12;sh.done=true;burst(sh.x,f.z,'#ffd21f',8);sfx('blast',.04);break}}
-    if(sh.done)continue;
-    const foe=sh.side==='p'?G.E:G.P;
-    if((foe.front-sh.z)*sh.dir<=0){damageBase(foe,sh.dmg,sh.x);sh.done=true;burst(sh.x,foe.front,'#ffd21f',8);sfx('blast',.04)}
+    // explodes on the first enemy it touches: unit, fence or base
+    const foe=sh.side==='p'?G.E:G.P;let hitZ=null,base=false,fence=null;
+    for(const o of G.units)if(o.side!==sh.side&&Math.abs(o.x-sh.x)<o.r+g.hitPad&&Math.abs(o.z-sh.z)<o.r+st){hitZ=sh.z;break}
+    if(hitZ===null)for(const f of G.fences)if(f.side!==sh.side&&Math.abs(sh.x-f.x)<f.w/2){const p=(f.z-sh.dir*CFG.fence.thick-sh.z)*sh.dir;
+      if(p<=0&&p>-st-CFG.fence.thick*2){hitZ=f.z;fence=f;break}}
+    if(hitZ===null&&(foe.front-sh.z)*sh.dir<=0){hitZ=foe.front;base=true}
+    if(hitZ!==null){sh.done=true;const R=g.blastR;
+      for(const o of G.units)if(o.side!==sh.side&&Math.hypot(o.x-sh.x,o.z-hitZ)<R+o.r){o.dmgAcc+=g.unitDmg;o.killer=sh.side;o.hit=.12}
+      for(const f of G.fences)if(f.side!==sh.side&&Math.abs(sh.x-f.x)<f.w/2+R&&Math.abs(f.z-hitZ)<R){f.dmgAcc+=sh.dmg;f.hitT=.12}
+      if(base||Math.abs(foe.front-hitZ)<R)damageBase(foe,sh.dmg,sh.x);
+      G.booms.push({x:sh.x,z:hitZ,r:R,t:0});burst(sh.x,hitZ,'#ff8a3a',14);burst(sh.x,hitZ,'#ffd21f',10);sfx('blast',.04)}
     else if(sh.dist>g.range)sh.done=true;
   }
   G.shells=G.shells.filter(s=>!s.done);
@@ -737,10 +741,10 @@ function stepBarrels(dt){
     if(!hit&&(foe.front-b.z)*b.dir<=BR)hit=true;
     if(!hit)continue;
     b.done=true;
-    for(const u of G.units)if(u.side!==b.side&&Math.hypot(u.x-b.x,u.z-b.z)<C.blastR+u.r){u.dmgAcc+=C.blastDmg*(u.giant?CFG.giant.barrelMul:1);u.killer=b.side;u.hit=.12}
+    for(const u of G.units)if(u.side!==b.side&&Math.hypot(u.x-b.x,u.z-b.z)<C.blastR+u.r){u.dmgAcc+=C.blastDmg*(b.dmgK||1)*(u.giant?CFG.giant.barrelMul:1);u.killer=b.side;u.hit=.12}
     for(const f of G.fences)if(f.side!==b.side&&Math.abs(b.x-f.x)<f.w/2+C.blastR&&Math.abs(b.z-f.z)<C.blastR){f.dmgAcc+=C.blastDmg;f.hitT=.12}
     const SR=C.slickR*k,sz=clamp(b.z,Math.min(G.E.front,G.P.front)+SR*.4,Math.max(G.E.front,G.P.front)-SR*.4);
-    G.slicks.push({side:b.side,x:b.x,z:sz,r:SR,k,t:0,seed:Math.random()*100});
+    G.slicks.push({side:b.side,x:b.x,z:sz,r:SR,k:b.dmgK||k,t:0,seed:Math.random()*100});
     G.booms.push({x:b.x,z:b.z,r:C.blastR,t:0});burst(b.x,b.z,'#ff8a3a',18);burst(b.x,b.z,'#222',14);sfx('boom',.05);
   }
   G.barrels=G.barrels.filter(b=>!b.done);
@@ -757,9 +761,9 @@ function step(dt){
   if(G.state==='play'){stepCannon(G.P,dt);stepCannon(G.E,dt)}
   stepBullets(dt);stepRockets(dt);stepShells(dt);stepBarrels(dt);stepArmies(dt);
   const R=CFG.rush;
-  if(G.state!=='play'){}else if(!G.rush){const alive=G.trees.reduce((a,t)=>a+(t.dead?0:1),0);
-    if(G.time>=R.time||G.P.hp<=R.baseHp||G.E.hp<=R.baseHp||alive<=R.treesLeft*G.treesInit){G.rush=true;G.rushT=0;sfx('rush');haptic('banner')}}
-  else if(!(G.cb&&G.cb.t<2.6))G.rushT+=dt; // one banner at a time
+  // game tempo: every 15 s all flask effects grow
+  if(G.state==='play'){const n=Math.floor(G.time/CFG.tempo.interval);if(n>(G.tempoN||0)){G.tempoN=n;G.tb={t:0,pct:Math.round(n*CFG.tempo.step*100)};sfx('level',.2)}}
+  if(G.tb&&!(G.cb&&G.cb.t<2.6))G.tb.t+=dt;
   if(G.state==='play')for(const s of[G.P,G.E])if(!s.comeback&&s.hp<CFG.baseHp*CFG.wave.comebackHp&&s.hp>0){
     s.comeback=true;G.cb={side:s.id,t:0};haptic('banner');sfx('rush');sfx('wave');
     G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:1,hit:new Set(),trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}
@@ -870,7 +874,7 @@ function bounceText(txt,x,y,size,fill,t){
 }
 // tank shell drawn from simple shapes: brass case, dark band, coloured pointed nose, smoke puff behind
 function drawShell(x,y,dir,side,fl){
-  ctx.save();ctx.translate(x,y);if(dir>0)ctx.rotate(Math.PI);ctx.scale(.67,.67);
+  ctx.save();ctx.translate(x,y);if(dir>0)ctx.rotate(Math.PI);
   for(let k=1;k<=4;k++){ctx.globalAlpha=.25-k*.05;ctx.fillStyle='#d9d4c8';ctx.beginPath();ctx.arc(Math.sin(G.time*20+k)*1.5,10+k*7,4+k*1.6,0,7);ctx.fill()}
   ctx.globalAlpha=1;ctx.lineWidth=2;ctx.strokeStyle='#22252c';
   ctx.fillStyle='#e0a83a';rr(-5,-4,10,14,2.5);ctx.fill();ctx.stroke();
@@ -924,6 +928,12 @@ function drawCracks(t,x,y,rot,dmg){
   if(dmg>.6){ctx.fillStyle='rgba(70,38,12,.35)';ctx.beginPath();ctx.arc(Math.cos(seed)*4,Math.sin(seed)*3,2.2,0,7);ctx.fill()}
   ctx.restore();
 }
+function nearTrees(t){const out=[],x=sx(t.x),y=sy(t.z);for(let ix=-1;ix<=1;ix++)for(let iz=0;iz<=2;iz++){const a=G.grid.get(cellKey(t.x+ix*.5,t.z+iz*.5));if(a)for(const n of a)if(!n.dead&&n.z>t.z&&Math.abs(sx(n.x)-x)<22&&sy(n.z)-y<30)out.push(n)}return out.sort((a,b)=>a.z-b.z)}
+const FLAMES=[];
+function drawFlame([fy,fx,fh,fw,sw,a]){
+  ctx.globalAlpha=a;ctx.fillStyle='#e8321a';ctx.beginPath();ctx.moveTo(fx-fw,fy);ctx.quadraticCurveTo(fx-fw*.7,fy-fh*.55,fx+sw,fy-fh);ctx.quadraticCurveTo(fx+fw*.7,fy-fh*.55,fx+fw,fy);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#ff9a1a';ctx.beginPath();ctx.moveTo(fx-fw*.7,fy);ctx.quadraticCurveTo(fx-fw*.45,fy-fh*.45,fx+sw*.8,fy-fh*.78);ctx.quadraticCurveTo(fx+fw*.45,fy-fh*.45,fx+fw*.7,fy);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#fff2a0';ctx.beginPath();ctx.moveTo(fx-fw*.35,fy);ctx.quadraticCurveTo(fx-fw*.2,fy-fh*.3,fx+sw*.5,fy-fh*.45);ctx.quadraticCurveTo(fx+fw*.2,fy-fh*.3,fx+fw*.35,fy);ctx.closePath();ctx.fill();ctx.globalAlpha=1}
 function drawFX(){
   const now=performance.now(),dt=Math.min(.05,(now-(drawFX.t||now))/1000);drawFX.t=now;
   for(const f of FX){if(!paused)f.t+=dt;if(f.t<0)continue;const k=f.t/f.life,sc=f.big?1.5:1;
@@ -982,7 +992,7 @@ function drawUnit(u){
     if(u.atkT>0){ph=1-u.atkT/.2;const k=ph<.3?ph/.3:Math.max(0,1-(ph-.3)/.7);
       x-=ax*(ph<.12?ph/.12:0)*2;x+=ax*k*8;y+=az*k*8*PZ/PX;
       tilt=ax*k*.7+(Math.abs(ax)<.3?(u.side==='p'?.35:-.35)*k:0);sc*=1+k*.22;slash=ph>.2&&ph<.75?1-Math.abs(ph-.45)/.3:0}
-    if(G.state!=='play'&&((G.state==='win')===(u.side==='p'))){const hop=Math.abs(Math.sin(G.time*3.2+(u.walk||0)));y-=hop*7;tilt=Math.sin(G.time*4+(u.walk||0))*.22;sc*=1+hop*.06}
+    if(G.state!=='play'&&((G.state==='win')===(u.side==='p'))){const ph=G.time*12+(u.walk||0),st=Math.abs(Math.sin(ph));y-=st*3.5;tilt=Math.sin(ph)*.2}
     FLASH=u.hit>0?Math.min(1,u.hit/.1):0;spr(u.side==='p'?'manB':'manR',x,y+5,SOLDIER_PX*sc,.5,1,tilt);FLASH=0;
     if(slash>0){const cx=x+ax*9,cy=y-6+az*9*PZ/PX,a0=Math.atan2(az*PZ/PX,ax);ctx.globalAlpha=Math.min(1,slash*1.4);
       ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.arc(cx,cy,8,a0-1.3+ph*1.2,a0+.2+ph*1.4);ctx.stroke();
@@ -1053,10 +1063,14 @@ function draw(){
   while(pi<peds.length){drawPed(peds[pi]);pi++}
   ctx.drawImage(FOREST.L[1],0,0,W,H);
   // damaged trees are drawn live: they shrink with lost HP and sway from the trunk when hit
-  for(const t of G.trees)if(!t.dead&&t.hp<t.max){const life=t.hp/t.max,k=1,ph=t.hit>0?.32-t.hit:1,dec=t.hit>0?t.hit/.32:0;
+  // damaged trees are drawn live (sway on hit); the healthy trees just in front are redrawn on top to keep the depth order
+  const dmgT=G.trees.filter(t=>!t.dead&&t.hp<t.max);
+  for(const t of dmgT){const ph=t.hit>0?.32-t.hit:1,dec=t.hit>0?t.hit/.32:0;
     const rot=dec>0?Math.sin(ph*38)*.28*dec*(t.sw||1):0,sq=dec>0?Math.sin(ph*50)*.1*dec:0,x=sx(t.x),y=sy(t.z)+7;
-    ctx.fillStyle='rgba(60,50,35,.25)';ctx.beginPath();ctx.ellipse(x+1,y,8*k,3*k,0,0,7);ctx.fill();
-    FLASH=t.hit>.2?Math.min(1,(t.hit-.2)/.12):0;spr(t.g?'treeY':'treeG',x,y,21*k*(1+sq),.5,.85,rot,1-sq);FLASH=0;bar(x-8,y-25,16,3,life,'#45d04a')}
+    ctx.fillStyle='rgba(60,50,35,.25)';ctx.beginPath();ctx.ellipse(x+1,y,8,3,0,0,7);ctx.fill();
+    FLASH=t.hit>.2?Math.min(1,(t.hit-.2)/.12):0;spr(t.g?'treeY':'treeG',x,y,21*(1+sq),.5,.85,rot,1-sq);FLASH=0;
+    for(const n of nearTrees(t))if(cachedT(n))spr(n.g?'treeY':'treeG',sx(n.x),sy(n.z)+7,21,.5,.85)}
+  for(const t of dmgT)bar(sx(t.x)-8,sy(t.z)-18,16,3,t.hp/t.max,'#45d04a');
 
   drawWall(G.E);drawWall(G.P);drawExp();
   for(const w of G.waves)drawWave(w);
@@ -1077,22 +1091,23 @@ function draw(){
     ctx.fillStyle=gl;ctx.beginPath();ctx.ellipse(x,y-6,o.r*PX*1.1,o.r*PZ,0,0,7);ctx.fill();ctx.globalCompositeOperation='source-over';
     for(let i=0;i<Math.round(34*area);i++){const ang=o.seed*7.3+i*2.39996,rad=Math.sqrt(((o.seed*13.7+i*.618)%1))*.9,
       fx=x+Math.cos(ang)*o.r*PX*rad,fy=y+Math.sin(ang)*o.r*PZ*rad*.85,t=G.time*10+i*1.7,
-      fh=(22+9*Math.sin(t)+6*Math.sin(t*2.3))*a*(1.2-rad*.45),fw=(8+2*Math.sin(t*1.3))*a,sw=Math.sin(t*.8)*3;
-      ctx.globalAlpha=a;ctx.fillStyle='#e8321a';ctx.beginPath();ctx.moveTo(fx-fw,fy);ctx.quadraticCurveTo(fx-fw*.7,fy-fh*.55,fx+sw,fy-fh);ctx.quadraticCurveTo(fx+fw*.7,fy-fh*.55,fx+fw,fy);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#ff9a1a';ctx.beginPath();ctx.moveTo(fx-fw*.7,fy);ctx.quadraticCurveTo(fx-fw*.45,fy-fh*.45,fx+sw*.8,fy-fh*.78);ctx.quadraticCurveTo(fx+fw*.45,fy-fh*.45,fx+fw*.7,fy);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#fff2a0';ctx.beginPath();ctx.moveTo(fx-fw*.35,fy);ctx.quadraticCurveTo(fx-fw*.2,fy-fh*.3,fx+sw*.5,fy-fh*.45);ctx.quadraticCurveTo(fx+fw*.2,fy-fh*.3,fx+fw*.35,fy);ctx.closePath();ctx.fill()}
+      fh=(22+9*Math.sin(t)+6*Math.sin(t*2.3))*a*(1.2-rad*.45),fw=(8+2*Math.sin(t*1.3))*a,sw=Math.sin(t*.8)*3;FLAMES.push([fy,fx,fh,fw,sw,a])}
     for(let i=0;i<Math.round(8*area);i++){const ph=((G.time*.5+i*.125+o.seed)%1),px=x+Math.sin(o.seed+i*2.1)*o.r*PX*.6+Math.sin(G.time*2+i)*5,py=y-20-ph*45;
       ctx.globalAlpha=a*.35*(1-ph);ctx.fillStyle='#3a3a40';ctx.beginPath();ctx.arc(px,py,6+ph*10,0,7);ctx.fill()}
     ctx.globalAlpha=1}
   // units, tanks and fences sorted by where they touch the ground, so lower things overlap higher ones
-  const ds=[];for(const u of G.units)ds.push([foot(u),u,0]);for(const f of G.fences)ds.push([sy(f.z)+8,f,1]);ds.sort((a,b)=>a[0]-b[0]);for(const d of ds)d[2]?drawFence(d[1]):drawUnit(d[1]);
+  const ds=[];for(const u of G.units)ds.push([foot(u),u,0]);for(const f of G.fences)ds.push([sy(f.z)+8,f,1]);for(const fl of FLAMES)ds.push([fl[0],fl,2]);FLAMES.length=0;
+  ds.sort((a,b)=>a[0]-b[0]);for(const d of ds)d[2]===2?drawFlame(d[1]):d[2]?drawFence(d[1]):drawUnit(d[1]);
   for(const b of G.bullets)if(!b.ghost){const x=sx(b.x),y=sy(b.z),d=Math.sign(b.dz),L=Math.min(85,b.dist*PZ);
     const g=ctx.createLinearGradient(x,y,x,y-d*L);g.addColorStop(0,'rgba(255,230,120,.85)');g.addColorStop(1,'rgba(255,200,60,0)');
     ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x-4.5,y);ctx.lineTo(x+4.5,y);ctx.lineTo(x+1,y-d*L);ctx.lineTo(x-1,y-d*L);ctx.fill();
     ctx.fillStyle='rgba(255,255,240,.7)';ctx.beginPath();ctx.moveTo(x-1.6,y);ctx.lineTo(x+1.6,y);ctx.lineTo(x,y-d*L*.6);ctx.fill();
     spr('bullet',x,y,10,.5,.5,d>0?Math.PI:0)}
   drawFX();
-  for(const sh of G.shells)if(sh.dir&&!sh.done){if(sh.hit>0)sh.hit-=1/60;drawShell(sx(sh.x),sy(sh.z),sh.dir,sh.side,sh.hit>0);if(sh.hp<(CFG.giant.shellHp||1))bar(sx(sh.x)-10,sy(sh.z)-(sh.dir<0?30:-24),20,3,sh.hp/CFG.giant.shellHp,'#45d04a')}
+  for(const sh of G.shells)if(sh.dir&&!sh.done){const tx=sx(sh.x),ty=sy(sh.z),L=Math.min(130,sh.dist*PZ),d=sh.dir>0?-1:1;
+    const tg=ctx.createLinearGradient(tx,ty,tx,ty+d*L);tg.addColorStop(0,sh.side==='p'?'rgba(120,190,255,.8)':'rgba(255,140,120,.8)');tg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=tg;ctx.beginPath();ctx.moveTo(tx-6,ty);ctx.lineTo(tx+6,ty);ctx.lineTo(tx+1.5,ty+d*L);ctx.lineTo(tx-1.5,ty+d*L);ctx.fill();
+    if(sh.hit>0)sh.hit-=1/60;drawShell(sx(sh.x),sy(sh.z),sh.dir,sh.side,sh.hit>0);if(sh.hp<(CFG.giant.shellHp||1))bar(sx(sh.x)-10,sy(sh.z)-(sh.dir<0?30:-24),20,3,sh.hp/CFG.giant.shellHp,'#45d04a')}
   for(const b of G.booms){const k=b.t/.45,R=b.r||.6,x=sx(b.x),y=sy(b.z),e=1-Math.pow(1-Math.min(1,k*2.2),3);
     ctx.fillStyle=`rgba(255,150,40,${.45*(1-k)})`;ctx.beginPath();ctx.ellipse(x,y,R*PX*e,R*PZ*e,0,0,7);ctx.fill();
     ctx.strokeStyle=`rgba(255,240,180,${1-k})`;ctx.lineWidth=3*(1-k)+1;ctx.beginPath();ctx.ellipse(x,y,R*PX*e,R*PZ*e,0,0,7);ctx.stroke();
@@ -1107,8 +1122,8 @@ function draw(){
   if(G.cb&&G.cb.t<2.6){const t=G.cb.t,a=t<.25?t/.25:t>2.1?(2.6-t)/.5:1,sc=1+Math.max(0,.35-t)*1.5,me=G.cb.side==='p';
     ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);
     bounceText(me?'ВАШ КАМБЭК':'КАМБЭК ВРАГА',0,0,40,me?'#4aa8ff':'#ff4d3a',t);ctx.restore();ctx.globalAlpha=1}
-  if(G.rush&&G.rushT<2.6&&!(G.cb&&G.cb.t<2.6)){const a=G.rushT<.25?G.rushT/.25:G.rushT>2.1?(2.6-G.rushT)/.5:1,sc=1+Math.max(0,.35-G.rushT)*1.5;
-    ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);bounceText('НАТИСК',0,0,48,'#ff4d3a',G.rushT);outlined('×'+CFG.rush.farmMul+' скорость фарма',0,40,18,'#fff','#22252c',5);ctx.restore();ctx.globalAlpha=1}
+  if(G.tb&&G.tb.t<2.2&&!(G.cb&&G.cb.t<2.6)){const t=G.tb.t,a=t<.2?t/.2:t>1.7?(2.2-t)/.5:1,sc=1+Math.max(0,.3-t)*1.5;
+    ctx.globalAlpha=a;ctx.save();ctx.translate(W/2,sy(CFG.tree.midZ));ctx.scale(sc,sc);bounceText('УЛУЧШЕНИЯ +'+G.tb.pct+'%',0,0,34,'#ffd21f',t);ctx.restore();ctx.globalAlpha=1}
   spr('pause',UI.pause.x,UI.pause.y,UI.pause.s);
   if(fsOK()){const b=FS,h=b.s/2;ctx.fillStyle='#22252c';rr(b.x-h,b.y-h,b.s,b.s,10);ctx.fill();ctx.fillStyle='#f6e7c8';rr(b.x-h+2.5,b.y-h+2.5,b.s-5,b.s-7,8);ctx.fill();
     ctx.strokeStyle='#1f6fd6';ctx.lineWidth=3.2;ctx.lineCap='round';const o=isFS()?4:9,i=isFS()?9:4,c=(sx_,sy_)=>{ctx.beginPath();ctx.moveTo(b.x+sx_*o,b.y+sy_*i);ctx.lineTo(b.x+sx_*o,b.y+sy_*o);ctx.lineTo(b.x+sx_*i,b.y+sy_*o);ctx.stroke()};
