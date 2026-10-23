@@ -99,17 +99,22 @@ document.getElementById('ui').addEventListener('pointerdown',e=>{
   try{audioInit();sfx(b.matches('[data-tab]:not(.au-nav__item--locked)')?'whoosh':'flaskHit',.03)}catch(_){}try{haptic('tap')}catch(_){}
 },true);
 // entrance: elements pop in one after another along the diagonal, top-left to bottom-right
-function staggerIn(box,sel){if(!box)return;const els=[...box.querySelectorAll(sel)],R=box.getBoundingClientRect();
-  els.forEach(el=>{const r=el.getBoundingClientRect(),d=((r.left-R.left)+(r.top-R.top))/(R.width+R.height||1);
-    el.classList.remove('ui-in');void el.offsetWidth;el.style.animationDelay=(d*.42).toFixed(3)+'s';el.classList.add('ui-in')})}
+function staggerIn(box,sel){if(!box)return;const els=[...box.querySelectorAll(sel)];
+  // read all positions first, then write: one layout pass instead of one per element
+  const R=box.getBoundingClientRect(),D=els.map(el=>{const r=el.getBoundingClientRect();return((r.left-R.left)+(r.top-R.top))/(R.width+R.height||1)});
+  for(const el of els)el.classList.remove('ui-in');void box.offsetWidth;
+  els.forEach((el,i)=>{el.style.animationDelay=(D[i]*.42).toFixed(3)+'s';el.classList.add('ui-in')})}
 
 // ---------- render ----------
 function arenaOf(tr){return arenaIdx(tr)}
-function render(){
-  document.getElementById('vGold').textContent=fmtN(META.gold);
-  document.getElementById('mAva').innerHTML=avatarHTML(profile().avatar);
-  if(TAB==='battle')renderBattle();else if(TAB==='up')renderUp();
+// tabs keep their DOM; a tab is rebuilt only when something it shows changed (DIRTY), not on every switch
+const DIRTY={battle:true,up:true};let HUD_KEY='';
+function render(force){
+  const key=META.gold+'|'+profile().avatar;if(key!==HUD_KEY){HUD_KEY=key;document.getElementById('vGold').textContent=fmtN(META.gold);document.getElementById('mAva').innerHTML=avatarHTML(profile().avatar)}
+  if(force===true){DIRTY.battle=DIRTY.up=true}
+  if(TAB==='battle'&&DIRTY.battle){DIRTY.battle=false;renderBattle()}else if(TAB==='up'&&DIRTY.up){DIRTY.up=false;renderUp()}
 }
+const invalidate=()=>{DIRTY.battle=DIRTY.up=true;render()};
 // ---------- battle tab: arena scene (top half), trophy road, arena selector + BATTLE ----------
 const AM=DATA.arenas.menu;
 const unlocked=k=>META.maxTrophies>=ARENAS[k].min;
@@ -131,8 +136,13 @@ function selHTML(k){const A=ARENAS[k],open=unlocked(k);
 const SCN=(()=>{const z=AM.scene.w/300,oy=1.25+68,trees=[];let sd=7;const r2=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
   for(let i=0;i<70;i++){const tx=r2()*300,ty=20+r2()*150;if(Math.abs(tx-150)<48)continue;trees.push({x:tx,y:ty,g:r2()<.3})}
   trees.sort((a,b)=>a.y-b.y);return{z,oy,trees,peds:[[70,110],[230,110]]}})();
-const sp=(k,x,y,w,ax,ay,cls)=>`<img class="s-obj ${cls||''}" alt="" src="${SPR[k]}" style="left:${(x*SCN.z).toFixed(1)}px;top:${(y*SCN.z+SCN.oy).toFixed(1)}px;width:${(w*SCN.z).toFixed(1)}px;transform:translate(${-ax*100}%,${-ay*100}%)">`;
+const SB={x:0,y:0}; // origin of the object box being built (px), children are placed relative to it
+const sp=(k,x,y,w,ax,ay,cls)=>`<img class="s-obj ${cls||''}" alt="" src="${SPR[k]}" style="left:${(x*SCN.z-SB.x).toFixed(1)}px;top:${(y*SCN.z+SCN.oy-SB.y).toFixed(1)}px;width:${(w*SCN.z).toFixed(1)}px;transform:translate(${-ax*100}%,${-ay*100}%)">`;
 const spB=(k,x,y,cls)=>{const m=DATA.sprites.baked[k];return sp(k,x,y,m.w,m.pivot[0],m.pivot[1],cls)};
+// one swappable object: a zero-size box at the object's foot, so flips scale small layers only
+function swapBox(fx,fy,attrs,build){const bx=fx*SCN.z,by=fy*SCN.z+SCN.oy;SB.x=bx;SB.y=by;const inner=build();SB.x=0;SB.y=0;
+  return `<span class="s-swap" style="left:${bx.toFixed(1)}px;top:${by.toFixed(1)}px" data-fx="${fx}" data-fy="${fy}" ${attrs}>${inner}</span>`}
+function swapFill(el,build){const fx=+el.dataset.fx,fy=+el.dataset.fy;SB.x=fx*SCN.z;SB.y=fy*SCN.z+SCN.oy;el.innerHTML=build();SB.x=0;SB.y=0}
 function pedHTML(kind,x,y){
   if(kind==='rocket')return sp('rocket',x,y+10,32,.5,.84);
   let h=sp('pedestal',x,y+10,26,.5,1);const cy=y-6;
@@ -142,8 +152,8 @@ function pedHTML(kind,x,y){
 const paperStyle=A=>`background-color:${A.paper};background-image:repeating-linear-gradient(90deg,transparent 0 5.6px,${A.grid} 5.6px 6.4px,transparent 6.4px 13px),repeating-linear-gradient(0deg,transparent 0 5.6px,${A.grid} 5.6px 6.4px,transparent 6.4px 13px)`;
 function sceneHTML(k){const A=ARENAS[k];let h=`<div class="s-paper" style="${paperStyle(A)}"></div>`;
   for(const t of SCN.trees)h+=`<span class="s-shadow" style="left:${((t.x+1)*SCN.z).toFixed(1)}px;top:${((t.y+7)*SCN.z+SCN.oy).toFixed(1)}px"></span>`;
-  const items=[];SCN.trees.forEach((t,i)=>items.push({y:t.y,h:`<span class="s-swap" style="transform-origin:${(t.x*SCN.z).toFixed(1)}px ${((t.y+7)*SCN.z+SCN.oy).toFixed(1)}px" data-x="${t.x}" data-tree="${i}" data-arena="${k}">${sp(treeKey(t.g,k),t.x,t.y+7,21,.5,.85)}</span>`}));
-  SCN.peds.forEach((p,i)=>items.push({y:p[1],h:`<span class="s-swap" style="transform-origin:${(p[0]*SCN.z).toFixed(1)}px ${((p[1]+10)*SCN.z+SCN.oy).toFixed(1)}px" data-x="${p[0]}" data-ped="${i}" data-arena="${k}">${pedHTML(A.obj,p[0],p[1])}</span>`}));
+  const items=[];SCN.trees.forEach((t,i)=>items.push({y:t.y,h:swapBox(t.x,t.y+7,`data-x="${t.x}" data-tree="${i}" data-arena="${k}"`,()=>sp(treeKey(t.g,k),t.x,t.y+7,21,.5,.85))}));
+  SCN.peds.forEach((p,i)=>items.push({y:p[1],h:swapBox(p[0],p[1]+10,`data-x="${p[0]}" data-ped="${i}" data-arena="${k}"`,()=>pedHTML(A.obj,p[0],p[1]))}));
   items.sort((a,b)=>a.y-b.y);for(const it of items)h+=it.h;
   h+=`<span class="s-shadow s-shadow--tank" style="left:${150*SCN.z}px;top:${226*SCN.z+SCN.oy}px"></span>`+sp('tankP',150,206,62,.5,.5,'s-tank');
   return h}
@@ -159,7 +169,7 @@ function renderBattle(){
      <div class="b-sel__view"><div class="b-sel__page">${selHTML(k)}</div></div>
      <button class="b-arrow b-arrow--r ${k<AM.shown-1?'':'is-off'}" data-act="arenaNext" aria-label="next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <button class="au-btn au-btn--hero b-fight" data-act="fight">${U.fight}</button></div>
-   <canvas class="b-fx" id="bfx" width="${393*2}" height="${852*2}"></canvas><div class="b-unlock au-outline" id="bunlock"></div></div>`;
+   <div class="b-unlock au-outline" id="bunlock"></div></div>`;
 }
 // switch to arena k: the tank stays, every tree / pedestal object flips into the new arena's version in a wave,
 // the paper colour cross-fades and the arena title slides (dir: +1 right, -1 left).
@@ -204,8 +214,8 @@ function tickSwitch(now){
     if(o.phase==='wait'){if(lt>=0){o.phase='out';o.ts=now}}
     if(o.phase==='out'){const t=(now-o.ts)/1000;sc=anim('sceneOut',Math.min(t,OUT)*SP).scale;rot=-dirOf(o)*14*(1-sc);hop=-6*(1-sc);
       if(t>=OUT){o.cur=o.target;const ti=o.el.dataset.tree;
-        if(ti!==undefined){const tr=SCN.trees[+ti];o.el.innerHTML=sp(treeKey(tr.g,o.cur),tr.x,tr.y+7,21,.5,.85)}
-        else{const pd=SCN.peds[+o.el.dataset.ped];o.el.innerHTML=pedHTML(ARENAS[o.cur].obj,pd[0],pd[1])}
+        if(ti!==undefined){const tr=SCN.trees[+ti];swapFill(o.el,()=>sp(treeKey(tr.g,o.cur),tr.x,tr.y+7,21,.5,.85))}
+        else{const pd=SCN.peds[+o.el.dataset.ped];swapFill(o.el,()=>pedHTML(ARENAS[o.cur].obj,pd[0],pd[1]))}
         o.el.dataset.arena=o.cur;o.phase='in';o.ts=now;sc=0}}
     else if(o.phase==='in'){const t=(now-o.ts)/1000,W=anim('treeWobble',Math.min(t*SP,animLen('treeWobble')));sc=anim('sceneIn',Math.min(t,IN)*SP).scale;rot=W.rot*dirOf(o);hop=W.hop;
       if(o.target!==o.cur&&now>=o.t0){o.phase='out';o.ts=now-(1-sc)*OUT*1000} // retarget mid-way
@@ -216,7 +226,8 @@ function tickSwitch(now){
 }
 // after a win: trophies burst from the centre with trails, hang, then fly into the trophy road
 function playTrophyFx(from,to,newArena){
-  const F=AM.trophyFx,cv=document.getElementById('bfx');if(!cv){SHOWN_TRO=null;return}
+  const F=AM.trophyFx,host=document.querySelector('.b-root');if(!host){SHOWN_TRO=null;return}
+  const cv=document.createElement('canvas');cv.className='b-fx';cv.width=393*2;cv.height=852*2;host.appendChild(cv); // created only for the effect
   const x=cv.getContext('2d'),img=new Image();img.src=SPR.icTrophy;
   const bar=document.querySelector('.b-bar'),uiR=document.getElementById('ui').getBoundingClientRect(),sc=uiR.width/393;
   const target=()=>{const r=bar.getBoundingClientRect(),[lo,hi]=arenaRange(VIEW),p=Math.max(0,Math.min(1,((SHOWN_TRO??to)-lo)/(hi-lo)));
@@ -238,7 +249,7 @@ function playTrophyFx(from,to,newArena){
         x.beginPath();x.moveTo(p.trail[j-1][0],p.trail[j-1][1]);x.lineTo(p.trail[j][0],p.trail[j][1]);x.stroke()}
       if(img.complete){const w=F.size*s;x.drawImage(img,px-w/2,py-w/2,w,w)}}
     if(live>0)requestAnimationFrame(f);
-    else{x.clearRect(0,0,393,852);SHOWN_TRO=null;updateBar();
+    else{cv.remove();SHOWN_TRO=null;updateBar();
       if(newArena>=0&&newArena<AM.shown)setTimeout(()=>switchArena(newArena,()=>showUnlock(newArena)),300)}})(t0);
 }
 function updateBar(){const el=document.querySelector('.b-prog');if(!el)return;el.innerHTML=progHTML(VIEW,SHOWN_TRO===null?META.trophies:SHOWN_TRO);
@@ -300,9 +311,9 @@ function levelUp(id){
   const it=AI[id];if(!it||it.locked){toast(U.notAvailable);return}
   const k=it.metaKey,L=META.lv[k]||1;if(L>=META_CFG.maxLv){toast(U.maxLevel);return}
   const c=cost(L);if(META.gold<c){toast(U.noGold);try{sfx('treeHit',.05)}catch(_){}return}
-  META.gold-=c;META.lv[k]=L+1;saveMeta();try{sfx('upgrade',.05)}catch(_){}render();
+  META.gold-=c;META.lv[k]=L+1;saveMeta();try{sfx('upgrade',.05)}catch(_){}invalidate();
 }
-function equip(id){const it=AI[id];if(!it||it.locked)return;META.equip[it.group]=id;saveMeta();sfxUI();render()}
+function equip(id){const it=AI[id];if(!it||it.locked)return;META.equip[it.group]=id;saveMeta();sfxUI();invalidate()}
 
 // ---------- arena path & rewards ----------
 let RW=null;function rewardsList(){if(RW)return RW;const out=[],n=META_CFG.nodesPerArena;
@@ -334,7 +345,7 @@ function startBattle(){
 Flow.on(()=>{root.style.display=Flow.inGame()?'none':'';if(Flow.inGame())layer.innerHTML=''}); // any route into a battle hides the menu
 let PENDING_FX=null;
 window.toMenu=function(){Flow.go('menu');root.style.display='';layer.innerHTML='';CUR_ARENA=arenaIdx(META.maxTrophies);
-  const fx=PENDING_FX;PENDING_FX=null;if(fx)SHOWN_TRO=fx.from;setTab('battle');if(fx)setTimeout(()=>playTrophyFx(fx.from,fx.to,fx.newArena),250)};
+  const fx=PENDING_FX;PENDING_FX=null;if(fx)SHOWN_TRO=fx.from;DIRTY.battle=DIRTY.up=true;TAB='';setTab('battle');if(fx)setTimeout(()=>playTrophyFx(fx.from,fx.to,fx.newArena),250)};
 function onMatchEnd(win){
   const before=META.trophies,prevMax=META.maxTrophies,floor=ARENAS[arenaIdx(META.maxTrophies)].min;
   META.trophies=win?META.trophies+META_CFG.winTrophies:Math.max(floor,META.trophies-META_CFG.loseTrophies);
@@ -368,11 +379,14 @@ setInterval(()=>{
 // background: a tiled layer one tile larger than the screen, shifted by (time*speed mod tile) -> seamless loop.
 // battle tab: game doodle pattern; army tab: moving blueprint grid
 (function bgFx(){const B=DATA.arenas.menu.bg,el=document.getElementById('mbg');if(!el)return;
-  el.innerHTML=`<div class="m-bgfx__layer m-bgfx__layer--pat" style="background-image:url(${SPR.menuBg});background-size:${B.tile}px ${B.tile}px;width:${393+B.tile}px;height:${852+B.tile}px"></div>
-   <div class="m-bgfx__layer m-bgfx__layer--bp" style="width:${393+B.bpTile}px;height:${852+B.bpTile}px"></div>`;
-  const pat=el.children[0],bp=el.children[1],t0=performance.now();
-  (function f(n){const t=(n-t0)/1000,d=(t*B.speed)%B.tile,e=(t*B.bpSpeed)%B.bpTile;
-    pat.style.transform=`translate(${-d}px,${-d}px)`;bp.style.transform=`translate(${-e}px,${-e}px)`;requestAnimationFrame(f)})(t0)})();
+  el.innerHTML=`<div class="m-bgfx__layer m-bgfx__layer--bp" style="width:${393+B.bpTile}px;height:${852+B.bpTile}px"></div>`;
+  const bp=el.firstChild,t0=performance.now();
+  // runs only while the menu is visible (stops during battles)
+  (function f(n){if(!Flow.inGame()){const e=((n-t0)/1000*B.bpSpeed)%B.bpTile;bp.style.transform=`translate3d(${-e}px,${-e}px,0)`}requestAnimationFrame(f)})(t0)})();
 setTab('battle');render();
+// sprites switched to short blob: URLs: rebuild the hidden tab later with the light HTML (visible one keeps working)
+window.onSpritesSwapped=()=>{DIRTY.up=TAB!=='up'||DIRTY.up};
+// build the army tab in the background once the menu is idle, so the first visit is instant
+setTimeout(()=>{if(DIRTY.up&&TAB!=='up'){DIRTY.up=false;renderUp()}},1200);
 window.addEventListener('pointerdown',()=>{try{audioInit()}catch(_){}},{once:true});
 })();

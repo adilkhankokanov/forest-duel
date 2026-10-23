@@ -3,6 +3,15 @@
 // =====================================================================
 const SPR=__SPRITES__;
 const IMG={};for(const k in SPR){const i=new Image();i.onload=()=>{try{whiteImg(k)}catch(e){}};i.src=SPR[k];IMG[k]=i}
+// Menu HTML references sprites by URL. Inline data URLs are megabytes of text per rebuild, so when the page
+// allows blob: images (some hosts' CSP does not) they are swapped for short blob: URLs, decoded once.
+// The canvas keeps its own Image objects above, so the game never depends on this.
+(function useBlobUrls(){try{
+  const toBlob=s=>{const m=/^data:([^;]+);base64,(.*)$/.exec(s);if(!m)return null;const bin=atob(m[2]),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return URL.createObjectURL(new Blob([u],{type:m[1]}))};
+  const probe=new Image(),url=toBlob(SPR.icLock);if(!url)return;
+  probe.onload=()=>{const B={};for(const k in SPR){const u=k==='icLock'?url:toBlob(SPR[k]);if(u)B[k]=u}Object.assign(SPR,B);window.onSpritesSwapped&&window.onSpritesSwapped()};
+  probe.onerror=()=>{try{URL.revokeObjectURL(url)}catch(e){}}; // blocked: keep data URLs
+  probe.src=url}catch(e){}})();
 const W=DATA.layout.ref.w,H=DATA.layout.ref.h;
 const cv=document.getElementById('c');let ctx=cv.getContext('2d');
 let K=1;

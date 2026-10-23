@@ -284,7 +284,7 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 @keyframes nav-pop{0%{transform:translateY(-6px) scale(.7)}60%{transform:translateY(-16px) scale(1.12)}100%{transform:translateY(-14px) scale(1)}}
 .ui-pop{animation:ui-pop .22s ease-out}
 @keyframes ui-pop{0%{transform:scale(1)}35%{transform:scale(.9)}75%{transform:scale(1.06)}100%{transform:scale(1)}}
-.ui-in{animation:ui-in .34s cubic-bezier(.3,1.5,.6,1) both}
+.ui-in{animation:ui-in .34s cubic-bezier(.3,1.5,.6,1) backwards} /* backwards: no hold after the end, so JS transforms (tree flips) keep working */
 @keyframes ui-in{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
 .m-switch{position:relative;width:64px;height:34px;flex:none;padding:0;border:2px solid var(--ink);border-radius:17px;background:#8a8d99;cursor:pointer;transition:background .18s}
 .m-switch.is-on{background:var(--green)}
@@ -296,11 +296,11 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 
 /* battle scene objects */
 .s-paper{position:absolute;left:0;top:0;width:393px;height:384px}
-.s-obj{position:absolute;display:block;pointer-events:none}
-.s-swap{position:absolute;left:0;top:0;width:393px;height:384px;pointer-events:none}
+.s-obj{position:absolute;display:block;pointer-events:none;max-width:none;max-height:none;height:auto} /* hosts may add img{max-width:100%}: inside the 0-size object boxes that would hide the sprite */
+.s-swap{position:absolute;width:0;height:0;pointer-events:none}
 .s-shadow{position:absolute;width:21px;height:8px;margin:-4px 0 0 -10.5px;border-radius:50%;background:rgba(60,50,35,.25)}
 .s-shadow--tank{width:78px;height:18px;margin:-9px 0 0 -39px;background:rgba(60,55,45,.26)}
-.s-bob{position:absolute;left:0;top:0;width:393px;height:384px;animation:s-bob 2.5s ease-in-out infinite}
+.s-bob{position:absolute;left:0;top:0;width:0;height:0;animation:s-bob 2.5s ease-in-out infinite}
 @keyframes s-bob{50%{transform:translateY(-3px)}}
 .s-glow{opacity:.35;animation:s-glow 1.25s ease-in-out infinite}
 @keyframes s-glow{50%{opacity:.6}}
@@ -319,23 +319,25 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 /* top bar floats over the content; on the battle tab the paper grid continues under it */
 .m-top{position:absolute;left:0;top:0;width:393px;z-index:4}
 .m-tab:not(.m-tab--flush){padding-top:74px}
-.b-scene{height:452px}.s-paper,.s-swap,.s-bob,.b-scene__lock{height:452px}
+.b-scene{height:452px}.s-paper,.b-scene__lock{height:452px}
 .b-scene__lock{padding-top:68px}
 .b-prog{top:386px}
 .b-fx{top:0}
 
 /* background layers: doodle pattern (default) and blueprint grid (army tab) */
-.m-bgfx__layer{position:absolute;left:0;top:0;will-change:transform;transition:opacity .35s}
-.m-bgfx__layer--pat{background-repeat:repeat;opacity:1}
+.m-bgfx__layer{position:absolute;left:0;top:0;will-change:transform}
 .m-bgfx__layer--bp{opacity:0;background-color:#1f5fae;
   background-image:linear-gradient(rgba(255,255,255,.28) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.28) 1.5px,transparent 1.5px),
    linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);
   background-size:96px 96px,96px 96px,24px 24px,24px 24px}
-.m-bgfx__layer--bp{opacity:1}
-.m-bgfx__layer--pat{opacity:0} /* blueprint on every tab */
+.m-bgfx__layer--bp{opacity:1} /* blueprint on every tab */
 .m-root.au-screen{background-color:#2f2b66}
 /* UI images never drag */
 #ui img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 /* coin pill: half width, right next to the avatar */
 .m-top .au-resbar{flex:none;width:150px}
 .m-top .m-gear{margin-left:auto}
+
+/* paint containment: animating one card never repaints its neighbours */
+.b-sel__page{contain:layout paint} /* only boxes with nothing sticking out (paint containment clips overflow) */
+.m-tab{contain:layout paint}
