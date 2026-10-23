@@ -1,0 +1,525 @@
+{
+ "about": "Army collection: groups of cards. Unlocked items with metaKey level up through META.lv[metaKey] (same multipliers the battle uses, meta.json 'per'). The equipped comeback (cb0 wave / cb1 barricade) is what fires in battle when the base drops low.",
+ "groups": [
+  {
+   "id": "vehicles",
+   "title": "Vehicles"
+  },
+  {
+   "id": "units",
+   "title": "Units"
+  },
+  {
+   "id": "reinforcements",
+   "title": "Reinforcements"
+  },
+  {
+   "id": "gadgets",
+   "title": "Gadgets"
+  },
+  {
+   "id": "ultimates",
+   "title": "Ultimates"
+  },
+  {
+   "id": "comebacks",
+   "title": "Comebacks"
+  }
+ ],
+ "items": [
+  {
+   "id": "veh0",
+   "group": "vehicles",
+   "name": "Guardian",
+   "desc": "A sturdy all-rounder. Steady fire rate and solid damage.",
+   "art": "tankP",
+   "locked": false,
+   "stats": {
+    "atk": 7.5,
+    "hp": 3500,
+    "spd": 5.11
+   },
+   "metaKey": "veh",
+   "scales": [
+    "atk"
+   ]
+  },
+  {
+   "id": "veh1",
+   "group": "vehicles",
+   "name": "Rhino",
+   "desc": "Heavy armor plates, slow but tough.",
+   "art": "tankP",
+   "locked": true,
+   "stats": {
+    "atk": 8.62,
+    "hp": 4550,
+    "spd": 4.09
+   }
+  },
+  {
+   "id": "veh2",
+   "group": "vehicles",
+   "name": "Viper",
+   "desc": "Light and quick, fires in rapid bursts.",
+   "art": "tankP",
+   "locked": true,
+   "stats": {
+    "atk": 6.75,
+    "hp": 2800,
+    "spd": 6.64
+   }
+  },
+  {
+   "id": "veh3",
+   "group": "vehicles",
+   "name": "Titan",
+   "desc": "Massive cannon that crushes trees in one shot.",
+   "art": "tankP",
+   "locked": true,
+   "stats": {
+    "atk": 10.12,
+    "hp": 3325,
+    "spd": 4.34
+   }
+  },
+  {
+   "id": "veh4",
+   "group": "vehicles",
+   "name": "Blaze",
+   "desc": "Shells set the forest on fire.",
+   "art": "tankP",
+   "locked": true,
+   "stats": {
+    "atk": 8.25,
+    "hp": 3500,
+    "spd": 5.11
+   }
+  },
+  {
+   "id": "veh5",
+   "group": "vehicles",
+   "name": "Frost",
+   "desc": "Freezing rounds slow enemy troops.",
+   "art": "tankP",
+   "locked": true,
+   "stats": {
+    "atk": 7.88,
+    "hp": 3675,
+    "spd": 4.85
+   }
+  },
+  {
+   "id": "veh6",
+   "group": "vehicles",
+   "name": "Thunder",
+   "desc": "Chain lightning jumps between targets.",
+   "art": "tankP",
+   "locked": true,
+   "stats": {
+    "atk": 9.0,
+    "hp": 3150,
+    "spd": 5.62
+   }
+  },
+  {
+   "id": "veh7",
+   "group": "vehicles",
+   "name": "Phantom",
+   "desc": "Fires piercing ghost bullets.",
+   "art": "tankP",
+   "locked": true,
+   "stats": {
+    "atk": 9.38,
+    "hp": 3850,
+    "spd": 5.37
+   }
+  },
+  {
+   "id": "unit0",
+   "group": "units",
+   "name": "Rookie",
+   "desc": "Brave little soldier. Marches down the road and fights in melee.",
+   "art": "manB",
+   "locked": false,
+   "stats": {
+    "atk": 8,
+    "hp": 50,
+    "spd": 0.83
+   },
+   "metaKey": "sold",
+   "scales": [
+    "atk",
+    "hp"
+   ]
+  },
+  {
+   "id": "unit1",
+   "group": "units",
+   "name": "Brawler",
+   "desc": "Big fists, more health.",
+   "art": "manB",
+   "locked": true,
+   "stats": {
+    "atk": 9.2,
+    "hp": 65,
+    "spd": 0.66
+   }
+  },
+  {
+   "id": "unit2",
+   "group": "units",
+   "name": "Scout",
+   "desc": "Fast runner that slips past the front line.",
+   "art": "manB",
+   "locked": true,
+   "stats": {
+    "atk": 7.2,
+    "hp": 40,
+    "spd": 1.08
+   }
+  },
+  {
+   "id": "unit3",
+   "group": "units",
+   "name": "Grenadier",
+   "desc": "Throws grenades over the trees.",
+   "art": "manB",
+   "locked": true,
+   "stats": {
+    "atk": 10.8,
+    "hp": 48,
+    "spd": 0.71
+   }
+  },
+  {
+   "id": "unit4",
+   "group": "units",
+   "name": "Knight",
+   "desc": "Shielded and hard to push back.",
+   "art": "manB",
+   "locked": true,
+   "stats": {
+    "atk": 8.8,
+    "hp": 50,
+    "spd": 0.83
+   }
+  },
+  {
+   "id": "unit5",
+   "group": "units",
+   "name": "Ninja",
+   "desc": "Strikes fast and dodges hits.",
+   "art": "manB",
+   "locked": true,
+   "stats": {
+    "atk": 8.4,
+    "hp": 52,
+    "spd": 0.79
+   }
+  },
+  {
+   "id": "unit6",
+   "group": "units",
+   "name": "Medic",
+   "desc": "Heals nearby soldiers.",
+   "art": "manB",
+   "locked": true,
+   "stats": {
+    "atk": 9.6,
+    "hp": 45,
+    "spd": 0.91
+   }
+  },
+  {
+   "id": "unit7",
+   "group": "units",
+   "name": "Berserker",
+   "desc": "Hits harder as it loses health.",
+   "art": "manB",
+   "locked": true,
+   "stats": {
+    "atk": 10.0,
+    "hp": 55,
+    "spd": 0.87
+   }
+  },
+  {
+   "id": "rein0",
+   "group": "reinforcements",
+   "name": "Roller",
+   "desc": "Rolling cannon that drives down the road and shells everything in its lane.",
+   "art": "giant",
+   "locked": false,
+   "stats": {
+    "atk": 87.5,
+    "hp": 440,
+    "spd": 0.75
+   },
+   "metaKey": "tank",
+   "scales": [
+    "atk",
+    "hp"
+   ]
+  },
+  {
+   "id": "rein1",
+   "group": "reinforcements",
+   "name": "Bulldog",
+   "desc": "Pushes soldiers aside with its plow.",
+   "art": "giant",
+   "locked": true,
+   "stats": {
+    "atk": 100.6,
+    "hp": 572,
+    "spd": 0.6
+   }
+  },
+  {
+   "id": "rein2",
+   "group": "reinforcements",
+   "name": "Mammoth",
+   "desc": "Twin cannons, double the shells.",
+   "art": "giant",
+   "locked": true,
+   "stats": {
+    "atk": 78.8,
+    "hp": 352,
+    "spd": 0.98
+   }
+  },
+  {
+   "id": "rein3",
+   "group": "reinforcements",
+   "name": "Hornet",
+   "desc": "Fast tank with homing missiles.",
+   "art": "giant",
+   "locked": true,
+   "stats": {
+    "atk": 118.1,
+    "hp": 418,
+    "spd": 0.64
+   }
+  },
+  {
+   "id": "rein4",
+   "group": "reinforcements",
+   "name": "Crusher",
+   "desc": "Flattens fences on contact.",
+   "art": "giant",
+   "locked": true,
+   "stats": {
+    "atk": 96.3,
+    "hp": 440,
+    "spd": 0.75
+   }
+  },
+  {
+   "id": "rein5",
+   "group": "reinforcements",
+   "name": "Inferno",
+   "desc": "Flamethrower tank.",
+   "art": "giant",
+   "locked": true,
+   "stats": {
+    "atk": 91.9,
+    "hp": 462,
+    "spd": 0.71
+   }
+  },
+  {
+   "id": "rein6",
+   "group": "reinforcements",
+   "name": "Glacier",
+   "desc": "Shells freeze the ground.",
+   "art": "giant",
+   "locked": true,
+   "stats": {
+    "atk": 105.0,
+    "hp": 396,
+    "spd": 0.83
+   }
+  },
+  {
+   "id": "rein7",
+   "group": "reinforcements",
+   "name": "Goliath",
+   "desc": "Slow giant with a huge health pool.",
+   "art": "giant",
+   "locked": true,
+   "stats": {
+    "atk": 109.4,
+    "hp": 484,
+    "spd": 0.79
+   }
+  },
+  {
+   "id": "ult0",
+   "group": "ultimates",
+   "name": "Double Fire",
+   "desc": "Two blazing bullets for a few seconds.",
+   "art": "flaskDoubles",
+   "locked": true,
+   "stats": {
+    "atk": 10,
+    "hp": 0,
+    "spd": 4
+   }
+  },
+  {
+   "id": "ult1",
+   "group": "ultimates",
+   "name": "Rocket Rain",
+   "desc": "Rockets fall across the enemy half.",
+   "art": "flaskDoubles",
+   "locked": true,
+   "stats": {
+    "atk": 10,
+    "hp": 0,
+    "spd": 4
+   }
+  },
+  {
+   "id": "ult2",
+   "group": "ultimates",
+   "name": "Shield Dome",
+   "desc": "Your base takes no damage for a moment.",
+   "art": "flaskDoubles",
+   "locked": true,
+   "stats": {
+    "atk": 10,
+    "hp": 0,
+    "spd": 4
+   }
+  },
+  {
+   "id": "ult3",
+   "group": "ultimates",
+   "name": "Time Stop",
+   "desc": "Freezes enemy troops in place.",
+   "art": "flaskDoubles",
+   "locked": true,
+   "stats": {
+    "atk": 10,
+    "hp": 0,
+    "spd": 4
+   }
+  },
+  {
+   "id": "cb0",
+   "group": "comebacks",
+   "name": "Shock Wave",
+   "desc": "When your base drops low, a free wave rolls out and pushes enemies back.",
+   "art": "flaskWave",
+   "locked": false,
+   "stats": {
+    "atk": 24,
+    "hp": 0,
+    "spd": 1.6
+   },
+   "metaKey": "wave",
+   "scales": [
+    "atk"
+   ]
+  },
+  {
+   "id": "cb1",
+   "group": "comebacks",
+   "name": "Barricade",
+   "desc": "When your base drops low, a wide fence slides out and blocks the road.",
+   "art": "fenceP",
+   "locked": false,
+   "stats": {
+    "atk": 0,
+    "hp": 1050,
+    "spd": 1.8
+   },
+   "metaKey": "fence",
+   "scales": [
+    "hp"
+   ]
+  },
+  {
+   "id": "cb2",
+   "group": "comebacks",
+   "name": "Air Strike",
+   "desc": "Bombers hit the enemy front line.",
+   "art": "flaskWave",
+   "locked": true,
+   "stats": {
+    "atk": 40,
+    "hp": 0,
+    "spd": 2
+   }
+  },
+  {
+   "id": "cb3",
+   "group": "comebacks",
+   "name": "Last Stand",
+   "desc": "Your cannon fires twice as fast for a while.",
+   "art": "flaskWave",
+   "locked": true,
+   "stats": {
+    "atk": 15,
+    "hp": 0,
+    "spd": 3
+   }
+  },
+  {
+   "id": "gad0",
+   "group": "gadgets",
+   "name": "Oil Barrel",
+   "desc": "Rolls down the road, bursts on the first enemy and leaves burning oil.",
+   "art": "flaskBarrel",
+   "locked": false,
+   "stats": {
+    "atk": 17,
+    "hp": 15,
+    "spd": 4.8
+   },
+   "metaKey": "barrel",
+   "scales": [
+    "atk"
+   ]
+  },
+  {
+   "id": "gad1",
+   "group": "gadgets",
+   "name": "Land Mine",
+   "desc": "Hidden trap that blows up the first soldier.",
+   "art": "flaskBarrel",
+   "locked": true,
+   "stats": {
+    "atk": 30,
+    "hp": 10,
+    "spd": 0
+   }
+  },
+  {
+   "id": "gad2",
+   "group": "gadgets",
+   "name": "Bomb Crate",
+   "desc": "Big blast, short fuse.",
+   "art": "flaskBarrel",
+   "locked": true,
+   "stats": {
+    "atk": 45,
+    "hp": 20,
+    "spd": 3
+   }
+  },
+  {
+   "id": "gad3",
+   "group": "gadgets",
+   "name": "Smoke Bomb",
+   "desc": "Enemies inside the cloud move slower.",
+   "art": "flaskBarrel",
+   "locked": true,
+   "stats": {
+    "atk": 5,
+    "hp": 15,
+    "spd": 4
+   }
+  }
+ ]
+}

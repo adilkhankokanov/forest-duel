@@ -20,7 +20,7 @@ function loadSim(){
   function stateSummary(){const alive=G.trees.filter(t=>!t.dead).length,s=x=>({hp:+x.hp.toFixed(3),gold:x.gold,lvl:x.lvl,x:+x.x.toFixed(4),dmgMul:+x.dmgMul.toFixed(4),rateMul:+x.rateMul.toFixed(4)});
     return{time:+G.time.toFixed(4),state:G.state,P:s(G.P),E:s(G.E),units:G.units.length,unitsP:G.units.filter(u=>u.side==='p').length,trees:alive,fences:G.fences.length,rockets:G.rockets.length,hash:stateHash()}}
   globalThis.snapAt=(seed,n)=>{CUR_ARENA=0;reset(seed);for(let i=0;i<n;i++){simTick(CFG.sim.dt);EVQ.length=0}return snapshot()};
-  globalThis.runTest=t=>{CUR_ARENA=t.level||0;Input.held={};Input.aim=null;reset(t.seed);
+  globalThis.runTest=t=>{CUR_ARENA=t.level||0;META.equip=Object.assign({},META_CFG.defaults.equip,t.equip||{});Input.held={};Input.aim=null;reset(t.seed);
     const inputs=(t.inputs||[]).slice().sort((a,b)=>a.at-b.at);let k=0;
     for(let i=0;i<t.steps;i++){
       while(k<inputs.length&&inputs[k].at===i){const e=inputs[k++];

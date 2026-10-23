@@ -14,7 +14,7 @@ function stateHash(){const j=JSON.stringify(snapshot());let h=0x811c9dc5;for(let
 function stepN(n){for(let i=0;i<n;i++){simTick(CFG.sim.dt);EVQ.length=0}}
 // a test: {seed, level, steps, inputs:[{at, action, value}], checkpoint?:{at}} -> summary
 function runTest(t){
-  CUR_ARENA=t.level||0;newMatch(t.seed);Clock.frozen=true;
+  CUR_ARENA=t.level||0;META.equip=Object.assign({},META_CFG.defaults.equip,t.equip||{});newMatch(t.seed);Clock.frozen=true;
   const inputs=(t.inputs||[]).slice().sort((a,b)=>a.at-b.at);let k=0;
   for(let i=0;i<t.steps;i++){
     while(k<inputs.length&&inputs[k].at===i){const e=inputs[k++];testInput(e.action,e.value)}

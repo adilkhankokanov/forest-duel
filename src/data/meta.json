@@ -15,7 +15,8 @@
   "sold": 0.1,
   "tank": 0.1,
   "fence": 0.1,
-  "barrel": 0.1
+  "barrel": 0.1,
+  "veh": 0.08
  },
  "defaults": {
   "trophies": 0,
@@ -29,13 +30,21 @@
    "sold": 1,
    "tank": 1,
    "fence": 1,
-   "barrel": 1
+   "barrel": 1,
+   "veh": 1
   },
   "claimed": {},
   "settings": {
    "sound": true,
    "music": true,
    "vib": true
+  },
+  "equip": {
+   "vehicles": "veh0",
+   "units": "unit0",
+   "reinforcements": "rein0",
+   "comebacks": "cb0",
+   "gadgets": "gad0"
   }
  }
 }

@@ -1,5 +1,5 @@
 {
- "about": "Simulation parity suite: seed + arena level + input sequence (by fixed 1/60 step) -> expected summary. 'hash' is the exact web state hash; Unity compares the numeric fields with 'tol'.",
+ "about": "Simulation parity suite: seed + arena level + input sequence (by fixed 1/60 step) -> expected summary. 'hash' is the exact web state hash; Unity compares the numeric fields with 'tol'. Optional 'equip' overrides the army loadout (e.g. comebacks: cb1 = barricade).",
  "tol": 0.000001,
  "tests": [
   {
@@ -11,27 +11,27 @@
     "time": 30,
     "state": "play",
     "P": {
-     "hp": 1882.6,
-     "gold": 14,
+     "hp": 2267.2,
+     "gold": 18,
      "lvl": 2,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 2720,
-     "gold": 58,
-     "lvl": 6,
-     "x": 1.4234,
-     "dmgMul": 1.2,
+     "hp": 2847.5,
+     "gold": 13,
+     "lvl": 7,
+     "x": 1.4216,
+     "dmgMul": 1.08,
      "rateMul": 1
     },
-    "units": 7,
+    "units": 17,
     "unitsP": 0,
-    "trees": 419,
+    "trees": 421,
     "fences": 0,
     "rockets": 0,
-    "hash": "3981af91"
+    "hash": "a00d3c77"
    }
   },
   {
@@ -44,26 +44,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 38,
-     "lvl": 3,
+     "gold": 11,
+     "lvl": 4,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 2592.5,
-     "gold": 54,
-     "lvl": 10,
-     "x": 1.0621,
-     "dmgMul": 1.2,
-     "rateMul": 1.2
+     "hp": 2502.5,
+     "gold": 70,
+     "lvl": 12,
+     "x": 2.9024,
+     "dmgMul": 1.24,
+     "rateMul": 1
     },
-    "units": 7,
+    "units": 6,
     "unitsP": 0,
-    "trees": 409,
-    "fences": 1,
+    "trees": 398,
+    "fences": 0,
     "rockets": 0,
-    "hash": "e606a66"
+    "hash": "bdca44b3"
    }
   },
   {
@@ -76,26 +76,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 16,
-     "lvl": 3,
+     "gold": 5,
+     "lvl": 4,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 3327.5,
-     "gold": 25,
-     "lvl": 14,
-     "x": -1.7944,
-     "dmgMul": 1.2,
-     "rateMul": 1.24
+     "hp": 2360,
+     "gold": 57,
+     "lvl": 15,
+     "x": -1.0382,
+     "dmgMul": 1.68,
+     "rateMul": 1.36
     },
-    "units": 7,
+    "units": 25,
     "unitsP": 0,
-    "trees": 400,
-    "fences": 2,
+    "trees": 399,
+    "fences": 0,
     "rockets": 0,
-    "hash": "780054ee"
+    "hash": "e43dfc8"
    }
   },
   {
@@ -130,7 +130,7 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 54,
+     "gold": 7,
      "lvl": 10,
      "x": -2.6762,
      "dmgMul": 1,
@@ -138,18 +138,18 @@
     },
     "E": {
      "hp": 3500,
-     "gold": 28,
+     "gold": 44,
      "lvl": 8,
-     "x": -1.3377,
-     "dmgMul": 1.08,
-     "rateMul": 1.16
+     "x": -1.1266,
+     "dmgMul": 1.2,
+     "rateMul": 1.08
     },
-    "units": 22,
+    "units": 11,
     "unitsP": 0,
     "trees": 382,
-    "fences": 1,
+    "fences": 0,
     "rockets": 0,
-    "hash": "b1040ae1"
+    "hash": "9a44c665"
    }
   },
   {
@@ -194,26 +194,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 77,
-     "lvl": 10,
+     "gold": 11,
+     "lvl": 9,
      "x": -3.35,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
      "hp": 3500,
-     "gold": 18,
-     "lvl": 9,
-     "x": -2.0074,
-     "dmgMul": 1.16,
+     "gold": 33,
+     "lvl": 8,
+     "x": 0.1909,
+     "dmgMul": 1,
      "rateMul": 1
     },
-    "units": 36,
+    "units": 12,
     "unitsP": 0,
-    "trees": 392,
+    "trees": 401,
     "fences": 0,
     "rockets": 0,
-    "hash": "e0a6fb25"
+    "hash": "41c507b0"
    }
   },
   {
@@ -226,26 +226,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 22,
+     "gold": 28,
      "lvl": 2,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 3410,
-     "gold": 64,
+     "hp": 3470,
+     "gold": 25,
      "lvl": 19,
-     "x": -0.7944,
-     "dmgMul": 1.24,
-     "rateMul": 1.24
+     "x": -1.7697,
+     "dmgMul": 1,
+     "rateMul": 1.4
     },
-    "units": 68,
+    "units": 30,
     "unitsP": 0,
-    "trees": 365,
+    "trees": 366,
     "fences": 0,
     "rockets": 0,
-    "hash": "855dc677"
+    "hash": "a5e87938"
    }
   },
   {
@@ -265,7 +265,7 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 53,
+     "gold": 65,
      "lvl": 10,
      "x": -1.1077,
      "dmgMul": 1,
@@ -273,18 +273,18 @@
     },
     "E": {
      "hp": 3500,
-     "gold": 35,
-     "lvl": 8,
-     "x": -1.1114,
-     "dmgMul": 1.12,
-     "rateMul": 1.08
+     "gold": 37,
+     "lvl": 11,
+     "x": -1.933,
+     "dmgMul": 1.08,
+     "rateMul": 1.36
     },
-    "units": 22,
+    "units": 46,
     "unitsP": 0,
-    "trees": 389,
+    "trees": 379,
     "fences": 0,
     "rockets": 0,
-    "hash": "7fcfca19"
+    "hash": "f9d5e9f6"
    }
   },
   {
@@ -298,26 +298,61 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 38,
+     "gold": 11,
+     "lvl": 4,
+     "x": 0,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 2502.5,
+     "gold": 70,
+     "lvl": 12,
+     "x": 2.9024,
+     "dmgMul": 1.24,
+     "rateMul": 1
+    },
+    "units": 6,
+    "unitsP": 0,
+    "trees": 398,
+    "fences": 0,
+    "rockets": 0,
+    "hash": "5e8b4c4c"
+   }
+  },
+  {
+   "name": "barricade comeback (equipped cb1)",
+   "seed": 42,
+   "level": 0,
+   "steps": 5400,
+   "equip": {
+    "comebacks": "cb1"
+   },
+   "expect": {
+    "time": 90,
+    "state": "lose",
+    "P": {
+     "hp": 0,
+     "gold": 10,
      "lvl": 3,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 2592.5,
-     "gold": 54,
-     "lvl": 10,
-     "x": 1.0621,
-     "dmgMul": 1.2,
-     "rateMul": 1.2
+     "hp": 2630,
+     "gold": 45,
+     "lvl": 11,
+     "x": 2.7059,
+     "dmgMul": 1.24,
+     "rateMul": 1
     },
-    "units": 7,
+    "units": 26,
     "unitsP": 0,
-    "trees": 409,
-    "fences": 1,
+    "trees": 404,
+    "fences": 0,
     "rockets": 0,
-    "hash": "e606a66"
+    "hash": "199ef225"
    }
   }
  ]

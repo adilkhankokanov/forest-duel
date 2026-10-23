@@ -164,7 +164,8 @@
   "zBot": -3.85,
   "secondLine": 0.4,
   "speed": 1.8,
-  "thick": 0.12
+  "thick": 0.12,
+  "comebackWidthFrac": 0.8
  },
  "pedestal": {
   "x": 1.65,
@@ -190,7 +191,6 @@
   "doubles": 1,
   "squad": 2,
   "giant": 2,
-  "fence": 1,
   "barrel": 1
  },
  "barrel": {
@@ -247,6 +247,7 @@
   "pMuzzle": 5.383558558558559,
   "eMuzzle": -6.0065315315315315,
   "pFlaskZ": 3.816891891891893,
-  "eFlaskZ": -5.519594594594595
+  "eFlaskZ": -5.519594594594595,
+  "baseWidth": 7.1455
  }
 }

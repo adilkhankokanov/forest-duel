@@ -12,7 +12,7 @@ function stepCannon(s,dt){
   s.cd-=dt;
   while(s.cd<=0){
     s.cd+=C.interval/(s.rateMul*M(s,'cRate'));s.recoil=3;s.flash=.09;if(s===G.P)Ev.sfx('shot',.05);
-    const x=s.x+RNG.range(-C.jitter,C.jitter),dmg=C.dmg*s.dmgMul*M(s,'cDmg'),b={side:s.id,z:s.muzzle,dz:s.dir*C.bulletSpeed,dist:0};
+    const x=s.x+RNG.range(-C.jitter,C.jitter),dmg=C.dmg*s.dmgMul*M(s,'cDmg')*M(s,'veh'),b={side:s.id,z:s.muzzle,dz:s.dir*C.bulletSpeed,dist:0};
     if(s.buff>0){
       const D=CFG.doubles;
       G.bullets.push({...b,x:x-D.offset,dmg:dmg*D.dmgMul,noFlask:true,fire:true},{...b,fire:true,x:x+D.offset,dmg:dmg*D.dmgMul,noFlask:true},
@@ -334,8 +334,11 @@ function step(dt){
   if(G.state==='play'){const n=Math.floor(G.time/CFG.tempo.interval);if(n>(G.tempoN||0)){G.tempoN=n;G.tb={t:0,pct:Math.round(n*CFG.tempo.step*100)};Ev.sfx('bugle',.2)}}
   if(G.tb&&!(G.cb&&G.cb.t<CFG.tempo.bannerBlock))G.tb.t+=dt;
   if(G.state==='play')for(const s of[G.P,G.E])if(!s.comeback&&s.hp<CFG.baseHp*CFG.wave.comebackHp&&s.hp>0){
-    s.comeback=true;G.cb={side:s.id,t:0};Ev.haptic('banner');Ev.sfx('rush');Ev.sfx('wave');
-    G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:M(s,'wave'),hit:[],trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}
+    s.comeback=true;G.cb={side:s.id,t:0};Ev.haptic('banner');Ev.sfx('rush');
+    if(s.cbType==='cb1'){ // barricade: a wide fence (80% of the base width) slides out to the first fence line
+      const C=CFG.fence,w=CFG.world.baseWidth*C.comebackWidthFrac,hp=C.hp*M(s,'fence');Ev.sfx('fence');
+      G.fences.push({side:s.id,dir:s.dir,x:0,z:s.front,tz:s.id==='p'?C.zPlayer:C.zBot,w,hp,max:hp,dmgAcc:0,hitT:0})}
+    else{Ev.sfx('wave');G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:M(s,'wave'),hit:[],trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}}
   if(G.cb)G.cb.t+=dt;
   if(G.state!=='play')G.endT+=dt;
   else if(G.E.hp<=0){G.state='win';Ev.sfx('win');Ev.shake(.8);Ev.haptic('rocket')}else if(G.P.hp<=0){G.state='lose';Ev.sfx('lose');Ev.shake(.8);Ev.haptic('rocket')}

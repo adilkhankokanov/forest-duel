@@ -67,6 +67,7 @@ function reset(seed){
     peds:[-1,1].map(s=>({x:s*CFG.pedestal.x,z:CFG.pedestal.z,hp:CFG.pedestal.hp,dead:false,hit:0})),
     shells:[],barrels:[],slicks:[],splats:[],rush:false,rushT:0,state:'play',endT:0,P:mkSide('p'),E:mkSide('e'),arena:CUR_ARENA};
   G.P.mod=metaMod('p');G.E.mod=metaMod('e');
+  G.P.cbType=equippedComeback();G.E.cbType='cb0'; // bot always uses the wave
   resetClock();
 }
 reset();

@@ -99,7 +99,16 @@
   "win": "VICTORY",
   "lose": "DEFEAT",
   "trophies": "Trophies: {n}",
-  "continue": "CONTINUE"
+  "continue": "CONTINUE",
+  "levelUp": "LEVEL UP",
+  "notAvailable": "Not available yet",
+  "equip": "EQUIP",
+  "equipped": "EQUIPPED",
+  "close": "CLOSE",
+  "lvShort": "LV {n}",
+  "statAtk": "Attack",
+  "statHp": "Health",
+  "statSpd": "Speed"
  },
  "metaUp": {
   "cDmg": [

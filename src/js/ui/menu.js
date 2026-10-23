@@ -24,16 +24,6 @@ const U=T.menu,UP=T.metaUp;
 
 
 // ---------- upgrade catalogue ----------
-const HERO_UP=[
- {k:'cDmg',name:UP.cDmg[0],art:'flaskDmg',stat:UP.cDmg[1],val:L=>CFG.cannon.dmg*(1+META_CFG.per.cDmg*(L-1)),f:f1},
- {k:'cRate',name:UP.cRate[0],art:'flaskRate',stat:UP.cRate[1],val:L=>1/CFG.cannon.interval*(1+META_CFG.per.cRate*(L-1)),f:f1},
- {k:'ult',name:UP.ult[0],art:'flaskDoubles',stat:UP.ult[1],val:L=>100*(1+META_CFG.per.ult*(L-1)),f:v=>Math.round(v)+'%'}];
-const CB_UP=[{k:'wave',name:UP.wave[0],art:'flaskWave',stat:UP.wave[1],val:L=>CFG.wave.dmg*(1+META_CFG.per.wave*(L-1)),f:f1}];
-const ARMY_UP=[
- {k:'sold',name:UP.sold[0],art:'flaskSquad',stat:UP.sold[1],val:L=>CFG.soldier.hp*(1+META_CFG.per.sold*(L-1)),f:v=>Math.round(v)},
- {k:'tank',name:UP.tank[0],art:'flaskGiant',stat:UP.tank[1],val:L=>CFG.giant.hp*(1+META_CFG.per.tank*(L-1)),f:v=>Math.round(v)},
- {k:'fence',name:UP.fence[0],art:'flaskFence',stat:UP.fence[1],val:L=>CFG.fence.hp*(1+META_CFG.per.fence*(L-1)),f:v=>Math.round(v)},
- {k:'barrel',name:UP.barrel[0],art:'flaskBarrel',stat:UP.barrel[1],val:L=>CFG.barrel.burnDmg*2*(1+META_CFG.per.barrel*(L-1)),f:f1}];
 const cost=L=>Math.round(40*L*(1+.15*(L-1)));
 
 // ---------- skeleton ----------
@@ -47,13 +37,11 @@ ui.innerHTML=`
   <button class="m-gear" data-act="settings" aria-label="${U.settings}">${icf('icGear')}</button>
  </div>
  <div class="m-content">
-  <section class="m-tab" id="t-hero"></section>
   <section class="m-tab" id="t-battle"></section>
   <section class="m-tab" id="t-up"></section>
  </div>
  <nav class="au-nav" role="tablist">
   <button class="au-nav__item au-nav__item--locked" data-tab="shop">${img('tabShop').replace('<img','<img class="au-nav__icon"')}<img class="au-nav__lock" alt="" src="${SPR.icLock}"><span class="au-nav__label au-outline">${U.tabShop}</span></button>
-  <button class="au-nav__item" data-tab="hero">${img('tabHero').replace('<img','<img class="au-nav__icon"')}<span class="au-nav__label au-outline">${U.tabHero}</span></button>
   <button class="au-nav__item au-nav__item--wide is-active" data-tab="battle" aria-selected="true">${img('tabBattle').replace('<img','<img class="au-nav__icon"')}<span class="au-nav__label au-outline">${U.tabBattle}</span></button>
   <button class="au-nav__item" data-tab="up">${img('tabUp').replace('<img','<img class="au-nav__icon"')}<span class="au-nav__label au-outline">${U.tabUp}</span></button>
   <button class="au-nav__item au-nav__item--locked" data-tab="league">${img('tabLeague').replace('<img','<img class="au-nav__icon"')}<img class="au-nav__lock" alt="" src="${SPR.icLock}"><span class="au-nav__label au-outline">${U.tabLeague}</span></button>
@@ -80,7 +68,7 @@ function soon(name){modal(U.soonTitle,`<div class="au-note">${name?name+' — ':
 
 // ---------- tabs ----------
 function setTab(t){
-  TAB=t;ui.querySelectorAll('.au-nav__item').forEach(b=>{const on=b.dataset.tab===t;b.setAttribute('aria-selected',on?'true':'false');b.classList.toggle('is-active',on)});
+  closeDetail();TAB=t;ui.querySelectorAll('.au-nav__item').forEach(b=>{const on=b.dataset.tab===t;b.setAttribute('aria-selected',on?'true':'false');b.classList.toggle('is-active',on)});
   ui.querySelectorAll('.m-tab').forEach(x=>x.classList.toggle('on',x.id==='t-'+t));render();
 }
 ui.addEventListener('click',e=>{
@@ -92,7 +80,10 @@ ui.addEventListener('click',e=>{
   else if(act==='settings')openSettings();
   else if(act==='fight')startBattle();
   else if(act==='path')openPath();
-  else if(act==='buy')buy(a.dataset.k);
+  else if(act==='item')openItem(a.dataset.id);
+  else if(act==='lvup')levelUp(a.dataset.id);
+  else if(act==='equip')equip(a.dataset.id);
+  else if(act==='closeItem')closeDetail();
 });
 function sfxUI(){try{sfx('flaskHit',.05)}catch(_){}}
 
@@ -101,7 +92,7 @@ function arenaOf(tr){return arenaIdx(tr)}
 function render(){
   document.getElementById('vTro').textContent=fmtN(META.trophies);
   document.getElementById('vGold').textContent=fmtN(META.gold);
-  if(TAB==='battle')renderBattle();else if(TAB==='hero')renderHero();else if(TAB==='up')renderUp();
+  if(TAB==='battle')renderBattle();else if(TAB==='up')renderUp();
 }
 function renderBattle(){
   const a=CUR_ARENA,A=ARENAS[a],next=ARENAS[a+1],lo=A.min,hi=next?next.min:A.min+250,p=Math.max(0,Math.min(1,(META.trophies-lo)/(hi-lo)));
@@ -114,33 +105,62 @@ function renderBattle(){
    <button class="au-btn au-btn--hero m-fight" data-act="fight">${U.fight}</button></div>`;
   drawScene();
 }
-function upCard(u,blue){
-  const L=META.lv[u.k]||1,max=L>=META_CFG.maxLv,c=cost(L),can=!max&&META.gold>=c;
-  return `<div class="au-upgrade ${blue?'au-upgrade--blue':''}">
-   <div class="au-upgrade__art">${img(u.art)}<span class="au-upgrade__lv au-outline-thin">${tx(U.lv,L)}</span></div>
-   <div class="au-upgrade__main"><div class="au-outline au-upgrade__name">${u.name}</div>
-    <div class="au-upgrade__stats au-outline-thin"><span>${u.stat}</span><span>${u.f(u.val(L))}</span>${max?'':`<i class="au-upgrade__arrow"></i><span class="au-up">${u.f(u.val(L+1))}</span>`}</div></div>
-   <div class="au-upgrade__side"><div class="au-progress au-progress--mini"><div class="au-progress__fill" style="width:${L/META_CFG.maxLv*100}%"></div><div class="au-progress__text">${L}/${META_CFG.maxLv}</div></div>
-    <button class="au-btn au-btn--sm ${max?'au-btn--grey':can?'au-btn--green':'au-btn--grey'}" data-act="buy" data-k="${u.k}">${max?U.max:`<span class="m-price">${icn('icCoin',18)}${fmtN(c)}</span>`}</button></div></div>`;
+// ---------- army: groups of cards, detail panel ----------
+const ARMY=DATA.army,AI={};for(const it of ARMY.items)AI[it.id]=it;
+const itemLv=it=>it.metaKey?(META.lv[it.metaKey]||1):1;
+const isEquipped=it=>META.equip&&META.equip[it.group]===it.id;
+// stat at a level: base × the same meta multiplier the battle uses for the scaled stats
+function itemStat(it,k,L){const b=it.stats[k];if(!it.metaKey||!(it.scales||[]).includes(k))return b;return b*(1+META_CFG.per[it.metaKey]*(L-1))}
+// bar scale per group: strongest item at max level
+const STAT_MAX={};for(const g of ARMY.groups){const m={atk:0,hp:0,spd:0};for(const it of ARMY.items)if(it.group===g.id)for(const k in m)m[k]=Math.max(m[k],it.stats[k]*(it.metaKey?1+META_CFG.per[it.metaKey]*(META_CFG.maxLv-1):1));STAT_MAX[g.id]=m}
+// green LEVEL UP button: small label on top, coin + price in the middle
+function lvBtn(it,big){
+  const L=itemLv(it),max=L>=META_CFG.maxLv,c=cost(L),can=!it.locked&&!max&&META.gold>=c;
+  return `<button class="au-btn ${can?'au-btn--green':'au-btn--grey'} a-lv ${big?'a-lv--big':''}" data-act="lvup" data-id="${it.id}">
+   <span class="a-lv__t">${U.levelUp}</span><span class="a-lv__p">${max?U.max:`${icn('icCoin',big?20:16)}${fmtN(c)}`}</span></button>`;
 }
-function renderHero(){
-  document.getElementById('t-hero').innerHTML=`
-   <div class="m-hero"><div class="m-hero__stage">${img('tankP')}</div><div class="m-hero__name au-outline">${U.heroName}</div></div>
-   <div class="m-ult"><span class="m-ult__art">${img('flaskDoubles').replace('<img','<img class="m-ult__img"')}</span><div><b class="au-outline-thin">${U.ultTitle}</b><br><span>${U.ultBody}</span></div></div>
-   <div class="m-sec au-outline">${U.stats}</div><div class="m-list">${HERO_UP.map(u=>upCard(u,true)).join('')}</div>
-   <div class="m-sec au-outline">${U.comeback}</div><div class="au-note m-mb10">${U.comebackBody}</div>
-   <div class="m-list">${CB_UP.map(u=>upCard(u,true)).join('')}</div>`;
+function tile(it){
+  const L=itemLv(it);
+  return `<div class="a-cell"><div class="a-tile ${it.locked?'a-tile--locked':''}" data-act="item" data-id="${it.id}">
+    <div class="a-tile__art">${img(it.art).replace('<img','<img class="a-tile__img'+(it.locked?' a-sil':'')+'"')}</div>
+    ${it.locked?`<img class="a-tile__lock" alt="" src="${SPR.icLock}">`:`<span class="a-tile__lv au-outline-thin">${tx(U.lvShort,L)}</span>`}
+    ${isEquipped(it)?'<span class="a-tile__eq">✓</span>':''}
+    <div class="a-tile__name au-outline-thin">${it.locked?'???':it.name}</div></div>${lvBtn(it,false)}</div>`;
 }
 function renderUp(){
-  document.getElementById('t-up').innerHTML=`<div class="m-sec au-outline m-mt6">${U.armyTitle}</div>
-   <div class="au-note m-mb12">${U.armyBody}</div>
-   <div class="m-list">${ARMY_UP.map(u=>upCard(u,false)).join('')}</div>`;
+  document.getElementById('t-up').innerHTML=ARMY.groups.map(g=>`<div class="m-sec au-outline">${g.title}</div>
+   <div class="a-grid">${ARMY.items.filter(it=>it.group===g.id).map(tile).join('')}</div>`).join('');
+  if(DETAIL)renderDetail();
 }
-function buy(k){
-  const L=META.lv[k]||1;if(L>=META_CFG.maxLv){toast(U.maxLevel);return}
+let DETAIL=null;
+function openItem(id){const it=AI[id];if(!it)return;if(it.locked){toast(U.notAvailable);try{sfx('treeHit',.05)}catch(_){}return}DETAIL=id;renderDetail();sfxUI()}
+function closeDetail(){DETAIL=null;const d=document.getElementById('adetail');if(d)d.remove()}
+function renderDetail(){
+  const it=AI[DETAIL],L=itemLv(it),mx=STAT_MAX[it.group],eq=isEquipped(it);
+  const row=(k,label)=>{const v=itemStat(it,k,L),n=itemStat(it,k,L+1),up=L<META_CFG.maxLv&&n>v;
+    return `<div class="a-stat"><span class="a-stat__l au-outline-thin">${label}</span><div class="a-stat__bar"><div class="a-stat__fill" style="width:${Math.min(100,v/mx[k]*100)}%"></div></div>
+     <span class="a-stat__v au-outline-thin">${f1(v)}${up?` <span class="au-up">+${f1(n-v)}</span>`:''}</span></div>`};
+  let d=document.getElementById('adetail');
+  if(!d){d=document.createElement('div');d.id='adetail';d.className='a-detail';root.appendChild(d)}
+  d.innerHTML=`<div class="a-show" style="background-image:url(${SPR.showcaseBg})">${img(it.art).replace('<img','<img class="a-show__model a-show__model--'+it.group+'"')}</div>
+   <div class="a-card">
+    <div class="a-card__head"><div class="a-card__icon">${img(it.art).replace('<img','<img class="a-card__iconimg"')}</div>
+     <div class="a-card__mid"><div class="a-card__name au-outline">${it.name}</div><div class="a-card__desc">${it.desc}</div></div>
+     <div class="a-card__lv au-outline">${tx(U.lvShort,L)}</div></div>
+    <div class="a-stats">${row('atk',U.statAtk)}${row('hp',U.statHp)}${row('spd',U.statSpd)}</div>
+    <div class="a-actions">
+     <button class="au-btn ${eq?'au-btn--grey':'au-btn--blue'} a-act" data-act="equip" data-id="${it.id}" ${eq?'disabled':''}>${eq?U.equipped+'<span class="a-act__ok">✓</span>':U.equip}</button>
+     ${lvBtn(it,true)}
+     <button class="au-btn au-btn--red a-act" data-act="closeItem">${U.close}</button>
+    </div></div>`;
+}
+function levelUp(id){
+  const it=AI[id];if(!it||it.locked){toast(U.notAvailable);return}
+  const k=it.metaKey,L=META.lv[k]||1;if(L>=META_CFG.maxLv){toast(U.maxLevel);return}
   const c=cost(L);if(META.gold<c){toast(U.noGold);try{sfx('treeHit',.05)}catch(_){}return}
   META.gold-=c;META.lv[k]=L+1;saveMeta();try{sfx('upgrade',.05)}catch(_){}render();
 }
+function equip(id){const it=AI[id];if(!it||it.locked)return;META.equip[it.group]=id;saveMeta();sfxUI();render()}
 
 // ---------- arena path & rewards ----------
 let RW=null;function rewardsList(){if(RW)return RW;const out=[],n=META_CFG.nodesPerArena;
