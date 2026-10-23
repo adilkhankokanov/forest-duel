@@ -332,6 +332,10 @@ function step(dt){
   G.time+=dt;
   for(const r of G.trees)if(r.hit>0)r.hit-=dt;
   for(const p of G.peds)if(p.hit>0)p.hit-=dt;
+  // match over: nothing fights any more — only timers, banners and fading fire keep going
+  if(G.state!=='play'){G.endT+=dt;if(G.tb)G.tb.t+=dt;if(G.cb)G.cb.t+=dt;
+    for(const o of G.slicks)o.t+=dt;G.slicks=G.slicks.filter(o=>o.t<CFG.barrel.slickTime);
+    for(const s of[G.P,G.E])if(s.hitT>0)s.hitT-=dt;for(const u of G.units){if(u.hit>0)u.hit-=dt;u.atkT=0;u.fire=0}return}
   if(G.state==='play'){stepCannon(G.P,dt);stepCannon(G.E,dt)}
   stepBullets(dt);stepRockets(dt);stepShells(dt);stepBarrels(dt);stepArmies(dt);
   const R=CFG.rush;
@@ -345,6 +349,11 @@ function step(dt){
       G.fences.push({side:s.id,dir:s.dir,x:0,z:s.front,tz:s.id==='p'?C.zPlayer:C.zBot,w,hp,max:hp,dmgAcc:0,hitT:0})}
     else{Ev.sfx('wave');G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:M(s,'wave'),hit:[],trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}}
   if(G.cb)G.cb.t+=dt;
-  if(G.state!=='play')G.endT+=dt;
-  else if(G.E.hp<=0){G.state='win';Ev.sfx('win');Ev.shake(.8);Ev.haptic('rocket')}else if(G.P.hp<=0){G.state='lose';Ev.sfx('lose');Ev.shake(.8);Ev.haptic('rocket')}
+  if(G.E.hp<=0){G.state='win';Ev.sfx('win');Ev.shake(.8);Ev.haptic('rocket');endMatch()}else if(G.P.hp<=0){G.state='lose';Ev.sfx('lose');Ev.shake(.8);Ev.haptic('rocket');endMatch()}
+}
+// the moment a base falls: every projectile disappears, buffs end, troops stand still
+function endMatch(){
+  G.bullets=[];G.shells=[];G.rockets=[];G.barrels=[];G.waves=[];
+  for(const s of[G.P,G.E]){s.buff=0;s.buffQ=[];s.reserve=[];s.flasks=[];s.pending=0;s.flash=0;s.recoil=0}
+  for(const u of G.units){u.vx=0;u.vz=0;u.kz=0;u.dmgAcc=0;u.act=null;u.chase=null}
 }

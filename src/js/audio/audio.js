@@ -108,6 +108,8 @@ function synth(name){
     case'bigBoom':tone(90,22,1.1,'sine',.45);tone(55,20,1.3,'triangle',.25);hiss(1.3,.5,2600,60);hiss(.25,.35,9000,2500,'highpass');
       for(let i=0;i<6;i++)hiss(.12,.12,1500+Math.random()*2000,300,'bandpass',.15+Math.random()*.5);break;
     case'pop':hiss(.2,.15,2500,400);tone(300,80,.15,'triangle',.06);break;
+    case'whoosh':hiss(.26,.16,600,3800,'bandpass',0);hiss(.2,.07,1800,700,'bandpass',.08);break; // tab change: rising then falling air sweep
+    case'roll':tone(620,520,.07,'triangle',.06);tone(1240,1040,.05,'sine',.02);break; // opponent search tick
     case'rush':[0,.32].forEach(d=>{tone(220,220,.28,'triangle',.12,d);tone(277,277,.28,'triangle',.08,d)});break;
     case'win':[523,659,784,1047,1319].forEach((f,i)=>tone(f,f,.3,'triangle',.13,i*.11));break;
     case'lose':[392,349,311,262].forEach((f,i)=>tone(f,f*.98,.35,'triangle',.13,i*.16));break;

@@ -143,6 +143,14 @@
   "lose": {
    "variants": 3,
    "len": 2.5
+  },
+  "roll": {
+   "variants": 3,
+   "len": 0.4
+  },
+  "whoosh": {
+   "variants": 3,
+   "len": 0.6
   }
  },
  "loops": {

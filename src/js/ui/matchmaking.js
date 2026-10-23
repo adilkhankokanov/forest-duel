@@ -19,17 +19,17 @@ function openMatchmaking(onCancel){
   MMS.opp={name:MM.botNames[Math.floor(Math.random()*MM.botNames.length)],avatar:Math.floor(Math.random()*MM.avatars.length),
     trophies:Math.max(0,META.trophies+Math.round((Math.random()-.5)*60))};
   const roll=MM.avatars.map((a,i)=>avatarHTML(i,'mm-roll__ava')).join('');
-  const el=document.createElement('div');el.className='au mm';
+  const el=document.createElement('div');el.className='au mm';el.style.setProperty('--mmpat','url('+SPR.menuBg+')');
   el.innerHTML=`
-   <div class="mm-half mm-half--top"><div class="mm-panel mm-panel--opp">
+   <div class="mm-half mm-half--top" style="clip-path:polygon(0 0,100% 0,100% ${MM.seam.rightPct}%,0 ${MM.seam.leftPct}%)"><div class="mm-panel mm-panel--opp">
      <div class="mm-ava mm-ava--opp"><div class="mm-roll"><div class="mm-roll__strip">${roll}${roll}</div></div><div class="mm-found">${avatarHTML(MMS.opp.avatar)}</div></div>
      <div class="mm-info"><div class="mm-name mm-name--opp au-outline">???</div><div class="mm-tro au-outline-thin"><img class="mm-tro__ic" alt="" src="${SPR.icTrophy}"><span class="mm-tro__v">—</span></div></div>
    </div></div>
-   <div class="mm-half mm-half--bot"><div class="mm-panel mm-panel--me">
+   <div class="mm-half mm-half--bot" style="clip-path:polygon(0 ${MM.seam.leftPct}%,100% ${MM.seam.rightPct}%,100% 100%,0 100%)"><div class="mm-panel mm-panel--me">
      <div class="mm-ava">${avatarHTML(P.avatar)}</div>
      <div class="mm-info"><div class="mm-name au-outline"></div><div class="mm-tro au-outline-thin"><img class="mm-tro__ic" alt="" src="${SPR.icTrophy}"><span>${fmtNum(META.trophies)}</span></div></div>
    </div></div>
-   <div class="mm-seam"></div>
+   <svg class="mm-seam" viewBox="0 0 393 852" preserveAspectRatio="none"><line x1="-2" y1="${852*MM.seam.leftPct/100}" x2="395" y2="${852*MM.seam.rightPct/100}" stroke="#0d0b1a" stroke-width="${MM.seam.width}"/></svg>
    <div class="mm-search au-outline">${U_.searching}</div>
    <button class="mm-cancel" aria-label="cancel"><svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5 5 15" stroke="#0d0b1a" stroke-width="6" stroke-linecap="round"/><path d="M5 5l10 10M15 5 5 15" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></button>
    <div class="mm-word mm-word--vs au-outline">${U_.vs}</div>
@@ -46,9 +46,12 @@ const fmtNum=n=>String(Math.round(n));
 function tickMatchmaking(now){
   const el=MMS.el;if(!el)return;MMS.raf=requestAnimationFrame(tickMatchmaking);
   const t=(now-MMS.t0)/1000,TL=MM.timeline,q=s=>el.querySelector(s),set=(n,o)=>{if(n)Object.assign(n.style,o)};
+  // drifting stripes on both halves (same edges the seam is drawn from, so it lines up at any screen size)
+  const bp=(t*MM.bgScroll).toFixed(1);set(q('.mm-half--top'),{backgroundPosition:`0 0,${bp}px ${bp}px,0 0`});set(q('.mm-half--bot'),{backgroundPosition:`0 0,${-bp}px ${-bp}px,0 0`});
   // searching: avatar strip rolls, label pulses
   if(t<TL.found){
     const y=anim('mmRoll',t).y,n=MM.avatars.length;set(q('.mm-roll__strip'),{transform:`translateY(${-y*n*76}px)`});
+    const step=Math.floor(t/(animLen('mmRoll')||DATA.anims.mmRoll.tracks[0].duration)*n);if(step!==MMS.step){MMS.step=step;try{sfx('roll',.02)}catch(_){}} // tun-tun-tun per avatar
     set(q('.mm-search'),{opacity:anim('mmPulse',t).alpha});
   }else if(MMS.phase==='search'){
     MMS.phase='found';q('.mm-roll').style.display='none';q('.mm-search').style.display='none';q('.mm-cancel').style.display='none';
@@ -64,7 +67,7 @@ function tickMatchmaking(now){
   if(t>=TL.vsIn&&MMS.phase==='found'){MMS.phase='vs';try{sfx('bugle',.1)}catch(_){}}
   // halves slide away and uncover the battle scene (match created, not running yet)
   if(t>=TL.panelsOut){
-    if(MMS.phase==='vs'){MMS.phase='out';CUR_ARENA=arenaIdx(META.maxTrophies);newMatch(undefined,'intro');document.getElementById('ui').appendChild(el)}
+    if(MMS.phase==='vs'){MMS.phase='out';newMatch(undefined,'intro');document.getElementById('ui').appendChild(el)}
     const s=anim('mmPanelsOut',t-TL.panelsOut).shift;
     set(q('.mm-seam'),{opacity:Math.max(0,1-s*4)});
     set(q('.mm-half--top'),{transform:`translateY(${-s*110}%)`});set(q('.mm-half--bot'),{transform:`translateY(${s*110}%)`});

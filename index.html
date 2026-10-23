@@ -27,7 +27,7 @@ body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-c
 #ui{position:absolute;left:0;top:0;width:393px;height:852px;transform-origin:0 0;overflow:hidden;border-radius:30px;user-select:none;-webkit-user-select:none;pointer-events:none}
 #ui .m-root,#ui .au-scrim{pointer-events:auto}
 #ui[hidden]{display:none!important}
-.m-root.au-screen{background-color:#3a3577;background-image:linear-gradient(180deg,var(--bg-deep) 0,rgba(30,29,61,0) 150px),var(--bgimg);background-size:100% 100%,300px 300px;animation:m-drift 14s linear infinite}
+.m-root.au-screen{background-color:#3a3577;background-image:radial-gradient(ellipse at 50% 60%,rgba(90,80,190,.35),rgba(20,18,45,.55) 75%),linear-gradient(180deg,var(--bg-deep) 0,rgba(30,29,61,0) 150px),var(--bgimg);background-size:100% 100%,100% 100%,460px 460px;background-position:0 0,0 0,center top} /* static, larger pattern */
 @keyframes m-drift{to{background-position:0 0,300px 300px}}
 .m-gear img{width:30px;height:30px}
 img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
@@ -60,16 +60,16 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 .au-res__plus{position:absolute;right:-2px;top:-2px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:var(--outline-thin) solid var(--ink);border-radius:7px;background:linear-gradient(180deg,#ffd25a 0 50%,#f59a1f 50%);font-size:20px;line-height:1;cursor:pointer}
 .au-res__fill{position:absolute;inset:2px auto 2px 2px;border-radius:var(--radius-pill);background:var(--progress);z-index:0}
 .au-res__value{position:relative;z-index:1}.au-res__icon,.au-res__plus{z-index:1}
-.au-nav{display:flex;align-items:flex-end;height:84px;background:var(--nav-bg);border-top:3px solid var(--ink)}
+.au-nav{position:relative;display:flex;align-items:flex-end;height:84px;background:var(--nav-bg);border-top:3px solid var(--ink)}
 .au-nav__item{flex:1 1 0;min-width:0;position:relative;display:flex;align-items:center;justify-content:center;height:72px;background:none;border:0;cursor:pointer;transition:transform .2s cubic-bezier(.3,1.5,.6,1);padding:0}
 .au-nav__item svg,.au-nav__item img{width:44px;height:44px;filter:drop-shadow(0 2px 0 var(--ink))}
 .au-nav__label{display:none;font:400 15px/1 var(--font-display)}
 .au-nav__item--wide{flex-grow:1.45}
-.au-nav__item.is-active{height:96px;align-self:flex-end;margin-top:-24px;background:linear-gradient(180deg,#4a58bd,var(--nav-active));border:var(--outline) solid var(--ink);border-bottom:0;border-radius:14px 14px 0 0}
-.au-nav__item.is-active .au-nav__icon{width:60px;height:60px;transform:translateY(-6px)}
+.au-nav__item.is-active .au-nav__icon{width:60px;height:60px;transform:translateY(-14px);animation:nav-pop .32s cubic-bezier(.3,1.6,.5,1)}
 .au-nav__item.is-active .au-nav__label{display:block;position:absolute;bottom:10px}
-.au-nav__lock{position:absolute;right:16%;top:10px;width:22px;height:22px}
-.au-nav__item--locked img{opacity:.55;filter:grayscale(.85) drop-shadow(0 2px 0 var(--ink))}
+.au-nav__lock{position:absolute;left:50%;top:50%;width:26px;height:26px;transform:translate(-50%,-50%)}
+.au-nav__item--locked .au-nav__icon{opacity:.5;filter:grayscale(.85) drop-shadow(0 2px 0 var(--ink))}
+.au-nav__item--locked img.au-nav__lock{opacity:1;filter:drop-shadow(0 2px 0 var(--ink))}
 .au-nav__item img{object-fit:contain}
 .au-progress{position:relative;height:34px;background:var(--track);border:var(--outline) solid var(--ink);border-radius:var(--radius-pill);box-shadow:0 0 0 4px var(--track-frame),0 0 0 7px var(--ink);overflow:hidden}
 .au-progress__fill{position:absolute;inset:0 auto 0 0;background:linear-gradient(180deg,#4ea2ff 0 45%,var(--progress) 45%);border-right:3px solid var(--ink);transition:width .5s cubic-bezier(.2,.8,.2,1)}
@@ -233,12 +233,12 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 
 /* ===== matchmaking: tilted red/blue halves, panels, VS / FIGHT ===== */
 .mm{position:absolute;left:0;top:0;width:393px;height:852px;z-index:30;overflow:hidden;pointer-events:auto;font-family:var(--font-display)}
-.mm-half{position:absolute;left:0;width:393px;height:852px;top:0;display:flex;justify-content:center;background-size:100% 100%,120px 120px,auto}
-.mm-half--top{clip-path:polygon(0 0,100% 0,100% 47.7%,0 52.3%);align-items:flex-start;padding-top:150px;
-  background-image:radial-gradient(ellipse at 50% 30%,rgba(255,170,150,.55),rgba(255,0,0,0) 60%),repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 14px,rgba(255,255,255,0) 14px 40px),linear-gradient(180deg,#ff4d5a,#b0102a)}
-.mm-half--bot{clip-path:polygon(0 52.3%,100% 47.7%,100% 100%,0 100%);align-items:flex-end;padding-bottom:170px;
-  background-image:radial-gradient(ellipse at 50% 70%,rgba(160,220,255,.55),rgba(0,0,255,0) 60%),repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 14px,rgba(255,255,255,0) 14px 40px),linear-gradient(180deg,#2a8cfb,#103f9e)}
-.mm-seam{position:absolute;left:-40px;top:422px;width:473px;height:8px;background:var(--ink);transform:rotate(-5.7deg);box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.mm-half{position:absolute;left:0;width:393px;height:852px;top:0;display:flex;justify-content:center;background-size:100% 100%,230px 230px,100% 100%;background-blend-mode:normal,soft-light,normal}
+.mm-half--top{align-items:flex-start;padding-top:150px;
+  background-image:radial-gradient(ellipse 85% 55% at 50% 28%,rgba(255,196,160,.55),rgba(255,120,90,0) 70%),var(--mmpat),linear-gradient(160deg,#ff6a5c 0%,#e8364a 45%,#9c1636 100%)}
+.mm-half--bot{align-items:flex-end;padding-bottom:170px;
+  background-image:radial-gradient(ellipse 85% 55% at 50% 72%,rgba(170,225,255,.55),rgba(90,170,255,0) 70%),var(--mmpat),linear-gradient(200deg,#5cc4ff 0%,#2a7cf0 50%,#1a3c9c 100%)}
+.mm-seam{position:absolute;left:0;top:0;width:393px;height:852px;pointer-events:none}
 .mm-panel{position:relative;width:300px;height:104px;display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(13,11,26,.38);border:var(--outline) solid var(--ink);border-radius:var(--radius-lg);box-shadow:inset 0 0 0 3px rgba(255,255,255,.14)}
 .mm-ava{position:relative;width:76px;height:76px;flex:none;border-radius:12px;background:rgba(13,11,26,.45);border:var(--outline-thin) solid var(--ink);overflow:hidden}
 .mm-roll{position:absolute;left:0;top:0;width:72px;height:72px;overflow:hidden;opacity:.85}
@@ -255,6 +255,106 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 .mm-word{position:absolute;left:196px;top:426px;display:none;align-items:center;justify-content:center;white-space:nowrap;pointer-events:none}
 .mm-word--vs{font-size:96px;color:var(--gold);-webkit-text-stroke:8px var(--ink);text-shadow:0 7px 0 var(--ink)}
 .mm-word--fight{font-size:84px;color:#fff;-webkit-text-stroke:8px var(--ink);text-shadow:0 7px 0 var(--ink)}
+
+/* ===== battle tab: scene (top half) / trophy road / arena selector (393×852 reference px) ===== */
+.m-tab--flush{padding:0;overflow:hidden}
+.b-root{position:relative;width:393px;height:100%;display:flex;flex-direction:column}
+.b-scene{position:relative;height:384px;flex:none;overflow:hidden;border-bottom:var(--outline) solid var(--ink)}
+.b-scene__cv{position:absolute;left:0;top:0;width:393px;height:330px;display:block}
+.b-scene__lock{position:absolute;left:0;top:0;width:393px;height:384px;transition:opacity .3s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(13,11,26,.55);font-size:30px}
+.b-scene__lock.is-off{opacity:0;pointer-events:none}
+.b-prog{position:absolute;left:0;top:318px;width:393px;height:68px;display:flex;align-items:flex-end;gap:6px;padding:0 10px;z-index:3}
+.b-prog__cup{width:40px;height:40px;flex:none;margin-bottom:-20px;object-fit:contain;filter:drop-shadow(0 2px 0 var(--ink))}
+.b-prog__mid{position:relative;flex:1;height:68px;display:flex;flex-direction:column;justify-content:flex-end}
+.b-nodes{position:absolute;left:0;right:0;top:16px;height:36px}
+.b-node{position:absolute;top:0;width:0;height:36px}
+.b-bubble{position:absolute;left:-17px;top:0;width:34px;height:28px;display:flex;align-items:center;justify-content:center;background:#fff;border:var(--outline-thin) solid var(--ink);border-radius:9px}
+.b-bubble::after{content:"";position:absolute;left:11px;bottom:-8px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--ink)}
+.b-bubble__img{width:24px;height:22px;object-fit:contain}
+.b-node.is-got .b-bubble{filter:saturate(.3) brightness(.85)}
+.b-bubble__ok{position:absolute;right:-7px;top:-7px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:var(--green);border:2px solid var(--ink);font:400 10px/1 var(--font-display);color:#fff}
+.b-bar{position:relative;height:28px;margin-bottom:-14px;background:var(--track);border:var(--outline) solid var(--ink);border-radius:var(--radius-pill);overflow:hidden}
+.b-bar__fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(180deg,#ffe066 0 45%,var(--gold-deep) 45%);border-right:3px solid var(--ink)}
+.b-bar__text{position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:17px}
+.b-lower{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:14px 0 18px}
+.b-sel{position:relative;width:393px;height:96px}
+.b-arrow{position:absolute;top:28px;z-index:2;width:40px;height:40px;flex:none;padding:0;display:flex;align-items:center;justify-content:center;background:rgba(13,11,26,.35);border:2px solid rgba(255,255,255,.35);border-radius:20px;cursor:pointer}
+.b-arrow svg{width:20px;height:20px}
+.b-arrow.is-off{visibility:hidden}
+.b-sel__view{position:absolute;left:62px;right:62px;top:0;height:96px;overflow:hidden} /* centred on the screen, independent of the arrows */
+.b-arrow--l{left:14px}.b-arrow--r{right:14px}
+.b-sel__page{position:absolute;left:0;top:0;width:100%;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.b-sel__sub{font:400 16px/1 var(--font-display);opacity:.9}
+.b-sel__name{font-size:30px;line-height:1;white-space:nowrap}
+.b-sel__lock{display:flex;align-items:center;gap:5px;margin-top:4px;font:400 14px/1 var(--font-display)}
+.b-sel__lockic{width:18px;height:18px}
+.b-fight{min-height:56px;min-width:184px;font-size:28px}
+.b-fx{position:absolute;left:0;top:-68px;width:393px;height:852px;pointer-events:none;z-index:5}
+.b-unlock{position:absolute;left:196px;top:260px;display:none;align-items:center;justify-content:center;white-space:nowrap;font-size:34px;color:var(--gold);-webkit-text-stroke:6px var(--ink);text-shadow:0 5px 0 var(--ink);pointer-events:none;z-index:6}
+
+/* ===== nav highlight, button feedback, entrances, switches ===== */
+.au-nav__hl{position:absolute;left:0;bottom:0;width:20%;height:96px;transition:transform .32s cubic-bezier(.3,1.25,.5,1);pointer-events:none;z-index:0}
+.au-nav__hl::before{content:"";position:absolute;left:3px;right:3px;top:0;bottom:0;background:linear-gradient(180deg,#4a58bd,var(--nav-active));border:var(--outline) solid var(--ink);border-bottom:0;border-radius:14px 14px 0 0}
+.au-nav__item{z-index:1}
+.au-nav__item.is-active .au-nav__label{bottom:12px}
+@keyframes nav-pop{0%{transform:translateY(-6px) scale(.7)}60%{transform:translateY(-16px) scale(1.12)}100%{transform:translateY(-14px) scale(1)}}
+.ui-pop{animation:ui-pop .22s ease-out}
+@keyframes ui-pop{0%{transform:scale(1)}35%{transform:scale(.9)}75%{transform:scale(1.06)}100%{transform:scale(1)}}
+.ui-in{animation:ui-in .34s cubic-bezier(.3,1.5,.6,1) both}
+@keyframes ui-in{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+.m-switch{position:relative;width:64px;height:34px;flex:none;padding:0;border:2px solid var(--ink);border-radius:17px;background:#8a8d99;cursor:pointer;transition:background .18s}
+.m-switch.is-on{background:var(--green)}
+.m-switch__knob{position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:12px;background:#fff;border:2px solid var(--ink);transition:transform .18s cubic-bezier(.3,1.4,.6,1)}
+.m-switch.is-on .m-switch__knob{transform:translateX(30px)}
+/* thinner button outlines */
+.au-btn{border-width:2px;-webkit-text-stroke-width:2.5px}
+.au-btn--hero{-webkit-text-stroke-width:3px}
+
+/* battle scene objects */
+.s-paper{position:absolute;left:0;top:0;width:393px;height:384px}
+.s-obj{position:absolute;display:block;pointer-events:none}
+.s-swap{position:absolute;left:0;top:0;width:393px;height:384px;pointer-events:none}
+.s-shadow{position:absolute;width:21px;height:8px;margin:-4px 0 0 -10.5px;border-radius:50%;background:rgba(60,50,35,.25)}
+.s-shadow--tank{width:78px;height:18px;margin:-9px 0 0 -39px;background:rgba(60,55,45,.26)}
+.s-bob{position:absolute;left:0;top:0;width:393px;height:384px;animation:s-bob 2.5s ease-in-out infinite}
+@keyframes s-bob{50%{transform:translateY(-3px)}}
+.s-glow{opacity:.35;animation:s-glow 1.25s ease-in-out infinite}
+@keyframes s-glow{50%{opacity:.6}}
+.s-fuse{animation:s-fuse .4s ease-in-out infinite}
+@keyframes s-fuse{50%{scale:1.3}}
+
+/* lock badge on a locked arena scene */
+.b-scene__lock{background:rgba(13,11,26,.45)}
+.b-lockbadge{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:-40px;padding:14px 26px 12px;background:rgba(13,11,26,.72);border:2px solid var(--ink);border-radius:18px;box-shadow:0 4px 0 rgba(13,11,26,.6)}
+.b-lockbadge__ic{width:56px;height:56px;object-fit:contain;display:block;filter:drop-shadow(0 3px 0 var(--ink))}
+.b-lockbadge__t{font-size:24px;line-height:1}
+/* menu background: drifting grid of icons (separate elements, seamless loop) */
+.m-root.au-screen{background-image:radial-gradient(ellipse at 50% 60%,rgba(90,80,190,.35),rgba(20,18,45,.55) 75%),linear-gradient(180deg,var(--bg-deep) 0,rgba(30,29,61,0) 150px)!important;background-size:100% 100%,100% 100%!important}
+.m-bgfx{position:absolute;left:0;top:0;width:393px;height:852px;overflow:hidden;pointer-events:none;z-index:0}
+.m-top,.m-content,.m-root>.au-nav{position:relative;z-index:1}
+/* top bar floats over the content; on the battle tab the paper grid continues under it */
+.m-top{position:absolute;left:0;top:0;width:393px;z-index:4}
+.m-tab:not(.m-tab--flush){padding-top:74px}
+.b-scene{height:452px}.s-paper,.s-swap,.s-bob,.b-scene__lock{height:452px}
+.b-scene__lock{padding-top:68px}
+.b-prog{top:386px}
+.b-fx{top:0}
+
+/* background layers: doodle pattern (default) and blueprint grid (army tab) */
+.m-bgfx__layer{position:absolute;left:0;top:0;will-change:transform;transition:opacity .35s}
+.m-bgfx__layer--pat{background-repeat:repeat;opacity:1}
+.m-bgfx__layer--bp{opacity:0;background-color:#1f5fae;
+  background-image:linear-gradient(rgba(255,255,255,.28) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.28) 1.5px,transparent 1.5px),
+   linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:96px 96px,96px 96px,24px 24px,24px 24px}
+.m-bgfx__layer--bp{opacity:1}
+.m-bgfx__layer--pat{opacity:0} /* blueprint on every tab */
+.m-root.au-screen{background-color:#2f2b66}
+/* UI images never drag */
+#ui img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
+/* coin pill: half width, right next to the avatar */
+.m-top .au-resbar{flex:none;width:150px}
+.m-top .m-gear{margin-left:auto}
 /* ===== in-battle HUD (DOM over the canvas, 393×852 reference px) ===== */
 .h-root{position:absolute;left:0;top:0;width:393px;height:852px;pointer-events:none;font-family:"Rubik","Arial Rounded MT Bold",system-ui,sans-serif}
 .h-root[hidden]{display:none}
@@ -285,7 +385,7 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 //  DATA — every JSON file from src/data, embedded by the build.
 //  Unity: the same files as TextAssets (or ScriptableObjects generated from them).
 // =====================================================================
-const DATA={"anims":{"bannerComeback":{"length":2.6,"tracks":[{"property":"alpha","from":0,"to":1,"duration":0.25},{"property":"alpha","from":1,"to":0,"duration":0.5,"delay":2.1},{"property":"scale","from":1.525,"to":1,"duration":0.35}]},"bannerTempo":{"length":2.2,"tracks":[{"property":"alpha","from":0,"to":1,"duration":0.2},{"property":"alpha","from":1,"to":0,"duration":0.5,"delay":1.7},{"property":"scale","from":1.45,"to":1,"duration":0.3}]},"bannerEnd":{"length":0.3,"tracks":[{"property":"scale","from":1.6,"to":1,"duration":0.3}],"letterLoop":2.4},"letterHop":{"length":0.290909,"stagger":0.040909,"startDelay":0.068182,"amp":0.28,"tracks":[{"property":"hop","from":0,"to":1,"duration":0.072727,"easing":"sineOut"},{"property":"hop","from":1,"to":0,"duration":0.072727,"delay":0.072727,"easing":"sineIn"}]},"floatText":{"length":1.2,"tracks":[{"property":"dy","from":0,"to":-36,"duration":1.2},{"property":"alpha","from":1,"to":1,"duration":0.6},{"property":"alpha","from":1,"to":0,"duration":0.6,"delay":0.6}]},"hitFx":{"normalized":true,"length":1,"tracks":[{"property":"alpha","from":1,"to":0,"duration":1},{"property":"ring","from":5,"to":19,"duration":1},{"property":"line","from":3,"to":0.5,"duration":1},{"property":"star","from":1,"to":0,"duration":0.5}]},"boom":{"length":0.45,"tracks":[{"property":"spread","from":0,"to":1,"duration":0.204545,"easing":"cubicOut"},{"property":"fill","from":0.45,"to":0,"duration":0.45},{"property":"stroke","from":1,"to":0,"duration":0.45},{"property":"line","from":4,"to":1,"duration":0.45},{"property":"core","from":1,"to":0,"duration":0.1575},{"property":"coreR","from":10,"to":6.5,"duration":0.1575}]},"splat":{"length":5,"tracks":[{"property":"pop","from":0,"to":1.35,"duration":0.12},{"property":"pop","from":1.35,"to":1,"duration":0.13,"delay":0.12},{"property":"alpha","from":1,"to":1,"duration":4},{"property":"alpha","from":1,"to":0,"duration":1,"delay":4}]},"flaskSpawn":{"length":0.2,"tracks":[{"property":"scale","from":0,"to":1,"duration":0.2}]},"flaskBob":{"length":0,"tracks":[{"property":"y","from":-2,"to":2,"duration":1.047198,"easing":"sineInOut","loop":"yoyo","phase":0.523599}]},"wallCollapse":{"length":2.6,"tracks":[{"property":"fall","from":0,"to":1,"duration":0.714286},{"property":"alpha","from":1,"to":0.35,"duration":2.6}]},"pedBob":{"length":0,"tracks":[{"property":"y","from":-2,"to":2,"duration":1.256637,"easing":"sineInOut","loop":"yoyo","phase":0.628319}]},"pedGlow":{"length":0,"tracks":[{"property":"alpha","from":0.14999999999999997,"to":0.55,"duration":0.628319,"easing":"sineInOut","loop":"yoyo","phase":0.314159}]},"fuse":{"length":0,"tracks":[{"property":"scale","from":0.7,"to":1.3,"duration":0.188496,"easing":"sineInOut","loop":"yoyo","phase":0.094248}]},"bombSpin":{"length":0,"tracks":[{"property":"rot","from":0,"to":6.283185307179586,"duration":0.753982,"loop":"restart"}]},"mmPop":{"length":0.45,"tracks":[{"property":"scale","from":0,"to":1,"duration":0.45,"easing":"backOut"},{"property":"alpha","from":0,"to":1,"duration":0.15}]},"mmVsIn":{"length":0.4,"tracks":[{"property":"scale","from":2.6,"to":1,"duration":0.4,"easing":"backOut"},{"property":"alpha","from":0,"to":1,"duration":0.2}]},"mmPanelsOut":{"length":0.55,"tracks":[{"property":"shift","from":0,"to":1,"duration":0.55,"easing":"cubicIn"}]},"mmTextOut":{"length":0.25,"tracks":[{"property":"scale","from":1,"to":1.7,"duration":0.25,"easing":"quadIn"},{"property":"alpha","from":1,"to":0,"duration":0.25}]},"mmFightIn":{"length":0.4,"tracks":[{"property":"scale","from":0.2,"to":1,"duration":0.4,"easing":"elasticOut"},{"property":"alpha","from":0,"to":1,"duration":0.12}]},"mmRoll":{"length":0,"tracks":[{"property":"y","from":0,"to":1,"duration":0.5,"loop":"restart"}]},"mmPulse":{"length":0,"tracks":[{"property":"alpha","from":0.45,"to":1,"duration":0.6,"easing":"sineInOut","loop":"yoyo"}]}},"arenas":{"count":100,"themes":[{"paper":"#f8f7f1","grid":"rgba(110,150,205,.3)","tint":null,"obj":"rocket","node":"lime"},{"paper":"#fbf3e6","grid":"rgba(210,140,80,.3)","tint":"autumn","obj":"bomb","node":"orange"},{"paper":"#f1f6fb","grid":"rgba(110,165,215,.38)","tint":"winter","obj":"ice","node":"blue"},{"paper":"#fbefe9","grid":"rgba(215,105,85,.3)","tint":"fire","obj":"lava","node":"orange"}],"threshold":{"first":[100,150,200],"base":250,"inc":25},"chest":{"base":200,"step":100}},"army":{"about":"Army collection: groups of cards. Unlocked items with metaKey level up through META.lv[metaKey] (same multipliers the battle uses, meta.json 'per'). The equipped comeback (cb0 wave / cb1 barricade) is what fires in battle when the base drops low.","groups":[{"id":"vehicles","title":"Vehicles"},{"id":"units","title":"Units"},{"id":"reinforcements","title":"Reinforcements"},{"id":"gadgets","title":"Gadgets"},{"id":"ultimates","title":"Ultimates"},{"id":"comebacks","title":"Comebacks"}],"items":[{"id":"veh0","group":"vehicles","name":"Guardian","desc":"A sturdy all-rounder. Steady fire rate and solid damage.","art":"tankP","locked":false,"stats":{"atk":7.5,"hp":3500,"spd":5.11},"metaKey":"veh","scales":["atk"]},{"id":"veh1","group":"vehicles","name":"Rhino","desc":"Heavy armor plates, slow but tough.","art":"tankP","locked":true,"stats":{"atk":8.62,"hp":4550,"spd":4.09}},{"id":"veh2","group":"vehicles","name":"Viper","desc":"Light and quick, fires in rapid bursts.","art":"tankP","locked":true,"stats":{"atk":6.75,"hp":2800,"spd":6.64}},{"id":"veh3","group":"vehicles","name":"Titan","desc":"Massive cannon that crushes trees in one shot.","art":"tankP","locked":true,"stats":{"atk":10.12,"hp":3325,"spd":4.34}},{"id":"veh4","group":"vehicles","name":"Blaze","desc":"Shells set the forest on fire.","art":"tankP","locked":true,"stats":{"atk":8.25,"hp":3500,"spd":5.11}},{"id":"veh5","group":"vehicles","name":"Frost","desc":"Freezing rounds slow enemy troops.","art":"tankP","locked":true,"stats":{"atk":7.88,"hp":3675,"spd":4.85}},{"id":"veh6","group":"vehicles","name":"Thunder","desc":"Chain lightning jumps between targets.","art":"tankP","locked":true,"stats":{"atk":9.0,"hp":3150,"spd":5.62}},{"id":"veh7","group":"vehicles","name":"Phantom","desc":"Fires piercing ghost bullets.","art":"tankP","locked":true,"stats":{"atk":9.38,"hp":3850,"spd":5.37}},{"id":"unit0","group":"units","name":"Rookie","desc":"Brave little soldier. Marches down the road and fights in melee.","art":"manB","locked":false,"stats":{"atk":8,"hp":50,"spd":0.83},"metaKey":"sold","scales":["atk","hp"]},{"id":"unit1","group":"units","name":"Brawler","desc":"Big fists, more health.","art":"manB","locked":true,"stats":{"atk":9.2,"hp":65,"spd":0.66}},{"id":"unit2","group":"units","name":"Scout","desc":"Fast runner that slips past the front line.","art":"manB","locked":true,"stats":{"atk":7.2,"hp":40,"spd":1.08}},{"id":"unit3","group":"units","name":"Grenadier","desc":"Throws grenades over the trees.","art":"manB","locked":true,"stats":{"atk":10.8,"hp":48,"spd":0.71}},{"id":"unit4","group":"units","name":"Knight","desc":"Shielded and hard to push back.","art":"manB","locked":true,"stats":{"atk":8.8,"hp":50,"spd":0.83}},{"id":"unit5","group":"units","name":"Ninja","desc":"Strikes fast and dodges hits.","art":"manB","locked":true,"stats":{"atk":8.4,"hp":52,"spd":0.79}},{"id":"unit6","group":"units","name":"Medic","desc":"Heals nearby soldiers.","art":"manB","locked":true,"stats":{"atk":9.6,"hp":45,"spd":0.91}},{"id":"unit7","group":"units","name":"Berserker","desc":"Hits harder as it loses health.","art":"manB","locked":true,"stats":{"atk":10.0,"hp":55,"spd":0.87}},{"id":"rein0","group":"reinforcements","name":"Roller","desc":"Rolling cannon that drives down the road and shells everything in its lane.","art":"giant","locked":false,"stats":{"atk":87.5,"hp":440,"spd":0.75},"metaKey":"tank","scales":["atk","hp"]},{"id":"rein1","group":"reinforcements","name":"Bulldog","desc":"Pushes soldiers aside with its plow.","art":"giant","locked":true,"stats":{"atk":100.6,"hp":572,"spd":0.6}},{"id":"rein2","group":"reinforcements","name":"Mammoth","desc":"Twin cannons, double the shells.","art":"giant","locked":true,"stats":{"atk":78.8,"hp":352,"spd":0.98}},{"id":"rein3","group":"reinforcements","name":"Hornet","desc":"Fast tank with homing missiles.","art":"giant","locked":true,"stats":{"atk":118.1,"hp":418,"spd":0.64}},{"id":"rein4","group":"reinforcements","name":"Crusher","desc":"Flattens fences on contact.","art":"giant","locked":true,"stats":{"atk":96.3,"hp":440,"spd":0.75}},{"id":"rein5","group":"reinforcements","name":"Inferno","desc":"Flamethrower tank.","art":"giant","locked":true,"stats":{"atk":91.9,"hp":462,"spd":0.71}},{"id":"rein6","group":"reinforcements","name":"Glacier","desc":"Shells freeze the ground.","art":"giant","locked":true,"stats":{"atk":105.0,"hp":396,"spd":0.83}},{"id":"rein7","group":"reinforcements","name":"Goliath","desc":"Slow giant with a huge health pool.","art":"giant","locked":true,"stats":{"atk":109.4,"hp":484,"spd":0.79}},{"id":"ult0","group":"ultimates","name":"Double Fire","desc":"Two blazing bullets for a few seconds.","art":"flaskDoubles","locked":true,"stats":{"atk":10,"hp":0,"spd":4}},{"id":"ult1","group":"ultimates","name":"Rocket Rain","desc":"Rockets fall across the enemy half.","art":"flaskDoubles","locked":true,"stats":{"atk":10,"hp":0,"spd":4}},{"id":"ult2","group":"ultimates","name":"Shield Dome","desc":"Your base takes no damage for a moment.","art":"flaskDoubles","locked":true,"stats":{"atk":10,"hp":0,"spd":4}},{"id":"ult3","group":"ultimates","name":"Time Stop","desc":"Freezes enemy troops in place.","art":"flaskDoubles","locked":true,"stats":{"atk":10,"hp":0,"spd":4}},{"id":"cb0","group":"comebacks","name":"Shock Wave","desc":"When your base drops low, a free wave rolls out and pushes enemies back.","art":"flaskWave","locked":false,"stats":{"atk":24,"hp":0,"spd":1.6},"metaKey":"wave","scales":["atk"]},{"id":"cb1","group":"comebacks","name":"Barricade","desc":"When your base drops low, a wide fence slides out and blocks the road.","art":"fenceP","locked":false,"stats":{"atk":0,"hp":1050,"spd":1.8},"metaKey":"fence","scales":["hp"]},{"id":"cb2","group":"comebacks","name":"Air Strike","desc":"Bombers hit the enemy front line.","art":"flaskWave","locked":true,"stats":{"atk":40,"hp":0,"spd":2}},{"id":"cb3","group":"comebacks","name":"Last Stand","desc":"Your cannon fires twice as fast for a while.","art":"flaskWave","locked":true,"stats":{"atk":15,"hp":0,"spd":3}},{"id":"gad0","group":"gadgets","name":"Oil Barrel","desc":"Rolls down the road, bursts on the first enemy and leaves burning oil.","art":"flaskBarrel","locked":false,"stats":{"atk":17,"hp":15,"spd":4.8},"metaKey":"barrel","scales":["atk"]},{"id":"gad1","group":"gadgets","name":"Land Mine","desc":"Hidden trap that blows up the first soldier.","art":"flaskBarrel","locked":true,"stats":{"atk":30,"hp":10,"spd":0}},{"id":"gad2","group":"gadgets","name":"Bomb Crate","desc":"Big blast, short fuse.","art":"flaskBarrel","locked":true,"stats":{"atk":45,"hp":20,"spd":3}},{"id":"gad3","group":"gadgets","name":"Smoke Bomb","desc":"Enemies inside the cloud move slower.","art":"flaskBarrel","locked":true,"stats":{"atk":5,"hp":15,"spd":4}}]},"audio":{"mixer":{"masterGain":0.55,"lowpassHz":5200,"lowpassQ":0.5,"compressor":"WebAudio defaults (threshold -24 dB, knee 30, ratio 12, attack 3 ms, release 250 ms)"},"maxVoices":14,"prerender":["shot","treeHit","hup","hya","unitDie","flaskHit","hitBase","tankShot","blast","tree","goldTree"],"alwaysPlay":["bigBoom","win","lose","rush","level","tankSpawn"],"voiceHoldMs":{"prerendered":400,"live":900},"sfx":{"shot":{"variants":3,"len":2.5},"treeHit":{"variants":3,"len":2.5},"tree":{"variants":3,"len":2.5},"goldTree":{"variants":3,"len":2.5},"flaskHit":{"variants":3,"len":2.5},"flask":{"variants":3,"len":2.5},"upgrade":{"variants":3,"len":2.5},"level":{"variants":3,"len":2.5},"unitDie":{"variants":3,"len":2.5},"hup":{"variants":3,"len":2.5},"hya":{"variants":3,"len":2.5},"tankSpawn":{"variants":3,"len":2.5},"giantDie":{"variants":3,"len":2.5},"hitBase":{"variants":3,"len":2.5},"squad":{"variants":3,"len":2.5},"giant":{"variants":3,"len":2.5},"wave":{"variants":3,"len":2.5},"fence":{"variants":3,"len":2.5},"rocket":{"variants":3,"len":2.5},"boom":{"variants":3,"len":2.5},"tankShot":{"variants":3,"len":2.5},"blast":{"variants":3,"len":2.5},"bugle":{"variants":3,"len":2.5},"bigBoom":{"variants":3,"len":2.5},"pop":{"variants":3,"len":2.5},"rush":{"variants":3,"len":2.5},"win":{"variants":3,"len":2.5},"lose":{"variants":3,"len":2.5}},"loops":{"rocket":{"gain":0.16},"wave":{"gain":0.22},"fence":{"gain":0.13}},"music":{"step":0.3,"chords":[[261.6,329.6,392,523.3],[220,261.6,329.6,440],[174.6,220,261.6,349.2],[196,246.9,293.7,392]],"pattern":[0,1,2,3,2,1,2,3],"inBattleVolume":0.6}},"balance":{"baseHp":3500,"cannon":{"dmg":7.5,"interval":0.19555555555555557,"bulletSpeed":12.6,"range":30,"jitter":0.04,"xLimit":3.35,"playerSpeed":60,"vsSoldier":4,"vsGiant":2.55},"tree":{"green":{"hp":40,"gold":8},"golden":{"hp":66.6667,"gold":39},"max":800,"xMin":-3.35,"xMax":3.35,"zMin":-3.25,"zMax":2.5,"minDist":0.21,"roadHalf":0.9,"radius":0.155,"pedestalClear":0.275,"densityFreq":0.65,"goldFreq":1.25,"densityCut":-0.42,"midZ":-0.375,"centerSpan":2.875,"beltGold":[0.2,0.35,0.5,0.65],"balanceTries":30},"level":{"first":20,"second":40,"step":5},"killGold":{"soldier":2,"giant":8},"flask":{"hp":24,"radius":0.3,"side":1.365,"xLimit":2.75,"minGap":1.5,"drawPx":38},"rankStep":0.2,"tempo":{"interval":15,"step":0.5,"start":0.5333333333333333,"cannonStart":0.4,"bannerBlock":2.6},"dmgUp":{"first":0.25,"step":0.04,"maxPicks":5},"rateUp":{"first":0.25,"step":0.04,"maxPicks":5},"doubles":{"offset":0.12,"dmgMul":0.75,"dur":4,"durStep":0.8},"squad":{"base":15},"soldier":{"aggro":1,"vsSoldierMul":2,"vsTankMul":2,"retaliate":4,"hp":50,"speed":0.825,"radius":0.16,"mass":1,"atkInterval":0.25,"dmgUnit":4,"dmgFence":4,"dmgBase":8,"engage":0.08},"giant":{"hw":0.4,"hl":0.5,"hp":440,"dmg":20,"atkInterval":1,"barrelMul":1,"speed":0.75,"radius":0.4,"mass":5,"shotBasePct":0.025,"shellHp":30,"shellR":0.15,"sizeStep":0.025,"sizeMax":0.25,"maxTargets":4,"frontMin":-0.03,"frontMax":1,"side":0.52,"gun":{"interval":2.1,"firstShot":1,"blastR":0.54,"unitDmg":40,"speed":4,"range":30,"hitPad":0.05,"dmgMul":4},"hitScale":0.96},"army":{"spawnOffset":0.6,"spiralAngle":2.39996,"spiralR":0.19,"baseGap":0.22,"limit":200,"releasePerStep":4,"sepIters":3},"wave":{"comebackHp":0.4,"pushFrac":0.4,"dmg":24,"speed":1.6,"width":3.025,"length":1.625,"hitHalf":1.5125,"push":0.8,"pushFMax":2,"slow":0.55,"slowDur":1.5,"knockDecay":6},"fence":{"hp":1050,"width":2.5,"widthMax":5.4,"maxAlive":2,"zPlayer":3.1,"zBot":-3.85,"secondLine":0.4,"speed":1.8,"thick":0.12,"comebackWidthFrac":0.8},"pedestal":{"x":1.65,"z":-0.375,"hp":400,"radius":0.17},"rocket":{"visScale":0.65,"hp":12.75,"dmg":875,"speed":3,"w":1.05,"h":2.25,"halfLen":0.65,"radius":0.4,"wobble":0.28,"wobbleFreq":4.5},"bag":{"dmg":1,"rate":1,"doubles":1,"squad":2,"giant":2,"barrel":1},"barrel":{"speed":4.8,"radius":0.28,"spawnOffset":0.3,"blastDmg":17,"blastR":0.45,"slickR":0.55,"slickTime":5,"slowMul":0.25,"hp":15,"burnDmg":8,"burnInterval":0.5,"laneGap":0.45,"stagger":0.25,"maxCount":4,"tempoStepsPerExtra":2},"bot":{"retarget":0.35,"aimErr":0.1,"smooth":4,"threatDist":3.5,"pedestalValue":60,"baseValue":1.2,"movePenalty":0.35,"score":{"cannon":4,"other":3,"favorite":2,"styleFit":1,"wave6":4,"fence3":3,"squad3":2,"squadLow":1},"nearDist":3,"bestChance":0.85},"rush":{"time":85,"baseHp":1750,"treesLeft":0.35,"farmMul":3},"splats":false,"splatTime":5,"sim":{"dt":0.016666666666666666,"maxSteps":6},"world":{"zAxis":"down-screen (towards the player); Unity worldY = -z","pFront":4.325000000000001,"eFront":-5.074999999999999,"pMuzzle":5.383558558558559,"eMuzzle":-6.0065315315315315,"pFlaskZ":3.816891891891893,"eFlaskZ":-5.519594594594595,"baseWidth":7.1455}},"fx":{"burst":{"speed":[30,130],"life":[0.3,0.7],"radius":[2,4],"dragPerFrame":0.92},"hit":{"life":0.28,"bigScale":1.5},"rocketBoom":{"stars":4,"spreadX":40,"spreadY":10,"stagger":0.07,"life":0.5},"shake":{"pxPerUnit":8}},"input":{"actions":{"aim":{"type":"value","bindings":["pointer/x"],"note":"screen x on the field -> cannon target (world x)"},"moveLeft":{"type":"hold","bindings":["key/ArrowLeft","key/a"]},"moveRight":{"type":"hold","bindings":["key/ArrowRight","key/d"]},"pause":{"type":"press","bindings":["key/p","key/Escape","ui/pause"]},"resume":{"type":"press","bindings":["ui/resume"]},"restart":{"type":"press","bindings":["ui/restart"]},"toMenu":{"type":"press","bindings":["ui/menu"]},"fullscreen":{"type":"press","bindings":["ui/fullscreen"]},"toggleSound":{"type":"press","bindings":["key/m","key/M"]}},"aim":{"edgeGain":0.15}},"layout":{"ref":{"w":393,"h":852},"ui":{"wallX":-4,"wallW":401,"wallH":42,"eWall":86,"pWall":572,"eTankY":54,"pTankY":652,"flaskY":548,"pause":{"x":356,"y":44,"s":40},"fullscreen":{"x":308,"y":44,"s":40}},"world":{"pxPerUnitX":55,"refFieldPx":470,"pxPerUnitZRef":50},"textAnchors":{"levelUpDy":-14,"flaskDy":-34,"flaskClamp":75,"pWallDy":-36,"eWallDy":26},"unitPx":{"soldier":18,"giant":46},"notes":"ui: reference-pixel positions of walls, tanks, flask row and HUD buttons; world: how world units map to screen pixels (Z is squeezed so the field fits between the walls)"},"matchmaking":{"about":"Opponent search screen before a battle: timings in seconds from opening, bot names, avatars.","timeline":{"found":2.5,"vsIn":3.15,"panelsOut":3.85,"vsOut":4.75,"fightIn":5.0,"fightOut":5.85,"start":6.1},"angleDeg":5,"botNames":["TankBuster","ForestFox","IronMole","PineSniper","Boomer77","Captain Oak","LeafStorm","RoadRoller","NutCracker","WildBerry","MapleKing","ShellShock","Turbo Toad","BarkBite","MossyRaider","TreeHugger"],"avatars":[{"img":"tankP","bg":"blue"},{"img":"manB","bg":"teal"},{"img":"giant","bg":"green"},{"img":"tankE","bg":"red"},{"img":"manR","bg":"orange"},{"img":"giantE","bg":"pink"},{"img":"rocket","bg":"purple"},{"img":"flaskDoubles","bg":"yellow"}]},"meta":{"storageKey":"forestDuel.meta.v1","winTrophies":30,"loseTrophies":0,"nodesPerArena":4,"nodeGold":40,"nodeGoldStep":10,"maxLv":15,"botPerArena":0.15,"per":{"cDmg":0.08,"cRate":0.06,"ult":0.15,"wave":0.15,"sold":0.1,"tank":0.1,"fence":0.1,"barrel":0.1,"veh":0.08},"defaults":{"trophies":0,"maxTrophies":0,"gold":150,"lv":{"cDmg":1,"cRate":1,"ult":1,"wave":1,"sold":1,"tank":1,"fence":1,"barrel":1,"veh":1},"claimed":{},"settings":{"sound":true,"music":true,"vib":true},"equip":{"vehicles":"veh0","units":"unit0","reinforcements":"rein0","comebacks":"cb0","gadgets":"gad0"},"profile":{"name":"Player","avatar":0}}},"palette":{"ash":"#555","barBack":"#262a33","barE":"#e8323a","barP":"#1f8ef0","barTrack":"#3a404d","barrel":"#a8462a","barrelEdge":"#3b1d14","barrelHoop":"#4a4f5c","boomCore":"#fffad2","boomFill":"#ff9628","boomRing":"#fff0b4","brass":"#e0a83a","c000000_0":"rgba(0,0,0,0)","c14161c_60":"rgba(20,22,28,.6)","c1f6fd6":"#1f6fd6","c2a6fd6":"#2a6fd6","c2f8df5":"#2f8df5","c2f9b3f":"#2f9b3f","c2fe0a0_30":"rgba(47,224,160,.3)","c333":"#333","c3c3223_25":"rgba(60,50,35,.25)","c3c372d_15":"rgba(60,55,45,.15)","c3c372d_18":"rgba(60,55,45,.18)","c3c372d_20":"rgba(60,55,45,.2)","c3c372d_22":"rgba(60,55,45,.22)","c3c372d_26":"rgba(60,55,45,.26)","c45c457":"#45c457","c4a90f0":"#4a90f0","c6cc4ff":"#6cc4ff","c7882a0_35":"rgba(120,130,160,.35)","c78beff_80":"rgba(120,190,255,.8)","c7cc0ff":"#7cc0ff","c8fd0ff":"#8fd0ff","cb478ff_18":"rgba(180,120,255,.18)","cc9452f":"#c9452f","cc9c2b4":"#c9c2b4","ce8343a":"#e8343a","cec6a4f":"#ec6a4f","cf6e7c8":"#f6e7c8","cff2800_0":"rgba(255,40,0,0)","cff3c00_0":"rgba(255,60,0,0)","cff5a14_0":"rgba(255,90,20,0)","cff5a14_45":"rgba(255,90,20,.45)","cff5a14_95":"rgba(255,90,20,.95)","cff5a1a":"#ff5a1a","cff5a28_0":"rgba(255,90,40,0)","cff8a80":"#ff8a80","cff8c28_90":"rgba(255,140,40,.9)","cff8c78_80":"rgba(255,140,120,.8)","cff9628_90":"rgba(255,150,40,.9)","cffaa1e_55":"rgba(255,170,30,.55)","cffaa1e_95":"rgba(255,170,30,.95)","cffaa3c_100":"rgba(255,170,60,1)","cffb0a8":"#ffb0a8","cffc83c_0":"rgba(255,200,60,0)","cffc850_90":"rgba(255,200,80,.9)","cffd25a_90":"rgba(255,210,90,.9)","cffdc5a_95":"rgba(255,220,90,.95)","cffe678_85":"rgba(255,230,120,.85)","cfff6d0":"#fff6d0","cfff7d6":"#fff7d6","cfffff0_70":"rgba(255,255,240,.7)","cffffff_0":"rgba(255,255,255,0)","cffffff_22":"rgba(255,255,255,.22)","cffffff_28":"rgba(255,255,255,.28)","cffffff_35":"rgba(255,255,255,.35)","cffffff_40":"rgba(255,255,255,.4)","cffffff_60":"rgba(255,255,255,.6)","cffffff_85":"rgba(255,255,255,.85)","comebackFoe":"#ff4d3a","ember":"#fff2b0","fireOrange":"#ff8a3a","flameCore":"#fff2a0","flameMid":"#ff9a1a","flameOuter":"#e8321a","gold":"#ffd21f","goldTree":"#ffb21a","greenTree":"#45b142","hpGreen":"#45d04a","ink":"#22252c","loseRed":"#ff5a5a","muzzle":"#ffdc5a","muzzleCore":"#ffffe6","oil":"#14161a","pedRed":"#c33","rubble":"#9aa0aa","shellSmoke":"#d9d4c8","smoke":"#3a3a40","soot":"#222","sparkYellow":"#ffd23a","teamE":"#ff4d4d","teamP":"#4aa8ff","ultRing":"#2fe0a0","upgOrange":"#ff9a3a","upgPurple":"#b46bff","upgTeal":"#2fd6c8","upgYellow":"#ffc21a","waveE":"#ff5a50","waveP":"#5aaaff","white":"#fff","xpFlash":"#ffffe7","xpGhost":"#fffadc"},"render":{"layers":["paper","slickOil","forest","walls","xpBar","waves","splats","slickFire","actors","barrels","bullets","hitFx","shells","booms","rockets","tanks","flasks","particles","floatTexts","banners","endScreen"],"notes":{"slickFire":"queues flames that 'actors' depth-sorts together with units and fences, so it must come before 'actors'","forest":"cached tree layers + pedestals + live-drawn damaged trees in Y order","hud":"pause / fullscreen buttons and the pause menu are DOM (ui/hud.js), above the canvas","barrels":"drawn above units (after actors)"}},"sprites":{"scale":4,"baked":{"shellP":{"w":14,"h":30,"pivot":[0.5,0.6]},"shellE":{"w":14,"h":30,"pivot":[0.5,0.6]},"bombPed":{"w":26,"h":38,"pivot":[0.5,0.8684]},"fuseSpark":{"w":7,"h":7,"pivot":[0.5,0.5]},"bombFly":{"w":28,"h":28,"pivot":[0.5,0.5]},"crystalIce":{"w":24,"h":40,"pivot":[0.5,0.9]},"glowIce":{"w":36,"h":36,"pivot":[0.5,0.8889]},"crystalIceFly":{"w":26,"h":38,"pivot":[0.5,0.5789]},"crystalLava":{"w":24,"h":40,"pivot":[0.5,0.9]},"glowLava":{"w":36,"h":36,"pivot":[0.5,0.8889]},"crystalLavaFly":{"w":26,"h":38,"pivot":[0.5,0.5789]},"barrelIcon":{"w":15,"h":11.7,"pivot":[0.5,0.5]},"btnFull":{"w":40,"h":40,"pivot":[0.5,0.5]},"btnFullExit":{"w":40,"h":40,"pivot":[0.5,0.5]},"paper0":{"w":13,"h":13,"pivot":[0,0]},"paper1":{"w":13,"h":13,"pivot":[0,0]},"paper2":{"w":13,"h":13,"pivot":[0,0]},"paper3":{"w":13,"h":13,"pivot":[0,0]}}},"texts":{"game":{"levelUp":"LEVEL {n}!","rocketOwn":"ROCKET!","rocketFoe":"Enemy rocket!","enemyPrefix":"Enemy: ","comebackOwn":"YOUR COMEBACK","comebackFoe":"ENEMY COMEBACK","tempo":"UPGRADES +{n}%","pause":"PAUSED","resume":"Resume","restart":"Restart","toMenu":"Main menu","win":"VICTORY","lose":"DEFEAT"},"upg":{"dmg":"Damage","rate":"Fire rate","doubles":"Ultimate","squad":"Squad","giant":"Tank","wave":"Wave","barrel":"Barrel","fence":"Fence"},"upgVal":{"dmg":"+{n}%","rate":"+{n}%","doubles":"{n} s","squad":"×{n}","giant":"{n} HP","wave":"{n} dmg","barrel":"×{n}","fence":"{n} HP"},"arenaNames":["Forest Glade","Autumn Woods","Winter Woods","Fire Valley","Quiet Grove","Rusty Thicket","Snowy Pass","Ashen Lands"],"arenaLaps":["II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII"],"menu":{"settings":"Settings","tabShop":"SHOP","tabHero":"HERO","tabBattle":"BATTLE","tabUp":"ARMY","tabLeague":"LEAGUE","soonTitle":"Coming soon","soonBody":"this section is still in development. Check back later!","shop":"Shop","league":"League","buyGold":"Buying gold","arena":"ARENA {n}","nextReward":"Next reward:","fight":"BATTLE","lv":"Lv. {n}","max":"MAX","heroName":"Tank “Guardian”","ultTitle":"Ultimate: Double Fire","ultBody":"The Ultimate flask fires two blazing bullets for a few seconds.","stats":"Stats","comeback":"Comeback","comebackBody":"When your base runs low on HP, a free wave rolls out and pushes enemies back.","armyTitle":"Army and buildings","armyBody":"Upgrades apply to everything that comes out of flasks in battle.","maxLevel":"Max level","noGold":"Not enough gold","chest":"Arena chest:","pathTitle":"Arena path","on":"ON","off":"OFF","sound":"Sound","music":"Music","vib":"Vibration","privacy":"Privacy Policy","privacyBody":"Forest Duel is a game prototype. The game does not collect personal data, show ads, or share data with third parties. Your progress (trophies, gold, upgrade levels and settings) is stored only in this browser on your device and is deleted together with the site data.","pathRewards":"Arena path rewards","newArena":"New arena unlocked:","win":"VICTORY","lose":"DEFEAT","trophies":"Trophies: {n}","continue":"CONTINUE","levelUp":"LEVEL UP","notAvailable":"Not available yet","equip":"EQUIP","equipped":"EQUIPPED","close":"CLOSE","lvShort":"LV {n}","statAtk":"Attack","statHp":"Health","statSpd":"Speed","searching":"Searching for opponent…","vs":"VS","profile":"Profile","nickname":"Nickname","avatar":"Avatar","save":"SAVE","fightBanner":"FIGHT!"},"metaUp":{"cDmg":["Damage","DMG"],"cRate":["Fire rate","shots/s"],"ult":["Ultimate","power"],"wave":["Wave","dmg"],"sold":["Squad","HP"],"tank":["Tank","HP"],"fence":["Fence","HP"],"barrel":["Barrel","fire"]}},"upgrades":{"dmg":{"img":"flaskDmg","pal":"teamP"},"rate":{"img":"flaskRate","pal":"teamP"},"doubles":{"img":"flaskDoubles","pal":"upgPurple"},"squad":{"img":"flaskSquad","pal":"teamE"},"giant":{"img":"flaskGiant","pal":"teamE"},"wave":{"img":"flaskWave","pal":"upgTeal"},"fence":{"img":"flaskFence","pal":"upgYellow"},"barrel":{"img":"flaskBarrel","pal":"upgOrange","icon":"barrel"}}};
+const DATA={"anims":{"bannerComeback":{"length":2.6,"tracks":[{"property":"alpha","from":0,"to":1,"duration":0.25},{"property":"alpha","from":1,"to":0,"duration":0.5,"delay":2.1},{"property":"scale","from":1.525,"to":1,"duration":0.35}]},"bannerTempo":{"length":2.2,"tracks":[{"property":"alpha","from":0,"to":1,"duration":0.2},{"property":"alpha","from":1,"to":0,"duration":0.5,"delay":1.7},{"property":"scale","from":1.45,"to":1,"duration":0.3}]},"bannerEnd":{"length":0.3,"tracks":[{"property":"scale","from":1.6,"to":1,"duration":0.3}],"letterLoop":2.4},"letterHop":{"length":0.290909,"stagger":0.040909,"startDelay":0.068182,"amp":0.28,"tracks":[{"property":"hop","from":0,"to":1,"duration":0.072727,"easing":"sineOut"},{"property":"hop","from":1,"to":0,"duration":0.072727,"delay":0.072727,"easing":"sineIn"}]},"floatText":{"length":1.2,"tracks":[{"property":"dy","from":0,"to":-36,"duration":1.2},{"property":"alpha","from":1,"to":1,"duration":0.6},{"property":"alpha","from":1,"to":0,"duration":0.6,"delay":0.6}]},"hitFx":{"normalized":true,"length":1,"tracks":[{"property":"alpha","from":1,"to":0,"duration":1},{"property":"ring","from":5,"to":19,"duration":1},{"property":"line","from":3,"to":0.5,"duration":1},{"property":"star","from":1,"to":0,"duration":0.5}]},"boom":{"length":0.45,"tracks":[{"property":"spread","from":0,"to":1,"duration":0.204545,"easing":"cubicOut"},{"property":"fill","from":0.45,"to":0,"duration":0.45},{"property":"stroke","from":1,"to":0,"duration":0.45},{"property":"line","from":4,"to":1,"duration":0.45},{"property":"core","from":1,"to":0,"duration":0.1575},{"property":"coreR","from":10,"to":6.5,"duration":0.1575}]},"splat":{"length":5,"tracks":[{"property":"pop","from":0,"to":1.35,"duration":0.12},{"property":"pop","from":1.35,"to":1,"duration":0.13,"delay":0.12},{"property":"alpha","from":1,"to":1,"duration":4},{"property":"alpha","from":1,"to":0,"duration":1,"delay":4}]},"flaskSpawn":{"length":0.2,"tracks":[{"property":"scale","from":0,"to":1,"duration":0.2}]},"flaskBob":{"length":0,"tracks":[{"property":"y","from":-2,"to":2,"duration":1.047198,"easing":"sineInOut","loop":"yoyo","phase":0.523599}]},"wallCollapse":{"length":2.6,"tracks":[{"property":"fall","from":0,"to":1,"duration":0.714286},{"property":"alpha","from":1,"to":0.35,"duration":2.6}]},"pedBob":{"length":0,"tracks":[{"property":"y","from":-2,"to":2,"duration":1.256637,"easing":"sineInOut","loop":"yoyo","phase":0.628319}]},"pedGlow":{"length":0,"tracks":[{"property":"alpha","from":0.14999999999999997,"to":0.55,"duration":0.628319,"easing":"sineInOut","loop":"yoyo","phase":0.314159}]},"fuse":{"length":0,"tracks":[{"property":"scale","from":0.7,"to":1.3,"duration":0.188496,"easing":"sineInOut","loop":"yoyo","phase":0.094248}]},"bombSpin":{"length":0,"tracks":[{"property":"rot","from":0,"to":6.283185307179586,"duration":0.753982,"loop":"restart"}]},"mmPop":{"length":0.45,"tracks":[{"property":"scale","from":0,"to":1,"duration":0.45,"easing":"backOut"},{"property":"alpha","from":0,"to":1,"duration":0.15}]},"mmVsIn":{"length":0.4,"tracks":[{"property":"scale","from":2.6,"to":1,"duration":0.4,"easing":"backOut"},{"property":"alpha","from":0,"to":1,"duration":0.2}]},"mmPanelsOut":{"length":0.55,"tracks":[{"property":"shift","from":0,"to":1,"duration":0.55,"easing":"cubicIn"}]},"mmTextOut":{"length":0.25,"tracks":[{"property":"scale","from":1,"to":1.7,"duration":0.25,"easing":"quadIn"},{"property":"alpha","from":1,"to":0,"duration":0.25}]},"mmFightIn":{"length":0.4,"tracks":[{"property":"scale","from":0.2,"to":1,"duration":0.4,"easing":"elasticOut"},{"property":"alpha","from":0,"to":1,"duration":0.12}]},"mmRoll":{"length":0,"tracks":[{"property":"y","from":0,"to":1,"duration":1.0,"loop":"restart"}]},"mmPulse":{"length":0,"tracks":[{"property":"alpha","from":0.45,"to":1,"duration":0.6,"easing":"sineInOut","loop":"yoyo"}]},"arenaSlide":{"length":0.38,"tracks":[{"property":"k","from":0,"to":1,"duration":0.38,"easing":"cubicOut"}]},"trophyBurst":{"length":0.45,"tracks":[{"property":"k","from":0,"to":1,"duration":0.45,"easing":"backOut"}]},"trophyFly":{"length":0.55,"tracks":[{"property":"k","from":0,"to":1,"duration":0.55,"easing":"quadIn"}]},"barPulse":{"length":0.25,"tracks":[{"property":"scale","from":1.12,"to":1,"duration":0.25,"easing":"quadOut"}]},"unlockBanner":{"length":1.8,"tracks":[{"property":"scale","from":0.3,"to":1,"duration":0.45,"easing":"elasticOut"},{"property":"alpha","from":0,"to":1,"duration":0.15},{"property":"alpha","from":1,"to":0,"duration":0.35,"delay":1.45},{"property":"y","from":0,"to":-30,"duration":0.35,"delay":1.45,"easing":"quadIn"}]},"sceneOut":{"length":0.14,"tracks":[{"property":"scale","from":1,"to":0,"duration":0.14,"easing":"backIn"}]},"sceneIn":{"length":0.26,"tracks":[{"property":"scale","from":0,"to":1,"duration":0.26,"easing":"backOut"}]},"treeWobble":{"length":0.5,"tracks":[{"property":"rot","from":10,"to":0,"duration":0.5,"easing":"elasticOut"},{"property":"hop","from":-8,"to":0,"duration":0.35,"easing":"bounceOut"}]}},"arenas":{"count":100,"themes":[{"paper":"#f8f7f1","grid":"rgba(110,150,205,.3)","tint":null,"obj":"rocket","node":"lime"},{"paper":"#fbf3e6","grid":"rgba(210,140,80,.3)","tint":"autumn","obj":"bomb","node":"orange"},{"paper":"#f1f6fb","grid":"rgba(110,165,215,.38)","tint":"winter","obj":"ice","node":"blue"},{"paper":"#fbefe9","grid":"rgba(215,105,85,.3)","tint":"fire","obj":"lava","node":"orange"}],"threshold":{"first":[100,150,200],"base":250,"inc":25},"chest":{"base":200,"step":100},"menu":{"shown":5,"scene":{"w":393,"h":330},"trophyFx":{"count":10,"origin":[196,260],"radius":[70,120],"burst":0.45,"hold":0.45,"stagger":0.06,"fly":0.55,"size":28,"trail":9},"unlockBanner":1.8,"bg":{"tile":300,"speed":20,"bpTile":96,"bpSpeed":14}}},"army":{"about":"Army collection: groups of cards. Unlocked items with metaKey level up through META.lv[metaKey] (same multipliers the battle uses, meta.json 'per'). The equipped comeback (cb0 wave / cb1 barricade) is what fires in battle when the base drops low.","groups":[{"id":"vehicles","title":"Vehicles"},{"id":"units","title":"Units"},{"id":"reinforcements","title":"Reinforcements"},{"id":"gadgets","title":"Gadgets"},{"id":"ultimates","title":"Ultimates"},{"id":"comebacks","title":"Comebacks"}],"items":[{"id":"veh0","group":"vehicles","name":"Guardian","desc":"A sturdy all-rounder. Steady fire rate and solid damage.","art":"tankP","locked":false,"stats":{"atk":7.5,"hp":3500,"spd":5.11},"metaKey":"veh","scales":["atk"]},{"id":"veh1","group":"vehicles","name":"Rhino","desc":"Heavy armor plates, slow but tough.","art":"tankP","locked":true,"stats":{"atk":8.62,"hp":4550,"spd":4.09}},{"id":"veh2","group":"vehicles","name":"Viper","desc":"Light and quick, fires in rapid bursts.","art":"tankP","locked":true,"stats":{"atk":6.75,"hp":2800,"spd":6.64}},{"id":"veh3","group":"vehicles","name":"Titan","desc":"Massive cannon that crushes trees in one shot.","art":"tankP","locked":true,"stats":{"atk":10.12,"hp":3325,"spd":4.34}},{"id":"veh4","group":"vehicles","name":"Blaze","desc":"Shells set the forest on fire.","art":"tankP","locked":true,"stats":{"atk":8.25,"hp":3500,"spd":5.11}},{"id":"veh5","group":"vehicles","name":"Frost","desc":"Freezing rounds slow enemy troops.","art":"tankP","locked":true,"stats":{"atk":7.88,"hp":3675,"spd":4.85}},{"id":"veh6","group":"vehicles","name":"Thunder","desc":"Chain lightning jumps between targets.","art":"tankP","locked":true,"stats":{"atk":9.0,"hp":3150,"spd":5.62}},{"id":"veh7","group":"vehicles","name":"Phantom","desc":"Fires piercing ghost bullets.","art":"tankP","locked":true,"stats":{"atk":9.38,"hp":3850,"spd":5.37}},{"id":"unit0","group":"units","name":"Rookie","desc":"Brave little soldier. Marches down the road and fights in melee.","art":"manB","locked":false,"stats":{"atk":8,"hp":50,"spd":0.83},"metaKey":"sold","scales":["atk","hp"]},{"id":"unit1","group":"units","name":"Brawler","desc":"Big fists, more health.","art":"manB","locked":true,"stats":{"atk":9.2,"hp":65,"spd":0.66}},{"id":"unit2","group":"units","name":"Scout","desc":"Fast runner that slips past the front line.","art":"manB","locked":true,"stats":{"atk":7.2,"hp":40,"spd":1.08}},{"id":"unit3","group":"units","name":"Grenadier","desc":"Throws grenades over the trees.","art":"manB","locked":true,"stats":{"atk":10.8,"hp":48,"spd":0.71}},{"id":"unit4","group":"units","name":"Knight","desc":"Shielded and hard to push back.","art":"manB","locked":true,"stats":{"atk":8.8,"hp":50,"spd":0.83}},{"id":"unit5","group":"units","name":"Ninja","desc":"Strikes fast and dodges hits.","art":"manB","locked":true,"stats":{"atk":8.4,"hp":52,"spd":0.79}},{"id":"unit6","group":"units","name":"Medic","desc":"Heals nearby soldiers.","art":"manB","locked":true,"stats":{"atk":9.6,"hp":45,"spd":0.91}},{"id":"unit7","group":"units","name":"Berserker","desc":"Hits harder as it loses health.","art":"manB","locked":true,"stats":{"atk":10.0,"hp":55,"spd":0.87}},{"id":"rein0","group":"reinforcements","name":"Roller","desc":"Rolling cannon that drives down the road and shells everything in its lane.","art":"giant","locked":false,"stats":{"atk":87.5,"hp":440,"spd":0.75},"metaKey":"tank","scales":["atk","hp"]},{"id":"rein1","group":"reinforcements","name":"Bulldog","desc":"Pushes soldiers aside with its plow.","art":"giant","locked":true,"stats":{"atk":100.6,"hp":572,"spd":0.6}},{"id":"rein2","group":"reinforcements","name":"Mammoth","desc":"Twin cannons, double the shells.","art":"giant","locked":true,"stats":{"atk":78.8,"hp":352,"spd":0.98}},{"id":"rein3","group":"reinforcements","name":"Hornet","desc":"Fast tank with homing missiles.","art":"giant","locked":true,"stats":{"atk":118.1,"hp":418,"spd":0.64}},{"id":"rein4","group":"reinforcements","name":"Crusher","desc":"Flattens fences on contact.","art":"giant","locked":true,"stats":{"atk":96.3,"hp":440,"spd":0.75}},{"id":"rein5","group":"reinforcements","name":"Inferno","desc":"Flamethrower tank.","art":"giant","locked":true,"stats":{"atk":91.9,"hp":462,"spd":0.71}},{"id":"rein6","group":"reinforcements","name":"Glacier","desc":"Shells freeze the ground.","art":"giant","locked":true,"stats":{"atk":105.0,"hp":396,"spd":0.83}},{"id":"rein7","group":"reinforcements","name":"Goliath","desc":"Slow giant with a huge health pool.","art":"giant","locked":true,"stats":{"atk":109.4,"hp":484,"spd":0.79}},{"id":"ult0","group":"ultimates","name":"Double Fire","desc":"Two blazing bullets for a few seconds.","art":"flaskDoubles","locked":true,"stats":{"atk":10,"hp":0,"spd":4}},{"id":"ult1","group":"ultimates","name":"Rocket Rain","desc":"Rockets fall across the enemy half.","art":"flaskDoubles","locked":true,"stats":{"atk":10,"hp":0,"spd":4}},{"id":"ult2","group":"ultimates","name":"Shield Dome","desc":"Your base takes no damage for a moment.","art":"flaskDoubles","locked":true,"stats":{"atk":10,"hp":0,"spd":4}},{"id":"ult3","group":"ultimates","name":"Time Stop","desc":"Freezes enemy troops in place.","art":"flaskDoubles","locked":true,"stats":{"atk":10,"hp":0,"spd":4}},{"id":"cb0","group":"comebacks","name":"Shock Wave","desc":"When your base drops low, a free wave rolls out and pushes enemies back.","art":"flaskWave","locked":false,"stats":{"atk":24,"hp":0,"spd":1.6},"metaKey":"wave","scales":["atk"]},{"id":"cb1","group":"comebacks","name":"Barricade","desc":"When your base drops low, a wide fence slides out and blocks the road.","art":"fenceP","locked":false,"stats":{"atk":0,"hp":1050,"spd":1.8},"metaKey":"fence","scales":["hp"]},{"id":"cb2","group":"comebacks","name":"Air Strike","desc":"Bombers hit the enemy front line.","art":"flaskWave","locked":true,"stats":{"atk":40,"hp":0,"spd":2}},{"id":"cb3","group":"comebacks","name":"Last Stand","desc":"Your cannon fires twice as fast for a while.","art":"flaskWave","locked":true,"stats":{"atk":15,"hp":0,"spd":3}},{"id":"gad0","group":"gadgets","name":"Oil Barrel","desc":"Rolls down the road, bursts on the first enemy and leaves burning oil.","art":"flaskBarrel","locked":false,"stats":{"atk":17,"hp":15,"spd":4.8},"metaKey":"barrel","scales":["atk"]},{"id":"gad1","group":"gadgets","name":"Land Mine","desc":"Hidden trap that blows up the first soldier.","art":"flaskBarrel","locked":true,"stats":{"atk":30,"hp":10,"spd":0}},{"id":"gad2","group":"gadgets","name":"Bomb Crate","desc":"Big blast, short fuse.","art":"flaskBarrel","locked":true,"stats":{"atk":45,"hp":20,"spd":3}},{"id":"gad3","group":"gadgets","name":"Smoke Bomb","desc":"Enemies inside the cloud move slower.","art":"flaskBarrel","locked":true,"stats":{"atk":5,"hp":15,"spd":4}}]},"audio":{"mixer":{"masterGain":0.55,"lowpassHz":5200,"lowpassQ":0.5,"compressor":"WebAudio defaults (threshold -24 dB, knee 30, ratio 12, attack 3 ms, release 250 ms)"},"maxVoices":14,"prerender":["shot","treeHit","hup","hya","unitDie","flaskHit","hitBase","tankShot","blast","tree","goldTree"],"alwaysPlay":["bigBoom","win","lose","rush","level","tankSpawn"],"voiceHoldMs":{"prerendered":400,"live":900},"sfx":{"shot":{"variants":3,"len":2.5},"treeHit":{"variants":3,"len":2.5},"tree":{"variants":3,"len":2.5},"goldTree":{"variants":3,"len":2.5},"flaskHit":{"variants":3,"len":2.5},"flask":{"variants":3,"len":2.5},"upgrade":{"variants":3,"len":2.5},"level":{"variants":3,"len":2.5},"unitDie":{"variants":3,"len":2.5},"hup":{"variants":3,"len":2.5},"hya":{"variants":3,"len":2.5},"tankSpawn":{"variants":3,"len":2.5},"giantDie":{"variants":3,"len":2.5},"hitBase":{"variants":3,"len":2.5},"squad":{"variants":3,"len":2.5},"giant":{"variants":3,"len":2.5},"wave":{"variants":3,"len":2.5},"fence":{"variants":3,"len":2.5},"rocket":{"variants":3,"len":2.5},"boom":{"variants":3,"len":2.5},"tankShot":{"variants":3,"len":2.5},"blast":{"variants":3,"len":2.5},"bugle":{"variants":3,"len":2.5},"bigBoom":{"variants":3,"len":2.5},"pop":{"variants":3,"len":2.5},"rush":{"variants":3,"len":2.5},"win":{"variants":3,"len":2.5},"lose":{"variants":3,"len":2.5},"roll":{"variants":3,"len":0.4},"whoosh":{"variants":3,"len":0.6}},"loops":{"rocket":{"gain":0.16},"wave":{"gain":0.22},"fence":{"gain":0.13}},"music":{"step":0.3,"chords":[[261.6,329.6,392,523.3],[220,261.6,329.6,440],[174.6,220,261.6,349.2],[196,246.9,293.7,392]],"pattern":[0,1,2,3,2,1,2,3],"inBattleVolume":0.6}},"balance":{"baseHp":3500,"cannon":{"dmg":7.5,"interval":0.19555555555555557,"bulletSpeed":12.6,"range":30,"jitter":0.04,"xLimit":3.35,"playerSpeed":60,"vsSoldier":4,"vsGiant":2.55},"tree":{"green":{"hp":40,"gold":8},"golden":{"hp":66.6667,"gold":39},"max":800,"xMin":-3.35,"xMax":3.35,"zMin":-3.25,"zMax":2.5,"minDist":0.21,"roadHalf":0.9,"radius":0.155,"pedestalClear":0.275,"densityFreq":0.65,"goldFreq":1.25,"densityCut":-0.42,"midZ":-0.375,"centerSpan":2.875,"beltGold":[0.2,0.35,0.5,0.65],"balanceTries":30},"level":{"first":20,"second":40,"step":5},"killGold":{"soldier":2,"giant":8},"flask":{"hp":24,"radius":0.3,"side":1.365,"xLimit":2.75,"minGap":1.5,"drawPx":38},"rankStep":0.2,"tempo":{"interval":15,"step":0.5,"start":0.5333333333333333,"cannonStart":0.4,"bannerBlock":2.6},"dmgUp":{"first":0.25,"step":0.04,"maxPicks":5},"rateUp":{"first":0.25,"step":0.04,"maxPicks":5},"doubles":{"offset":0.12,"dmgMul":0.75,"dur":4,"durStep":0.8},"squad":{"base":15},"soldier":{"aggro":1,"vsSoldierMul":2,"vsTankMul":2,"retaliate":4,"hp":50,"speed":0.825,"radius":0.16,"mass":1,"atkInterval":0.25,"dmgUnit":4,"dmgFence":4,"dmgBase":8,"engage":0.08},"giant":{"hw":0.4,"hl":0.5,"hp":440,"dmg":20,"atkInterval":1,"barrelMul":1,"speed":0.75,"radius":0.4,"mass":5,"shotBasePct":0.025,"shellHp":30,"shellR":0.15,"sizeStep":0.025,"sizeMax":0.25,"maxTargets":4,"frontMin":-0.03,"frontMax":1,"side":0.52,"gun":{"interval":2.1,"firstShot":1,"blastR":0.54,"unitDmg":40,"speed":4,"range":30,"hitPad":0.05,"dmgMul":4},"hitScale":0.96},"army":{"spawnOffset":0.6,"spiralAngle":2.39996,"spiralR":0.19,"baseGap":0.22,"limit":200,"releasePerStep":4,"sepIters":3},"wave":{"comebackHp":0.4,"pushFrac":0.4,"dmg":24,"speed":1.6,"width":3.025,"length":1.625,"hitHalf":1.5125,"push":0.8,"pushFMax":2,"slow":0.55,"slowDur":1.5,"knockDecay":6},"fence":{"hp":1050,"width":2.5,"widthMax":5.4,"maxAlive":2,"zPlayer":3.1,"zBot":-3.85,"secondLine":0.4,"speed":1.8,"thick":0.12,"comebackWidthFrac":0.8},"pedestal":{"x":1.65,"z":-0.375,"hp":400,"radius":0.17},"rocket":{"visScale":0.65,"hp":12.75,"dmg":875,"speed":3,"w":1.05,"h":2.25,"halfLen":0.65,"radius":0.4,"wobble":0.28,"wobbleFreq":4.5},"bag":{"dmg":1,"rate":1,"doubles":1,"squad":2,"giant":2,"barrel":1},"barrel":{"speed":4.8,"radius":0.28,"spawnOffset":0.3,"blastDmg":17,"blastR":0.45,"slickR":0.55,"slickTime":5,"slowMul":0.25,"hp":15,"burnDmg":8,"burnInterval":0.5,"laneGap":0.45,"stagger":0.25,"maxCount":4,"tempoStepsPerExtra":2},"bot":{"retarget":0.35,"aimErr":0.1,"smooth":4,"threatDist":3.5,"pedestalValue":60,"baseValue":1.2,"movePenalty":0.35,"score":{"cannon":4,"other":3,"favorite":2,"styleFit":1,"wave6":4,"fence3":3,"squad3":2,"squadLow":1},"nearDist":3,"bestChance":0.85},"rush":{"time":85,"baseHp":1750,"treesLeft":0.35,"farmMul":3},"splats":false,"splatTime":5,"sim":{"dt":0.016666666666666666,"maxSteps":6},"world":{"zAxis":"down-screen (towards the player); Unity worldY = -z","pFront":4.325000000000001,"eFront":-5.074999999999999,"pMuzzle":5.383558558558559,"eMuzzle":-6.0065315315315315,"pFlaskZ":3.816891891891893,"eFlaskZ":-5.519594594594595,"baseWidth":7.1455}},"fx":{"burst":{"speed":[30,130],"life":[0.3,0.7],"radius":[2,4],"dragPerFrame":0.92},"hit":{"life":0.28,"bigScale":1.5},"rocketBoom":{"stars":4,"spreadX":40,"spreadY":10,"stagger":0.07,"life":0.5},"shake":{"pxPerUnit":8}},"input":{"actions":{"aim":{"type":"value","bindings":["pointer/x"],"note":"screen x on the field -> cannon target (world x)"},"moveLeft":{"type":"hold","bindings":["key/ArrowLeft","key/a"]},"moveRight":{"type":"hold","bindings":["key/ArrowRight","key/d"]},"pause":{"type":"press","bindings":["key/p","key/Escape","ui/pause"]},"resume":{"type":"press","bindings":["ui/resume"]},"restart":{"type":"press","bindings":["ui/restart"]},"toMenu":{"type":"press","bindings":["ui/menu"]},"fullscreen":{"type":"press","bindings":["ui/fullscreen"]},"toggleSound":{"type":"press","bindings":["key/m","key/M"]}},"aim":{"edgeGain":0.15}},"layout":{"ref":{"w":393,"h":852},"ui":{"wallX":-4,"wallW":401,"wallH":42,"eWall":86,"pWall":572,"eTankY":54,"pTankY":652,"flaskY":548,"pause":{"x":356,"y":44,"s":40},"fullscreen":{"x":308,"y":44,"s":40}},"world":{"pxPerUnitX":55,"refFieldPx":470,"pxPerUnitZRef":50},"textAnchors":{"levelUpDy":-14,"flaskDy":-34,"flaskClamp":75,"pWallDy":-36,"eWallDy":26},"unitPx":{"soldier":18,"giant":46},"notes":"ui: reference-pixel positions of walls, tanks, flask row and HUD buttons; world: how world units map to screen pixels (Z is squeezed so the field fits between the walls)"},"matchmaking":{"about":"Opponent search screen before a battle: timings in seconds from opening, bot names, avatars.","timeline":{"found":2.5,"vsIn":3.15,"panelsOut":3.85,"vsOut":4.75,"fightIn":5.0,"fightOut":5.85,"start":6.1},"angleDeg":5,"botNames":["TankBuster","ForestFox","IronMole","PineSniper","Boomer77","Captain Oak","LeafStorm","RoadRoller","NutCracker","WildBerry","MapleKing","ShellShock","Turbo Toad","BarkBite","MossyRaider","TreeHugger"],"avatars":[{"img":"tankP","bg":"blue"},{"img":"manB","bg":"teal"},{"img":"giant","bg":"green"},{"img":"tankE","bg":"red"},{"img":"manR","bg":"orange"},{"img":"giantE","bg":"pink"},{"img":"rocket","bg":"purple"},{"img":"flaskDoubles","bg":"yellow"}],"seam":{"leftPct":52.3,"rightPct":47.7,"width":8},"bgScroll":26},"meta":{"storageKey":"forestDuel.meta.v1","winTrophies":30,"loseTrophies":0,"nodesPerArena":4,"nodeGold":40,"nodeGoldStep":10,"maxLv":15,"botPerArena":0.15,"per":{"cDmg":0.08,"cRate":0.06,"ult":0.15,"wave":0.15,"sold":0.1,"tank":0.1,"fence":0.1,"barrel":0.1,"veh":0.08},"defaults":{"trophies":0,"maxTrophies":0,"gold":150,"lv":{"cDmg":1,"cRate":1,"ult":1,"wave":1,"sold":1,"tank":1,"fence":1,"barrel":1,"veh":1},"claimed":{},"settings":{"sound":true,"music":true,"vib":true},"equip":{"vehicles":"veh0","units":"unit0","reinforcements":"rein0","comebacks":"cb0","gadgets":"gad0"},"profile":{"name":"Player","avatar":0}}},"palette":{"ash":"#555","barBack":"#262a33","barE":"#e8323a","barP":"#1f8ef0","barTrack":"#3a404d","barrel":"#a8462a","barrelEdge":"#3b1d14","barrelHoop":"#4a4f5c","boomCore":"#fffad2","boomFill":"#ff9628","boomRing":"#fff0b4","brass":"#e0a83a","c000000_0":"rgba(0,0,0,0)","c14161c_60":"rgba(20,22,28,.6)","c1f6fd6":"#1f6fd6","c2a6fd6":"#2a6fd6","c2f8df5":"#2f8df5","c2f9b3f":"#2f9b3f","c2fe0a0_30":"rgba(47,224,160,.3)","c333":"#333","c3c3223_25":"rgba(60,50,35,.25)","c3c372d_15":"rgba(60,55,45,.15)","c3c372d_18":"rgba(60,55,45,.18)","c3c372d_20":"rgba(60,55,45,.2)","c3c372d_22":"rgba(60,55,45,.22)","c3c372d_26":"rgba(60,55,45,.26)","c45c457":"#45c457","c4a90f0":"#4a90f0","c6cc4ff":"#6cc4ff","c7882a0_35":"rgba(120,130,160,.35)","c78beff_80":"rgba(120,190,255,.8)","c7cc0ff":"#7cc0ff","c8fd0ff":"#8fd0ff","cb478ff_18":"rgba(180,120,255,.18)","cc9452f":"#c9452f","cc9c2b4":"#c9c2b4","ce8343a":"#e8343a","cec6a4f":"#ec6a4f","cf6e7c8":"#f6e7c8","cff2800_0":"rgba(255,40,0,0)","cff3c00_0":"rgba(255,60,0,0)","cff5a14_0":"rgba(255,90,20,0)","cff5a14_45":"rgba(255,90,20,.45)","cff5a14_95":"rgba(255,90,20,.95)","cff5a1a":"#ff5a1a","cff5a28_0":"rgba(255,90,40,0)","cff8a80":"#ff8a80","cff8c28_90":"rgba(255,140,40,.9)","cff8c78_80":"rgba(255,140,120,.8)","cff9628_90":"rgba(255,150,40,.9)","cffaa1e_55":"rgba(255,170,30,.55)","cffaa1e_95":"rgba(255,170,30,.95)","cffaa3c_100":"rgba(255,170,60,1)","cffb0a8":"#ffb0a8","cffc83c_0":"rgba(255,200,60,0)","cffc850_90":"rgba(255,200,80,.9)","cffd25a_90":"rgba(255,210,90,.9)","cffdc5a_95":"rgba(255,220,90,.95)","cffe678_85":"rgba(255,230,120,.85)","cfff6d0":"#fff6d0","cfff7d6":"#fff7d6","cfffff0_70":"rgba(255,255,240,.7)","cffffff_0":"rgba(255,255,255,0)","cffffff_22":"rgba(255,255,255,.22)","cffffff_28":"rgba(255,255,255,.28)","cffffff_35":"rgba(255,255,255,.35)","cffffff_40":"rgba(255,255,255,.4)","cffffff_60":"rgba(255,255,255,.6)","cffffff_85":"rgba(255,255,255,.85)","comebackFoe":"#ff4d3a","ember":"#fff2b0","fireOrange":"#ff8a3a","flameCore":"#fff2a0","flameMid":"#ff9a1a","flameOuter":"#e8321a","gold":"#ffd21f","goldTree":"#ffb21a","greenTree":"#45b142","hpGreen":"#45d04a","ink":"#22252c","loseRed":"#ff5a5a","muzzle":"#ffdc5a","muzzleCore":"#ffffe6","oil":"#14161a","pedRed":"#c33","rubble":"#9aa0aa","shellSmoke":"#d9d4c8","smoke":"#3a3a40","soot":"#222","sparkYellow":"#ffd23a","teamE":"#ff4d4d","teamP":"#4aa8ff","ultRing":"#2fe0a0","upgOrange":"#ff9a3a","upgPurple":"#b46bff","upgTeal":"#2fd6c8","upgYellow":"#ffc21a","waveE":"#ff5a50","waveP":"#5aaaff","white":"#fff","xpFlash":"#ffffe7","xpGhost":"#fffadc"},"render":{"layers":["paper","slickOil","forest","walls","xpBar","waves","splats","slickFire","actors","barrels","bullets","hitFx","shells","booms","rockets","tanks","flasks","particles","floatTexts","banners","endScreen"],"notes":{"slickFire":"queues flames that 'actors' depth-sorts together with units and fences, so it must come before 'actors'","forest":"cached tree layers + pedestals + live-drawn damaged trees in Y order","hud":"pause / fullscreen buttons and the pause menu are DOM (ui/hud.js), above the canvas","barrels":"drawn above units (after actors)"}},"sprites":{"scale":4,"baked":{"shellP":{"w":14,"h":30,"pivot":[0.5,0.6]},"shellE":{"w":14,"h":30,"pivot":[0.5,0.6]},"bombPed":{"w":26,"h":38,"pivot":[0.5,0.8684]},"fuseSpark":{"w":7,"h":7,"pivot":[0.5,0.5]},"bombFly":{"w":28,"h":28,"pivot":[0.5,0.5]},"crystalIce":{"w":24,"h":40,"pivot":[0.5,0.9]},"glowIce":{"w":36,"h":36,"pivot":[0.5,0.8889]},"crystalIceFly":{"w":26,"h":38,"pivot":[0.5,0.5789]},"crystalLava":{"w":24,"h":40,"pivot":[0.5,0.9]},"glowLava":{"w":36,"h":36,"pivot":[0.5,0.8889]},"crystalLavaFly":{"w":26,"h":38,"pivot":[0.5,0.5789]},"barrelIcon":{"w":15,"h":11.7,"pivot":[0.5,0.5]},"btnFull":{"w":40,"h":40,"pivot":[0.5,0.5]},"btnFullExit":{"w":40,"h":40,"pivot":[0.5,0.5]},"paper0":{"w":13,"h":13,"pivot":[0,0]},"paper1":{"w":13,"h":13,"pivot":[0,0]},"paper2":{"w":13,"h":13,"pivot":[0,0]},"paper3":{"w":13,"h":13,"pivot":[0,0]}}},"texts":{"game":{"levelUp":"LEVEL {n}!","rocketOwn":"ROCKET!","rocketFoe":"Enemy rocket!","enemyPrefix":"Enemy: ","comebackOwn":"YOUR COMEBACK","comebackFoe":"ENEMY COMEBACK","tempo":"UPGRADES +{n}%","pause":"PAUSED","resume":"Resume","restart":"Restart","toMenu":"Main menu","win":"VICTORY","lose":"DEFEAT"},"upg":{"dmg":"Damage","rate":"Fire rate","doubles":"Ultimate","squad":"Squad","giant":"Tank","wave":"Wave","barrel":"Barrel","fence":"Fence"},"upgVal":{"dmg":"+{n}%","rate":"+{n}%","doubles":"{n} s","squad":"×{n}","giant":"{n} HP","wave":"{n} dmg","barrel":"×{n}","fence":"{n} HP"},"arenaNames":["Forest Glade","Autumn Woods","Winter Woods","Fire Valley","Quiet Grove","Rusty Thicket","Snowy Pass","Ashen Lands"],"arenaLaps":["II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII"],"menu":{"settings":"Settings","tabShop":"SHOP","tabHero":"HERO","tabBattle":"BATTLE","tabUp":"ARMY","tabLeague":"LEAGUE","soonTitle":"Coming soon","soonBody":"this section is still in development. Check back later!","shop":"Shop","league":"League","buyGold":"Buying gold","arena":"ARENA {n}","nextReward":"Next reward:","fight":"BATTLE","lv":"Lv. {n}","max":"MAX","heroName":"Tank “Guardian”","ultTitle":"Ultimate: Double Fire","ultBody":"The Ultimate flask fires two blazing bullets for a few seconds.","stats":"Stats","comeback":"Comeback","comebackBody":"When your base runs low on HP, a free wave rolls out and pushes enemies back.","armyTitle":"Army and buildings","armyBody":"Upgrades apply to everything that comes out of flasks in battle.","maxLevel":"Max level","noGold":"Not enough gold","chest":"Arena chest:","pathTitle":"Arena path","on":"ON","off":"OFF","sound":"Sound","music":"Music","vib":"Vibration","privacy":"Privacy Policy","privacyBody":"Forest Duel is a game prototype. The game does not collect personal data, show ads, or share data with third parties. Your progress (trophies, gold, upgrade levels and settings) is stored only in this browser on your device and is deleted together with the site data.","pathRewards":"Arena path rewards","newArena":"New arena unlocked:","win":"VICTORY","lose":"DEFEAT","trophies":"Trophies: {n}","continue":"CONTINUE","levelUp":"LEVEL UP","notAvailable":"Not available yet","equip":"EQUIP","equipped":"EQUIPPED","close":"CLOSE","lvShort":"LV {n}","statAtk":"Attack","statHp":"Health","statSpd":"Speed","searching":"Searching for opponent…","vs":"VS","profile":"Profile","nickname":"Nickname","avatar":"Avatar","save":"SAVE","fightBanner":"FIGHT!","locked":"LOCKED","unlocksAt":"Unlocks at {n}","arenaUnlocked":"ARENA {n} UNLOCKED!","chestInfo":"{n} 🏆 → +{g} gold"},"metaUp":{"cDmg":["Damage","DMG"],"cRate":["Fire rate","shots/s"],"ult":["Ultimate","power"],"wave":["Wave","dmg"],"sold":["Squad","HP"],"tank":["Tank","HP"],"fence":["Fence","HP"],"barrel":["Barrel","fire"]}},"upgrades":{"dmg":{"img":"flaskDmg","pal":"teamP"},"rate":{"img":"flaskRate","pal":"teamP"},"doubles":{"img":"flaskDoubles","pal":"upgPurple"},"squad":{"img":"flaskSquad","pal":"teamE"},"giant":{"img":"flaskGiant","pal":"teamE"},"wave":{"img":"flaskWave","pal":"upgTeal"},"fence":{"img":"flaskFence","pal":"upgYellow"},"barrel":{"img":"flaskBarrel","pal":"upgOrange","icon":"barrel"}}};
 const T=DATA.texts;
 // text template: "УРОВЕНЬ {n}!" + 5 -> "УРОВЕНЬ 5!"
 const tx=(s,n)=>s.replace('{n}',n);
@@ -837,6 +937,8 @@ function synth(name){
     case'bigBoom':tone(90,22,1.1,'sine',.45);tone(55,20,1.3,'triangle',.25);hiss(1.3,.5,2600,60);hiss(.25,.35,9000,2500,'highpass');
       for(let i=0;i<6;i++)hiss(.12,.12,1500+Math.random()*2000,300,'bandpass',.15+Math.random()*.5);break;
     case'pop':hiss(.2,.15,2500,400);tone(300,80,.15,'triangle',.06);break;
+    case'whoosh':hiss(.26,.16,600,3800,'bandpass',0);hiss(.2,.07,1800,700,'bandpass',.08);break; // tab change: rising then falling air sweep
+    case'roll':tone(620,520,.07,'triangle',.06);tone(1240,1040,.05,'sine',.02);break; // opponent search tick
     case'rush':[0,.32].forEach(d=>{tone(220,220,.28,'triangle',.12,d);tone(277,277,.28,'triangle',.08,d)});break;
     case'win':[523,659,784,1047,1319].forEach((f,i)=>tone(f,f,.3,'triangle',.13,i*.11));break;
     case'lose':[392,349,311,262].forEach((f,i)=>tone(f,f*.98,.35,'triangle',.13,i*.16));break;
@@ -1208,6 +1310,10 @@ function step(dt){
   G.time+=dt;
   for(const r of G.trees)if(r.hit>0)r.hit-=dt;
   for(const p of G.peds)if(p.hit>0)p.hit-=dt;
+  // match over: nothing fights any more — only timers, banners and fading fire keep going
+  if(G.state!=='play'){G.endT+=dt;if(G.tb)G.tb.t+=dt;if(G.cb)G.cb.t+=dt;
+    for(const o of G.slicks)o.t+=dt;G.slicks=G.slicks.filter(o=>o.t<CFG.barrel.slickTime);
+    for(const s of[G.P,G.E])if(s.hitT>0)s.hitT-=dt;for(const u of G.units){if(u.hit>0)u.hit-=dt;u.atkT=0;u.fire=0}return}
   if(G.state==='play'){stepCannon(G.P,dt);stepCannon(G.E,dt)}
   stepBullets(dt);stepRockets(dt);stepShells(dt);stepBarrels(dt);stepArmies(dt);
   const R=CFG.rush;
@@ -1221,8 +1327,13 @@ function step(dt){
       G.fences.push({side:s.id,dir:s.dir,x:0,z:s.front,tz:s.id==='p'?C.zPlayer:C.zBot,w,hp,max:hp,dmgAcc:0,hitT:0})}
     else{Ev.sfx('wave');G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*CFG.wave.length/2,F:M(s,'wave'),hit:[],trav:0,maxDist:CFG.wave.pushFrac*(P_FRONT-E_FRONT)})}}
   if(G.cb)G.cb.t+=dt;
-  if(G.state!=='play')G.endT+=dt;
-  else if(G.E.hp<=0){G.state='win';Ev.sfx('win');Ev.shake(.8);Ev.haptic('rocket')}else if(G.P.hp<=0){G.state='lose';Ev.sfx('lose');Ev.shake(.8);Ev.haptic('rocket')}
+  if(G.E.hp<=0){G.state='win';Ev.sfx('win');Ev.shake(.8);Ev.haptic('rocket');endMatch()}else if(G.P.hp<=0){G.state='lose';Ev.sfx('lose');Ev.shake(.8);Ev.haptic('rocket');endMatch()}
+}
+// the moment a base falls: every projectile disappears, buffs end, troops stand still
+function endMatch(){
+  G.bullets=[];G.shells=[];G.rockets=[];G.barrels=[];G.waves=[];
+  for(const s of[G.P,G.E]){s.buff=0;s.buffQ=[];s.reserve=[];s.flasks=[];s.pending=0;s.flash=0;s.recoil=0}
+  for(const u of G.units){u.vx=0;u.vz=0;u.kz=0;u.dmgAcc=0;u.act=null;u.chase=null}
 }
 // =====================================================================
 //  VISUAL EFFECTS — presentation-only state, fed by simulation events.
@@ -1717,17 +1828,17 @@ function openMatchmaking(onCancel){
   MMS.opp={name:MM.botNames[Math.floor(Math.random()*MM.botNames.length)],avatar:Math.floor(Math.random()*MM.avatars.length),
     trophies:Math.max(0,META.trophies+Math.round((Math.random()-.5)*60))};
   const roll=MM.avatars.map((a,i)=>avatarHTML(i,'mm-roll__ava')).join('');
-  const el=document.createElement('div');el.className='au mm';
+  const el=document.createElement('div');el.className='au mm';el.style.setProperty('--mmpat','url('+SPR.menuBg+')');
   el.innerHTML=`
-   <div class="mm-half mm-half--top"><div class="mm-panel mm-panel--opp">
+   <div class="mm-half mm-half--top" style="clip-path:polygon(0 0,100% 0,100% ${MM.seam.rightPct}%,0 ${MM.seam.leftPct}%)"><div class="mm-panel mm-panel--opp">
      <div class="mm-ava mm-ava--opp"><div class="mm-roll"><div class="mm-roll__strip">${roll}${roll}</div></div><div class="mm-found">${avatarHTML(MMS.opp.avatar)}</div></div>
      <div class="mm-info"><div class="mm-name mm-name--opp au-outline">???</div><div class="mm-tro au-outline-thin"><img class="mm-tro__ic" alt="" src="${SPR.icTrophy}"><span class="mm-tro__v">—</span></div></div>
    </div></div>
-   <div class="mm-half mm-half--bot"><div class="mm-panel mm-panel--me">
+   <div class="mm-half mm-half--bot" style="clip-path:polygon(0 ${MM.seam.leftPct}%,100% ${MM.seam.rightPct}%,100% 100%,0 100%)"><div class="mm-panel mm-panel--me">
      <div class="mm-ava">${avatarHTML(P.avatar)}</div>
      <div class="mm-info"><div class="mm-name au-outline"></div><div class="mm-tro au-outline-thin"><img class="mm-tro__ic" alt="" src="${SPR.icTrophy}"><span>${fmtNum(META.trophies)}</span></div></div>
    </div></div>
-   <div class="mm-seam"></div>
+   <svg class="mm-seam" viewBox="0 0 393 852" preserveAspectRatio="none"><line x1="-2" y1="${852*MM.seam.leftPct/100}" x2="395" y2="${852*MM.seam.rightPct/100}" stroke="#0d0b1a" stroke-width="${MM.seam.width}"/></svg>
    <div class="mm-search au-outline">${U_.searching}</div>
    <button class="mm-cancel" aria-label="cancel"><svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5 5 15" stroke="#0d0b1a" stroke-width="6" stroke-linecap="round"/><path d="M5 5l10 10M15 5 5 15" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></button>
    <div class="mm-word mm-word--vs au-outline">${U_.vs}</div>
@@ -1744,9 +1855,12 @@ const fmtNum=n=>String(Math.round(n));
 function tickMatchmaking(now){
   const el=MMS.el;if(!el)return;MMS.raf=requestAnimationFrame(tickMatchmaking);
   const t=(now-MMS.t0)/1000,TL=MM.timeline,q=s=>el.querySelector(s),set=(n,o)=>{if(n)Object.assign(n.style,o)};
+  // drifting stripes on both halves (same edges the seam is drawn from, so it lines up at any screen size)
+  const bp=(t*MM.bgScroll).toFixed(1);set(q('.mm-half--top'),{backgroundPosition:`0 0,${bp}px ${bp}px,0 0`});set(q('.mm-half--bot'),{backgroundPosition:`0 0,${-bp}px ${-bp}px,0 0`});
   // searching: avatar strip rolls, label pulses
   if(t<TL.found){
     const y=anim('mmRoll',t).y,n=MM.avatars.length;set(q('.mm-roll__strip'),{transform:`translateY(${-y*n*76}px)`});
+    const step=Math.floor(t/(animLen('mmRoll')||DATA.anims.mmRoll.tracks[0].duration)*n);if(step!==MMS.step){MMS.step=step;try{sfx('roll',.02)}catch(_){}} // tun-tun-tun per avatar
     set(q('.mm-search'),{opacity:anim('mmPulse',t).alpha});
   }else if(MMS.phase==='search'){
     MMS.phase='found';q('.mm-roll').style.display='none';q('.mm-search').style.display='none';q('.mm-cancel').style.display='none';
@@ -1762,7 +1876,7 @@ function tickMatchmaking(now){
   if(t>=TL.vsIn&&MMS.phase==='found'){MMS.phase='vs';try{sfx('bugle',.1)}catch(_){}}
   // halves slide away and uncover the battle scene (match created, not running yet)
   if(t>=TL.panelsOut){
-    if(MMS.phase==='vs'){MMS.phase='out';CUR_ARENA=arenaIdx(META.maxTrophies);newMatch(undefined,'intro');document.getElementById('ui').appendChild(el)}
+    if(MMS.phase==='vs'){MMS.phase='out';newMatch(undefined,'intro');document.getElementById('ui').appendChild(el)}
     const s=anim('mmPanelsOut',t-TL.panelsOut).shift;
     set(q('.mm-seam'),{opacity:Math.max(0,1-s*4)});
     set(q('.mm-half--top'),{transform:`translateY(${-s*110}%)`});set(q('.mm-half--bot'),{transform:`translateY(${s*110}%)`});
@@ -1819,22 +1933,22 @@ const cost=L=>Math.round(40*L*(1+.15*(L-1)));
 
 // ---------- skeleton ----------
 ui.innerHTML=`
-<div class="m-root au au-screen" id="mroot">
+<div class="m-root au au-screen" id="mroot"><div class="m-bgfx" id="mbg"></div>
  <div class="m-top">
   <button class="m-ava" data-act="profile" id="mAva"></button>
   <div class="au-resbar m-grow">
-   <div class="au-res" id="rTro"><span class="au-res__icon">${icf('icTrophy')}</span><span class="au-res__value au-outline" id="vTro">0</span></div>
-   <div class="au-res" id="rGold"><span class="au-res__icon">${icf('icCoin')}</span><span class="au-res__value au-outline" id="vGold">0</span><span class="au-res__plus au-outline" data-act="soon">+</span></div>
+   <div class="au-res" id="rGold"><span class="au-res__icon">${icf('icCoin')}</span><span class="au-res__value au-outline" id="vGold">0</span><span class="au-res__plus au-outline" data-act="noop">+</span></div>
   </div>
   <button class="m-gear" data-act="settings" aria-label="${U.settings}">${icf('icGear')}</button>
  </div>
  <div class="m-content">
-  <section class="m-tab" id="t-battle"></section>
+  <section class="m-tab m-tab--flush" id="t-battle"></section>
   <section class="m-tab" id="t-up"></section>
  </div>
- <nav class="au-nav" role="tablist">
+ <nav class="au-nav" role="tablist"><span class="au-nav__hl" id="navHl"></span>
   <button class="au-nav__item au-nav__item--locked" data-tab="shop">${img('tabShop').replace('<img','<img class="au-nav__icon"')}<img class="au-nav__lock" alt="" src="${SPR.icLock}"><span class="au-nav__label au-outline">${U.tabShop}</span></button>
-  <button class="au-nav__item au-nav__item--wide is-active" data-tab="battle" aria-selected="true">${img('tabBattle').replace('<img','<img class="au-nav__icon"')}<span class="au-nav__label au-outline">${U.tabBattle}</span></button>
+  <button class="au-nav__item au-nav__item--locked" data-tab="hero">${img('tabHero').replace('<img','<img class="au-nav__icon"')}<img class="au-nav__lock" alt="" src="${SPR.icLock}"><span class="au-nav__label au-outline">${U.tabHero}</span></button>
+  <button class="au-nav__item is-active" data-tab="battle" aria-selected="true">${img('tabBattle').replace('<img','<img class="au-nav__icon"')}<span class="au-nav__label au-outline">${U.tabBattle}</span></button>
   <button class="au-nav__item" data-tab="up">${img('tabUp').replace('<img','<img class="au-nav__icon"')}<span class="au-nav__label au-outline">${U.tabUp}</span></button>
   <button class="au-nav__item au-nav__item--locked" data-tab="league">${img('tabLeague').replace('<img','<img class="au-nav__icon"')}<img class="au-nav__lock" alt="" src="${SPR.icLock}"><span class="au-nav__label au-outline">${U.tabLeague}</span></button>
  </nav>
@@ -1842,7 +1956,7 @@ ui.innerHTML=`
 <div id="mlayer" class="m-layer"></div>`;
 const root=document.getElementById('mroot');root.style.setProperty('--bgimg','url('+SPR.menuBg+')');
 const _r2=0,layer=document.getElementById('mlayer');
-ui.querySelectorAll('.m-tab').forEach(t=>dragScroll(t));
+ui.querySelectorAll('.m-tab:not(.m-tab--flush)').forEach(t=>dragScroll(t)); // the battle tab does not scroll
 let TAB='battle';
 
 function dragScroll(el){let y0=null,s0=0,moved=false;
@@ -1860,45 +1974,184 @@ function soon(name){modal(U.soonTitle,`<div class="au-note">${name?name+' — ':
 
 // ---------- tabs ----------
 function setTab(t){
-  closeDetail();TAB=t;ui.querySelectorAll('.au-nav__item').forEach(b=>{const on=b.dataset.tab===t;b.setAttribute('aria-selected',on?'true':'false');b.classList.toggle('is-active',on)});
+  closeDetail();TAB=t;root.classList.toggle('is-army',t==='up');let idx=0;ui.querySelectorAll('.au-nav__item').forEach((b,i)=>{const on=b.dataset.tab===t;if(on)idx=i;b.setAttribute('aria-selected',on?'true':'false');b.classList.toggle('is-active',on)});
+  const hl=document.getElementById('navHl');if(hl)hl.style.transform=`translateX(${idx*100}%)`; // slides under the chosen tab (CSS transition)
   ui.querySelectorAll('.m-tab').forEach(x=>x.classList.toggle('on',x.id==='t-'+t));render();
+  const box=document.getElementById('t-'+t);box.scrollTop=0;staggerIn(box,t==='battle'?'.s-swap,.b-prog,.b-sel__view,.b-arrow:not(.is-off),.b-fight':'.m-sec,.a-cell');
 }
 ui.addEventListener('click',e=>{
   try{audioInit()}catch(_){}
   const n=e.target.closest('[data-tab]');
-  if(n){const t=n.dataset.tab;if(t==='shop'||t==='league'){soon(t==='shop'?U.shop:U.league);return}setTab(t);sfxUI();return}
+  if(n){const t=n.dataset.tab;if(t==='shop'||t==='league'||t==='hero'){toast(U.soonTitle);return}if(t===TAB)return;setTab(t);return}
   const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;
-  if(act==='soon')soon(U.buyGold);
-  else if(act==='settings')openSettings();
+  if(act==='settings')openSettings();
   else if(act==='profile')openProfile(modal,render);
   else if(act==='fight')startBattle();
-  else if(act==='path')openPath();
+  else if(act==='arenaPrev')switchArena(VIEW-1);
+  else if(act==='arenaNext')switchArena(VIEW+1);
+  else if(act==='chest'){const r=rewardsList().find(x=>x.at===+a.dataset.at);if(r)toast(U.chestInfo.replace('{n}',r.at).replace('{g}',r.gold))}
   else if(act==='item')openItem(a.dataset.id);
   else if(act==='lvup')levelUp(a.dataset.id);
   else if(act==='equip')equip(a.dataset.id);
   else if(act==='closeItem')closeDetail();
 });
 function sfxUI(){try{sfx('flaskHit',.05)}catch(_){}}
+document.getElementById('ui').addEventListener('dragstart',e=>e.preventDefault()); // images are not draggable
+// every button in the UI: short pop, tap sound and a light haptic
+document.getElementById('ui').addEventListener('pointerdown',e=>{
+  const b=e.target.closest('button,[data-act],[data-tab],.b-node');if(!b||b.disabled||b.classList.contains('is-active'))return; // the open tab stays silent
+  b.classList.remove('ui-pop');void b.offsetWidth;b.classList.add('ui-pop');
+  try{audioInit();sfx(b.matches('[data-tab]:not(.au-nav__item--locked)')?'whoosh':'flaskHit',.03)}catch(_){}try{haptic('tap')}catch(_){}
+},true);
+// entrance: elements pop in one after another along the diagonal, top-left to bottom-right
+function staggerIn(box,sel){if(!box)return;const els=[...box.querySelectorAll(sel)],R=box.getBoundingClientRect();
+  els.forEach(el=>{const r=el.getBoundingClientRect(),d=((r.left-R.left)+(r.top-R.top))/(R.width+R.height||1);
+    el.classList.remove('ui-in');void el.offsetWidth;el.style.animationDelay=(d*.42).toFixed(3)+'s';el.classList.add('ui-in')})}
 
 // ---------- render ----------
 function arenaOf(tr){return arenaIdx(tr)}
 function render(){
-  document.getElementById('vTro').textContent=fmtN(META.trophies);
   document.getElementById('vGold').textContent=fmtN(META.gold);
   document.getElementById('mAva').innerHTML=avatarHTML(profile().avatar);
   if(TAB==='battle')renderBattle();else if(TAB==='up')renderUp();
 }
-function renderBattle(){
-  const a=CUR_ARENA,A=ARENAS[a],next=ARENAS[a+1],lo=A.min,hi=next?next.min:A.min+250,p=Math.max(0,Math.min(1,(META.trophies-lo)/(hi-lo)));
-  const nr=nextReward();
-  document.getElementById('t-battle').innerHTML=`<div class="m-battle">
-   <div class="m-center"><div class="au-outline m-arena-sub">${tx(U.arena,a+1)}</div><div class="m-arena-title au-outline">${A.name}</div></div>
-   <div class="m-scene" data-act="path"><canvas id="mscene" width="600" height="500"></canvas></div>
-   <div class="au-progress m-prog" data-act="path"><div class="au-progress__fill" style="width:${p*100}%"></div><div class="au-progress__text">${META.trophies}/${hi}</div></div>
-   ${nr?`<div class="m-nextrw au-outline-thin">${U.nextReward} ${icn('icTrophy',20)} ${nr.at} → ${nr.chest?icn('icChest',22):icn('icCoin',20)} ${nr.gold}</div>`:''}
-   <button class="au-btn au-btn--hero m-fight" data-act="fight">${U.fight}</button></div>`;
-  drawScene();
+// ---------- battle tab: arena scene (top half), trophy road, arena selector + BATTLE ----------
+const AM=DATA.arenas.menu;
+const unlocked=k=>META.maxTrophies>=ARENAS[k].min;
+let VIEW=Math.min(arenaIdx(META.maxTrophies),AM.shown-1),SHOWN_TRO=null;
+function arenaRange(k){const lo=ARENAS[k].min,hi=ARENAS[k+1]?ARENAS[k+1].min:lo+250;return[lo,hi]}
+function progHTML(k,tro){
+  const[lo,hi]=arenaRange(k),p=Math.max(0,Math.min(1,(tro-lo)/(hi-lo)));
+  const nodes=rewardsList().filter(r=>r.at>lo&&r.at<=hi).map(r=>{const got=!!META.claimed[r.at];
+    return `<span class="b-node ${got?'is-got':''}" data-act="chest" data-at="${r.at}" style="left:${(r.at-lo)/(hi-lo)*100}%"><span class="b-bubble"><img class="b-bubble__img" alt="" src="${SPR.icChest}">${got?'<span class="b-bubble__ok">✓</span>':''}</span></span>`}).join('');
+  return `<img class="b-prog__cup" alt="" src="${SPR.icTrophy}">
+   <div class="b-prog__mid"><div class="b-nodes">${nodes}</div>
+    <div class="b-bar"><div class="b-bar__fill" style="width:${p*100}%"></div><div class="b-bar__text au-outline">${Math.round(tro)} / ${hi}</div></div></div>
+   <img class="b-prog__cup" alt="" src="${SPR.icTrophy}">`;
 }
+function selHTML(k){const A=ARENAS[k],open=unlocked(k);
+  return `<div class="b-sel__sub au-outline">${tx(U.arena,k+1)}</div><div class="b-sel__name au-outline">${A.name}</div>
+   ${open?'':`<div class="b-sel__lock au-outline-thin"><img class="b-sel__lockic" alt="" src="${SPR.icLock}">${tx(U.unlocksAt,A.min)}</div>`}`}
+// scene objects (trees, pedestal objects, tank) as separate sprites, laid out like the battle field preview
+const SCN=(()=>{const z=AM.scene.w/300,oy=1.25+68,trees=[];let sd=7;const r2=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+  for(let i=0;i<70;i++){const tx=r2()*300,ty=20+r2()*150;if(Math.abs(tx-150)<48)continue;trees.push({x:tx,y:ty,g:r2()<.3})}
+  trees.sort((a,b)=>a.y-b.y);return{z,oy,trees,peds:[[70,110],[230,110]]}})();
+const sp=(k,x,y,w,ax,ay,cls)=>`<img class="s-obj ${cls||''}" alt="" src="${SPR[k]}" style="left:${(x*SCN.z).toFixed(1)}px;top:${(y*SCN.z+SCN.oy).toFixed(1)}px;width:${(w*SCN.z).toFixed(1)}px;transform:translate(${-ax*100}%,${-ay*100}%)">`;
+const spB=(k,x,y,cls)=>{const m=DATA.sprites.baked[k];return sp(k,x,y,m.w,m.pivot[0],m.pivot[1],cls)};
+function pedHTML(kind,x,y){
+  if(kind==='rocket')return sp('rocket',x,y+10,32,.5,.84);
+  let h=sp('pedestal',x,y+10,26,.5,1);const cy=y-6;
+  if(kind==='bomb')h+=spB('bombPed',x,cy)+spB('fuseSpark',x+7,cy-31,'s-fuse');
+  else{const n=kind==='ice'?'Ice':'Lava';h+=`<span class="s-bob">${spB('crystal'+n,x,cy)}${spB('glow'+n,x,cy,'s-glow')}</span>`}
+  return h}
+const paperStyle=A=>`background-color:${A.paper};background-image:repeating-linear-gradient(90deg,transparent 0 5.6px,${A.grid} 5.6px 6.4px,transparent 6.4px 13px),repeating-linear-gradient(0deg,transparent 0 5.6px,${A.grid} 5.6px 6.4px,transparent 6.4px 13px)`;
+function sceneHTML(k){const A=ARENAS[k];let h=`<div class="s-paper" style="${paperStyle(A)}"></div>`;
+  for(const t of SCN.trees)h+=`<span class="s-shadow" style="left:${((t.x+1)*SCN.z).toFixed(1)}px;top:${((t.y+7)*SCN.z+SCN.oy).toFixed(1)}px"></span>`;
+  const items=[];SCN.trees.forEach((t,i)=>items.push({y:t.y,h:`<span class="s-swap" style="transform-origin:${(t.x*SCN.z).toFixed(1)}px ${((t.y+7)*SCN.z+SCN.oy).toFixed(1)}px" data-x="${t.x}" data-tree="${i}" data-arena="${k}">${sp(treeKey(t.g,k),t.x,t.y+7,21,.5,.85)}</span>`}));
+  SCN.peds.forEach((p,i)=>items.push({y:p[1],h:`<span class="s-swap" style="transform-origin:${(p[0]*SCN.z).toFixed(1)}px ${((p[1]+10)*SCN.z+SCN.oy).toFixed(1)}px" data-x="${p[0]}" data-ped="${i}" data-arena="${k}">${pedHTML(A.obj,p[0],p[1])}</span>`}));
+  items.sort((a,b)=>a.y-b.y);for(const it of items)h+=it.h;
+  h+=`<span class="s-shadow s-shadow--tank" style="left:${150*SCN.z}px;top:${226*SCN.z+SCN.oy}px"></span>`+sp('tankP',150,206,62,.5,.5,'s-tank');
+  return h}
+function renderBattle(){
+  cancelAnimationFrame(SWS.raf);SWS.raf=0;SWS.pages=[];SWS.objs=null;
+  const k=VIEW,open=unlocked(k),tro=SHOWN_TRO===null?META.trophies:SHOWN_TRO;
+  document.getElementById('t-battle').innerHTML=`<div class="b-root">
+   <div class="b-scene" id="bscene">${sceneHTML(k)}
+    <div class="b-scene__lock ${open?'is-off':''}"><div class="b-lockbadge"><img class="b-lockbadge__ic" alt="" src="${SPR.icLock}"><span class="b-lockbadge__t au-outline">${U.locked}</span></div></div></div>
+   <div class="b-prog">${progHTML(k,tro)}</div>
+   <div class="b-lower">
+    <div class="b-sel"><button class="b-arrow b-arrow--l ${k>0?'':'is-off'}" data-act="arenaPrev" aria-label="previous"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+     <div class="b-sel__view"><div class="b-sel__page">${selHTML(k)}</div></div>
+     <button class="b-arrow b-arrow--r ${k<AM.shown-1?'':'is-off'}" data-act="arenaNext" aria-label="next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <button class="au-btn au-btn--hero b-fight" data-act="fight">${U.fight}</button></div>
+   <canvas class="b-fx" id="bfx" width="${393*2}" height="${852*2}"></canvas><div class="b-unlock au-outline" id="bunlock"></div></div>`;
+}
+// switch to arena k: the tank stays, every tree / pedestal object flips into the new arena's version in a wave,
+// the paper colour cross-fades and the arena title slides (dir: +1 right, -1 left).
+// Presses can come in quick succession: every object keeps its own state and simply retargets.
+const SWS={raf:0,pages:[],objs:null};
+function switchArena(k,done){
+  if(k<0||k>=AM.shown||k===VIEW){done&&done();return}
+  const dir=k>VIEW?1:-1,root_=document.querySelector('.b-root'),scene=document.getElementById('bscene');if(!root_){VIEW=k;return}
+  VIEW=k;const now=performance.now(),A=ARENAS[k];
+  // title pages: whatever is on screen slides out, the new one slides in
+  const view=root_.querySelector('.b-sel__view');
+  for(const p of SWS.pages)if(!p.out){p.out=true;p.dir=dir;p.t0=now;p.from=p.pos()}
+  [...view.querySelectorAll('.b-sel__page')].forEach(el=>{if(!SWS.pages.some(p=>p.el===el))SWS.pages.push({el,out:true,dir,t0:now,from:0,pos:()=>0})});
+  const pg=document.createElement('div');pg.className='b-sel__page';pg.innerHTML=selHTML(k);view.appendChild(pg);
+  const np={el:pg,out:false,dir,t0:now,from:dir};np.pos=()=>np.cur||0;SWS.pages.push(np);
+  // paper: new layer fades in on top
+  const paper=document.createElement('div');paper.className='s-paper';paper.style.cssText=paperStyle(A)+';opacity:0';paper.dataset.t0=now;
+  const papers=scene.querySelectorAll('.s-paper');papers[papers.length-1].after(paper);
+  scene.querySelector('.b-scene__lock').classList.toggle('is-off',unlocked(k));
+  root_.querySelector('.b-arrow--l').classList.toggle('is-off',k<=0);root_.querySelector('.b-arrow--r').classList.toggle('is-off',k>=AM.shown-1);
+  const pr=root_.querySelector('.b-prog');if(pr)pr.innerHTML=progHTML(k,SHOWN_TRO===null?META.trophies:SHOWN_TRO);
+  // objects: each one gets a new target and its own start time along the wave
+  if(!SWS.objs)SWS.objs=[...scene.querySelectorAll('.s-swap')].map(el=>({el,cur:+el.dataset.arena,target:+el.dataset.arena,t0:0,phase:'idle'}));
+  // a press during a running switch speeds everything up (shorter wave, faster flips) instead of queueing behind it
+  const hurry=SWS.raf?1:0;SWS.speed=hurry?1.9:1;const span=hurry?.12:.32;
+  for(const o of SWS.objs){const x=+o.el.dataset.x,t1=now+((dir>0?x:300-x)/300*span+Math.random()*.04)*1000;o.target=k;
+    if(o.phase==='idle'){o.phase='wait';o.t0=t1}else o.t0=Math.min(o.t0,t1)}
+  if(!SWS.raf)SWS.raf=requestAnimationFrame(tickSwitch);
+  done&&setTimeout(done,800);
+}
+const dirOf=o=>(+o.el.dataset.x<150?-1:1); // trees lean outward while they flip
+function tickSwitch(now){
+  const SP=SWS.speed||1,OUT=animLen('sceneOut')/SP,IN=animLen('sceneIn')/SP,SL=animLen('arenaSlide');let busy=false;
+  for(const p of SWS.pages){const e=anim('arenaSlide',(now-p.t0)/1000).k;
+    if(p.out){const x=p.from+(-p.dir-p.from)*e;p.cur=x;p.el.style.transform=`translateX(${x*100}%)`;p.el.style.opacity=1-Math.abs(x);if(e>=1)p.dead=true}
+    else{const x=p.from*(1-e);p.cur=x;p.el.style.transform=`translateX(${x*100}%)`;p.el.style.opacity=1-Math.abs(x)}
+    if((now-p.t0)/1000<SL)busy=true}
+  SWS.pages=SWS.pages.filter(p=>{if(p.dead){p.el.remove();return false}return true});
+  const scene=document.getElementById('bscene');
+  if(scene){const ps=[...scene.querySelectorAll('.s-paper')];ps.forEach((el,i)=>{if(i===0)return;const a=Math.min(1,(now-(+el.dataset.t0))/350);el.style.opacity=a;if(a<1)busy=true;else while(ps.length>1&&ps[0]!==el){ps.shift().remove()}})}
+  for(const o of SWS.objs||[]){if(o.phase==='idle')continue;busy=true;const lt=(now-o.t0)/1000;let sc=1,rot=0,hop=0;
+    if(o.phase==='wait'){if(lt>=0){o.phase='out';o.ts=now}}
+    if(o.phase==='out'){const t=(now-o.ts)/1000;sc=anim('sceneOut',Math.min(t,OUT)*SP).scale;rot=-dirOf(o)*14*(1-sc);hop=-6*(1-sc);
+      if(t>=OUT){o.cur=o.target;const ti=o.el.dataset.tree;
+        if(ti!==undefined){const tr=SCN.trees[+ti];o.el.innerHTML=sp(treeKey(tr.g,o.cur),tr.x,tr.y+7,21,.5,.85)}
+        else{const pd=SCN.peds[+o.el.dataset.ped];o.el.innerHTML=pedHTML(ARENAS[o.cur].obj,pd[0],pd[1])}
+        o.el.dataset.arena=o.cur;o.phase='in';o.ts=now;sc=0}}
+    else if(o.phase==='in'){const t=(now-o.ts)/1000,W=anim('treeWobble',Math.min(t*SP,animLen('treeWobble')));sc=anim('sceneIn',Math.min(t,IN)*SP).scale;rot=W.rot*dirOf(o);hop=W.hop;
+      if(o.target!==o.cur&&now>=o.t0){o.phase='out';o.ts=now-(1-sc)*OUT*1000} // retarget mid-way
+      else if(t>=Math.max(IN,animLen('treeWobble')/SP)){o.phase=o.target!==o.cur?'wait':'idle';sc=1;rot=0;hop=0}}
+    else if(o.phase==='wait')sc=1;
+    o.el.style.transform=`translateY(${hop.toFixed(2)}px) rotate(${rot.toFixed(2)}deg) scale(${sc})`}
+  SWS.raf=busy?requestAnimationFrame(tickSwitch):0;if(!busy)SWS.speed=1;
+}
+// after a win: trophies burst from the centre with trails, hang, then fly into the trophy road
+function playTrophyFx(from,to,newArena){
+  const F=AM.trophyFx,cv=document.getElementById('bfx');if(!cv){SHOWN_TRO=null;return}
+  const x=cv.getContext('2d'),img=new Image();img.src=SPR.icTrophy;
+  const bar=document.querySelector('.b-bar'),uiR=document.getElementById('ui').getBoundingClientRect(),sc=uiR.width/393;
+  const target=()=>{const r=bar.getBoundingClientRect(),[lo,hi]=arenaRange(VIEW),p=Math.max(0,Math.min(1,((SHOWN_TRO??to)-lo)/(hi-lo)));
+    return[(r.left-uiR.left)/sc+p*r.width/sc,(r.top-uiR.top)/sc+r.height/sc/2]};
+  const P=[];for(let i=0;i<F.count;i++){const a=i/F.count*6.283+Math.random()*.4,R=F.radius[0]+Math.random()*(F.radius[1]-F.radius[0]);
+    P.push({a,R,trail:[],done:false,wob:Math.random()*6})}
+  SHOWN_TRO=from;let arrived=0;const t0=performance.now(),[ox,oy]=F.origin;
+  (function f(now){const t=(now-t0)/1000;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,393,852);let live=0;
+    const[tx_,ty_]=target();
+    for(let i=0;i<P.length;i++){const p=P[i];if(p.done)continue;live++;
+      const bx=ox+Math.cos(p.a)*p.R,by=oy+Math.sin(p.a)*p.R*.8,ft=t-F.burst-F.hold-i*F.stagger;let px,py,s=1;
+      if(t<F.burst){const k=anim('trophyBurst',t).k;px=ox+(bx-ox)*k;py=oy+(by-oy)*k;s=.4+.6*Math.min(1,k)}
+      else if(ft<0){px=bx;py=by+Math.sin(t*6+p.wob)*3}
+      else{const k=anim('trophyFly',ft).k,cx=(bx+tx_)/2+(bx-ox)*.6,cy=Math.min(by,ty_)-60;
+        px=(1-k)*(1-k)*bx+2*(1-k)*k*cx+k*k*tx_;py=(1-k)*(1-k)*by+2*(1-k)*k*cy+k*k*ty_;s=1-.35*k;
+        if(k>=1){p.done=true;arrived++;SHOWN_TRO=from+(to-from)*arrived/P.length;updateBar();continue}}
+      p.trail.push([px,py]);if(p.trail.length>F.trail)p.trail.shift();
+      for(let j=1;j<p.trail.length;j++){const q=j/p.trail.length;x.strokeStyle=`rgba(255,214,60,${q*.7})`;x.lineWidth=F.size*.42*q;x.lineCap='round';
+        x.beginPath();x.moveTo(p.trail[j-1][0],p.trail[j-1][1]);x.lineTo(p.trail[j][0],p.trail[j][1]);x.stroke()}
+      if(img.complete){const w=F.size*s;x.drawImage(img,px-w/2,py-w/2,w,w)}}
+    if(live>0)requestAnimationFrame(f);
+    else{x.clearRect(0,0,393,852);SHOWN_TRO=null;updateBar();
+      if(newArena>=0&&newArena<AM.shown)setTimeout(()=>switchArena(newArena,()=>showUnlock(newArena)),300)}})(t0);
+}
+function updateBar(){const el=document.querySelector('.b-prog');if(!el)return;el.innerHTML=progHTML(VIEW,SHOWN_TRO===null?META.trophies:SHOWN_TRO);
+  const b=el.querySelector('.b-bar');if(b&&SHOWN_TRO!==null){const t0=performance.now();(function f(n){const A=anim('barPulse',(n-t0)/1000);b.style.transform=`scaleY(${A.scale})`;if((n-t0)/1000<animLen('barPulse'))requestAnimationFrame(f)})(t0)}}
+function showUnlock(k){const el=document.getElementById('bunlock');if(!el)return;el.textContent=tx(U.arenaUnlocked,k+1);try{sfx('level',.1)}catch(_){}
+  const t0=performance.now();(function f(n){const t=(n-t0)/1000,A=anim('unlockBanner',t);el.style.display='flex';
+    el.style.transform=`translate(-50%,-50%) translateY(${A.y}px) scale(${A.scale})`;el.style.opacity=A.alpha;
+    if(t<animLen('unlockBanner'))requestAnimationFrame(f);else el.style.display='none'})(t0)}
 // ---------- army: groups of cards, detail panel ----------
 const ARMY=DATA.army,AI={};for(const it of ARMY.items)AI[it.id]=it;
 const itemLv=it=>it.metaKey?(META.lv[it.metaKey]||1):1;
@@ -1927,7 +2180,7 @@ function renderUp(){
   if(DETAIL)renderDetail();
 }
 let DETAIL=null;
-function openItem(id){const it=AI[id];if(!it)return;if(it.locked){toast(U.notAvailable);try{sfx('treeHit',.05)}catch(_){}return}DETAIL=id;renderDetail();sfxUI()}
+function openItem(id){const it=AI[id];if(!it)return;if(it.locked){toast(U.notAvailable);try{sfx('treeHit',.05)}catch(_){}return}DETAIL=id;renderDetail();sfxUI();staggerIn(document.getElementById('adetail'),'.a-card__head,.a-stat,.a-act,.a-lv')}
 function closeDetail(){DETAIL=null;const d=document.getElementById('adetail');if(d)d.remove()}
 function renderDetail(){
   const it=AI[DETAIL],L=itemLv(it),mx=STAT_MAX[it.group],eq=isEquipped(it);
@@ -1964,23 +2217,14 @@ let RW=null;function rewardsList(){if(RW)return RW;const out=[],n=META_CFG.nodes
   return RW=out}
 function nextReward(){return rewardsList().find(r=>!META.claimed[r.at])}
 function claimRewards(){let g=0;const got=[];for(const r of rewardsList())if(r.at<=META.trophies&&!META.claimed[r.at]){META.claimed[r.at]=1;g+=r.gold;got.push(r)}META.gold+=g;return{g,got}}
-function openPath(){
-  const L=rewardsList().filter(r=>r.at<=Math.max(META.trophies,0)+3000).reverse();let h='<div class="m-pathwrap"><div class="au-path">';
-  for(const r of L){const done=!!META.claimed[r.at],ai=arenaIdx(r.at);
-    if(r.chest)h+=`<div class="au-milestone ${META.trophies>=r.at?'':'au-milestone--locked'}"><div class="au-note m-note-sm">${U.chest} ${icn('icCoin',16)} ${r.gold}</div>
-      <div class="au-milestone__head au-outline"><span>${r.arena+1}</span> ${ARENAS[r.arena].name}<span class="m-push">${r.at}</span></div></div>`;
-    else h+=`<div class="au-node au-node--${ARENAS[ai].node} au-outline-thin ${done?'au-node--done':''}"><span class="m-w24">${icf('icTrophy')}</span>${r.at}<span class="au-node__reward">${r.gold} <span class="m-coin22">${icf('icCoin')}</span></span></div>`}
-  h+=`<div class="au-milestone"><div class="au-milestone__head au-outline"><span>1</span> ${ARENAS[0].name}<span class="m-push">0</span></div></div></div></div>`;
-  const m=modal(U.pathTitle,h);const w=m.querySelector('.m-pathwrap');const here=w.querySelector('.au-node--here')||w.lastElementChild;w.scrollTop=w.scrollHeight;requestAnimationFrame(()=>{const cur=[...w.querySelectorAll('.au-node:not(.au-node--done)')].pop();if(cur)w.scrollTop=cur.offsetTop-w.clientHeight/2});dragScroll(w);
-}
 
 // ---------- settings ----------
 function openSettings(){
-  const row=(k,name)=>`<div class="m-row au-outline-thin"><span>${name}</span><button class="au-btn au-btn--sm m-toggle ${META.settings[k]?'au-btn--green':'au-btn--grey'}" data-set="${k}">${META.settings[k]?U.on:U.off}</button></div>`;
+  const row=(k,name)=>`<div class="m-row au-outline-thin"><span>${name}</span><button class="m-switch ${META.settings[k]?'is-on':''}" data-set="${k}" aria-label="${name}"><span class="m-switch__knob"></span></button></div>`;
   const m=modal(U.settings,`<div class="m-stack">${row('sound',U.sound)}${row('music',U.music)}${row('vib',U.vib)}
     <button class="au-btn au-btn--blue m-mt6" data-pp>${U.privacy}</button></div>`,{cls:'au-modal--settings'});
   m.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set;META.settings[k]=!META.settings[k];saveMeta();applySettings();
-    b.classList.toggle('au-btn--green',META.settings[k]);b.classList.toggle('au-btn--grey',!META.settings[k]);b.textContent=META.settings[k]?U.on:U.off});
+    b.classList.toggle('is-on',META.settings[k]);if(k==='vib'&&META.settings.vib)try{haptic('tap')}catch(_){}});
   m.querySelector('[data-pp]').onclick=()=>modal(U.privacy,`<div class="m-legal">${U.privacyBody}</div>`,{cls:'au-modal--settings'});
 }
 function applySettings(){try{SND.on=META.settings.sound}catch(_){}}
@@ -1990,15 +2234,18 @@ applySettings();
 const isPhone=()=>/Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent)||(matchMedia('(pointer:coarse)').matches&&navigator.maxTouchPoints>0);
 function startBattle(){
   try{audioInit()}catch(_){}if(isPhone())try{goFull()}catch(_){}
-  CUR_ARENA=arenaIdx(META.maxTrophies);openMatchmaking(); // search screen; it starts the match itself
+  CUR_ARENA=arenaIdx(META.maxTrophies);openMatchmaking(); // always the arena you are in, whatever the selector shows
 }
 Flow.on(()=>{root.style.display=Flow.inGame()?'none':'';if(Flow.inGame())layer.innerHTML=''}); // any route into a battle hides the menu
-window.toMenu=function(){Flow.go('menu');root.style.display='';layer.innerHTML='';CUR_ARENA=arenaIdx(META.maxTrophies);setTab('battle')};
+let PENDING_FX=null;
+window.toMenu=function(){Flow.go('menu');root.style.display='';layer.innerHTML='';CUR_ARENA=arenaIdx(META.maxTrophies);
+  const fx=PENDING_FX;PENDING_FX=null;if(fx)SHOWN_TRO=fx.from;setTab('battle');if(fx)setTimeout(()=>playTrophyFx(fx.from,fx.to,fx.newArena),250)};
 function onMatchEnd(win){
-  const before=META.trophies,floor=ARENAS[arenaIdx(META.maxTrophies)].min;
+  const before=META.trophies,prevMax=META.maxTrophies,floor=ARENAS[arenaIdx(META.maxTrophies)].min;
   META.trophies=win?META.trophies+META_CFG.winTrophies:Math.max(floor,META.trophies-META_CFG.loseTrophies);
   META.maxTrophies=Math.max(META.maxTrophies,META.trophies);
-  const prevArena=CUR_ARENA,newArena=arenaIdx(META.maxTrophies);
+  const prevArena=arenaIdx(prevMax),newArena=arenaIdx(META.maxTrophies);
+  if(win&&META.trophies>before)PENDING_FX={from:before,to:META.trophies,newArena:newArena>prevArena?newArena:-1};
   const {g,got}=claimRewards();saveMeta();
   const d=META.trophies-before;
   let rw='';if(got.length)rw=`<div class="au-note m-mt8">${U.pathRewards}</div><div class="m-rw au-outline">${icn('icCoin',24)} +${g}</div>`;
@@ -2010,23 +2257,7 @@ function onMatchEnd(win){
 }
 setInterval(()=>{if(Flow.state==='result'&&G.endT>1.6&&!G.resultShown){G.resultShown=true;onMatchEnd(G.state==='win')}},200);
 
-// ---------- arena preview scene ----------
-function drawScene(){
-  const c=document.getElementById('mscene');if(!c)return;const x=c.getContext('2d'),A=ARENAS[CUR_ARENA];
-  x.setTransform(2,0,0,2,0,0);x.fillStyle=A.paper;x.fillRect(0,0,300,250);x.strokeStyle=A.grid;x.lineWidth=.7;x.beginPath();
-  for(let i=6;i<300;i+=13){x.moveTo(i,0);x.lineTo(i,250)}for(let j=6;j<250;j+=13){x.moveTo(0,j);x.lineTo(300,j)}x.stroke();
-  const keep=ctx,keepA=G.arena;ctx=x;G.arena=CUR_ARENA;
-  const trees=[];let sd=7;const rnd2=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
-  for(let i=0;i<70;i++){const tx=rnd2()*300,ty=20+rnd2()*150;if(Math.abs(tx-150)<48)continue;trees.push([tx,ty,rnd2()<.3])}
-  trees.sort((a,b)=>a[1]-b[1]);
-  for(const[tx,ty]of trees){x.fillStyle='rgba(60,50,35,.25)';x.beginPath();x.ellipse(tx+1,ty+7,8,3,0,0,7);x.fill()}
-  let pi=0;const peds=[[70,110],[230,110]];
-  for(const[tx,ty,g]of trees){while(pi<2&&peds[pi][1]<ty){try{drawPedObj(A.obj,peds[pi][0],peds[pi][1],1)}catch(_){}pi++}spr(treeKey(g,CUR_ARENA),tx,ty+7,21,.5,.85)}
-  while(pi<2){try{drawPedObj(A.obj,peds[pi][0],peds[pi][1],1)}catch(_){}pi++}
-  x.fillStyle='rgba(60,55,45,.26)';x.beginPath();x.ellipse(150,226,30,7,0,0,7);x.fill();spr('tankP',150,206,62);
-  ctx=keep;G.arena=keepA;
-}
-setTimeout(()=>{if(TAB==='battle')drawScene()},400);
+
 
 // ---------- background music (soft arpeggio loop) ----------
 const MUS=DATA.audio.music,CH=MUS.chords;let mStep=0;
@@ -2037,6 +2268,16 @@ setInterval(()=>{
   mStep++;
 },MUS.step*1000);
 
+// background: a grid of small game icons drifting diagonally; the pattern repeats every block,
+// so shifting by exactly one block loops seamlessly
+// background: a tiled layer one tile larger than the screen, shifted by (time*speed mod tile) -> seamless loop.
+// battle tab: game doodle pattern; army tab: moving blueprint grid
+(function bgFx(){const B=DATA.arenas.menu.bg,el=document.getElementById('mbg');if(!el)return;
+  el.innerHTML=`<div class="m-bgfx__layer m-bgfx__layer--pat" style="background-image:url(${SPR.menuBg});background-size:${B.tile}px ${B.tile}px;width:${393+B.tile}px;height:${852+B.tile}px"></div>
+   <div class="m-bgfx__layer m-bgfx__layer--bp" style="width:${393+B.bpTile}px;height:${852+B.bpTile}px"></div>`;
+  const pat=el.children[0],bp=el.children[1],t0=performance.now();
+  (function f(n){const t=(n-t0)/1000,d=(t*B.speed)%B.tile,e=(t*B.bpSpeed)%B.bpTile;
+    pat.style.transform=`translate(${-d}px,${-d}px)`;bp.style.transform=`translate(${-e}px,${-e}px)`;requestAnimationFrame(f)})(t0)})();
 setTab('battle');render();
 window.addEventListener('pointerdown',()=>{try{audioInit()}catch(_){}},{once:true});
 })();

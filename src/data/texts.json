@@ -115,7 +115,11 @@
   "nickname": "Nickname",
   "avatar": "Avatar",
   "save": "SAVE",
-  "fightBanner": "FIGHT!"
+  "fightBanner": "FIGHT!",
+  "locked": "LOCKED",
+  "unlocksAt": "Unlocks at {n}",
+  "arenaUnlocked": "ARENA {n} UNLOCKED!",
+  "chestInfo": "{n} 🏆 → +{g} gold"
  },
  "metaUp": {
   "cDmg": [

@@ -61,5 +61,11 @@
    "img": "flaskDoubles",
    "bg": "yellow"
   }
- ]
+ ],
+ "seam": {
+  "leftPct": 52.3,
+  "rightPct": 47.7,
+  "width": 8
+ },
+ "bgScroll": 26
 }

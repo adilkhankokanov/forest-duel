@@ -396,7 +396,7 @@
     "property": "y",
     "from": 0,
     "to": 1,
-    "duration": 0.5,
+    "duration": 1.0,
     "loop": "restart"
    }
   ]
@@ -411,6 +411,130 @@
     "duration": 0.6,
     "easing": "sineInOut",
     "loop": "yoyo"
+   }
+  ]
+ },
+ "arenaSlide": {
+  "length": 0.38,
+  "tracks": [
+   {
+    "property": "k",
+    "from": 0,
+    "to": 1,
+    "duration": 0.38,
+    "easing": "cubicOut"
+   }
+  ]
+ },
+ "trophyBurst": {
+  "length": 0.45,
+  "tracks": [
+   {
+    "property": "k",
+    "from": 0,
+    "to": 1,
+    "duration": 0.45,
+    "easing": "backOut"
+   }
+  ]
+ },
+ "trophyFly": {
+  "length": 0.55,
+  "tracks": [
+   {
+    "property": "k",
+    "from": 0,
+    "to": 1,
+    "duration": 0.55,
+    "easing": "quadIn"
+   }
+  ]
+ },
+ "barPulse": {
+  "length": 0.25,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 1.12,
+    "to": 1,
+    "duration": 0.25,
+    "easing": "quadOut"
+   }
+  ]
+ },
+ "unlockBanner": {
+  "length": 1.8,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 0.3,
+    "to": 1,
+    "duration": 0.45,
+    "easing": "elasticOut"
+   },
+   {
+    "property": "alpha",
+    "from": 0,
+    "to": 1,
+    "duration": 0.15
+   },
+   {
+    "property": "alpha",
+    "from": 1,
+    "to": 0,
+    "duration": 0.35,
+    "delay": 1.45
+   },
+   {
+    "property": "y",
+    "from": 0,
+    "to": -30,
+    "duration": 0.35,
+    "delay": 1.45,
+    "easing": "quadIn"
+   }
+  ]
+ },
+ "sceneOut": {
+  "length": 0.14,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 1,
+    "to": 0,
+    "duration": 0.14,
+    "easing": "backIn"
+   }
+  ]
+ },
+ "sceneIn": {
+  "length": 0.26,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 0,
+    "to": 1,
+    "duration": 0.26,
+    "easing": "backOut"
+   }
+  ]
+ },
+ "treeWobble": {
+  "length": 0.5,
+  "tracks": [
+   {
+    "property": "rot",
+    "from": 10,
+    "to": 0,
+    "duration": 0.5,
+    "easing": "elasticOut"
+   },
+   {
+    "property": "hop",
+    "from": -8,
+    "to": 0,
+    "duration": 0.35,
+    "easing": "bounceOut"
    }
   ]
  }

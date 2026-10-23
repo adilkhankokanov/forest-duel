@@ -42,5 +42,36 @@
  "chest": {
   "base": 200,
   "step": 100
+ },
+ "menu": {
+  "shown": 5,
+  "scene": {
+   "w": 393,
+   "h": 330
+  },
+  "trophyFx": {
+   "count": 10,
+   "origin": [
+    196,
+    260
+   ],
+   "radius": [
+    70,
+    120
+   ],
+   "burst": 0.45,
+   "hold": 0.45,
+   "stagger": 0.06,
+   "fly": 0.55,
+   "size": 28,
+   "trail": 9
+  },
+  "unlockBanner": 1.8,
+  "bg": {
+   "tile": 300,
+   "speed": 20,
+   "bpTile": 96,
+   "bpSpeed": 14
+  }
  }
 }
