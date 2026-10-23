@@ -1,0 +1,46 @@
+{
+ "count": 100,
+ "themes": [
+  {
+   "paper": "#f8f7f1",
+   "grid": "rgba(110,150,205,.3)",
+   "tint": null,
+   "obj": "rocket",
+   "node": "lime"
+  },
+  {
+   "paper": "#fbf3e6",
+   "grid": "rgba(210,140,80,.3)",
+   "tint": "autumn",
+   "obj": "bomb",
+   "node": "orange"
+  },
+  {
+   "paper": "#f1f6fb",
+   "grid": "rgba(110,165,215,.38)",
+   "tint": "winter",
+   "obj": "ice",
+   "node": "blue"
+  },
+  {
+   "paper": "#fbefe9",
+   "grid": "rgba(215,105,85,.3)",
+   "tint": "fire",
+   "obj": "lava",
+   "node": "orange"
+  }
+ ],
+ "threshold": {
+  "first": [
+   100,
+   150,
+   200
+  ],
+  "base": 250,
+  "inc": 25
+ },
+ "chest": {
+  "base": 200,
+  "step": 100
+ }
+}

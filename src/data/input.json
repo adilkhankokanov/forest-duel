@@ -1,0 +1,67 @@
+{
+ "actions": {
+  "aim": {
+   "type": "value",
+   "bindings": [
+    "pointer/x"
+   ],
+   "note": "screen x on the field -> cannon target (world x)"
+  },
+  "moveLeft": {
+   "type": "hold",
+   "bindings": [
+    "key/ArrowLeft",
+    "key/a"
+   ]
+  },
+  "moveRight": {
+   "type": "hold",
+   "bindings": [
+    "key/ArrowRight",
+    "key/d"
+   ]
+  },
+  "pause": {
+   "type": "press",
+   "bindings": [
+    "key/p",
+    "key/Escape",
+    "ui/pause"
+   ]
+  },
+  "resume": {
+   "type": "press",
+   "bindings": [
+    "ui/resume"
+   ]
+  },
+  "restart": {
+   "type": "press",
+   "bindings": [
+    "ui/restart"
+   ]
+  },
+  "toMenu": {
+   "type": "press",
+   "bindings": [
+    "ui/menu"
+   ]
+  },
+  "fullscreen": {
+   "type": "press",
+   "bindings": [
+    "ui/fullscreen"
+   ]
+  },
+  "toggleSound": {
+   "type": "press",
+   "bindings": [
+    "key/m",
+    "key/M"
+   ]
+  }
+ },
+ "aim": {
+  "edgeGain": 0.15
+ }
+}

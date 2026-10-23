@@ -1,0 +1,324 @@
+{
+ "about": "Simulation parity suite: seed + arena level + input sequence (by fixed 1/60 step) -> expected summary. 'hash' is the exact web state hash; Unity compares the numeric fields with 'tol'.",
+ "tol": 0.000001,
+ "tests": [
+  {
+   "name": "idle 30s seed 42",
+   "seed": 42,
+   "level": 0,
+   "steps": 1800,
+   "expect": {
+    "time": 30,
+    "state": "play",
+    "P": {
+     "hp": 1882.6,
+     "gold": 14,
+     "lvl": 2,
+     "x": 0,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 2720,
+     "gold": 58,
+     "lvl": 6,
+     "x": 1.4234,
+     "dmgMul": 1.2,
+     "rateMul": 1
+    },
+    "units": 7,
+    "unitsP": 0,
+    "trees": 419,
+    "fences": 0,
+    "rockets": 0,
+    "hash": "3981af91"
+   }
+  },
+  {
+   "name": "idle full match seed 42",
+   "seed": 42,
+   "level": 0,
+   "steps": 5400,
+   "expect": {
+    "time": 90,
+    "state": "lose",
+    "P": {
+     "hp": 0,
+     "gold": 38,
+     "lvl": 3,
+     "x": 0,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 2592.5,
+     "gold": 54,
+     "lvl": 10,
+     "x": 1.0621,
+     "dmgMul": 1.2,
+     "rateMul": 1.2
+    },
+    "units": 7,
+    "unitsP": 0,
+    "trees": 409,
+    "fences": 1,
+    "rockets": 0,
+    "hash": "e606a66"
+   }
+  },
+  {
+   "name": "idle full match seed 7",
+   "seed": 7,
+   "level": 0,
+   "steps": 5400,
+   "expect": {
+    "time": 90,
+    "state": "lose",
+    "P": {
+     "hp": 0,
+     "gold": 16,
+     "lvl": 3,
+     "x": 0,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 3327.5,
+     "gold": 25,
+     "lvl": 14,
+     "x": -1.7944,
+     "dmgMul": 1.2,
+     "rateMul": 1.24
+    },
+    "units": 7,
+    "unitsP": 0,
+    "trees": 400,
+    "fences": 2,
+    "rockets": 0,
+    "hash": "780054ee"
+   }
+  },
+  {
+   "name": "aim left lane then right lane",
+   "seed": 3,
+   "level": 0,
+   "steps": 3600,
+   "inputs": [
+    {
+     "at": 0,
+     "action": "aim",
+     "value": 90
+    },
+    {
+     "at": 900,
+     "action": "aim",
+     "value": 300
+    },
+    {
+     "at": 1800,
+     "action": "aim",
+     "value": 60
+    },
+    {
+     "at": 2700,
+     "action": "aim",
+     "value": 196
+    }
+   ],
+   "expect": {
+    "time": 60,
+    "state": "lose",
+    "P": {
+     "hp": 0,
+     "gold": 54,
+     "lvl": 10,
+     "x": -2.6762,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 3500,
+     "gold": 28,
+     "lvl": 8,
+     "x": -1.3377,
+     "dmgMul": 1.08,
+     "rateMul": 1.16
+    },
+    "units": 22,
+    "unitsP": 0,
+    "trees": 382,
+    "fences": 1,
+    "rockets": 0,
+    "hash": "b1040ae1"
+   }
+  },
+  {
+   "name": "sweep with keys",
+   "seed": 11,
+   "level": 0,
+   "steps": 3600,
+   "inputs": [
+    {
+     "at": 0,
+     "action": "moveLeft",
+     "value": true
+    },
+    {
+     "at": 120,
+     "action": "moveLeft",
+     "value": false
+    },
+    {
+     "at": 600,
+     "action": "moveRight",
+     "value": true
+    },
+    {
+     "at": 780,
+     "action": "moveRight",
+     "value": false
+    },
+    {
+     "at": 1500,
+     "action": "moveLeft",
+     "value": true
+    },
+    {
+     "at": 1560,
+     "action": "moveLeft",
+     "value": false
+    }
+   ],
+   "expect": {
+    "time": 60,
+    "state": "lose",
+    "P": {
+     "hp": 0,
+     "gold": 77,
+     "lvl": 10,
+     "x": -3.35,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 3500,
+     "gold": 18,
+     "lvl": 9,
+     "x": -2.0074,
+     "dmgMul": 1.16,
+     "rateMul": 1
+    },
+    "units": 36,
+    "unitsP": 0,
+    "trees": 392,
+    "fences": 0,
+    "rockets": 0,
+    "hash": "e0a6fb25"
+   }
+  },
+  {
+   "name": "arena 10 bot (stronger meta)",
+   "seed": 42,
+   "level": 9,
+   "steps": 3600,
+   "expect": {
+    "time": 60,
+    "state": "lose",
+    "P": {
+     "hp": 0,
+     "gold": 22,
+     "lvl": 2,
+     "x": 0,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 3410,
+     "gold": 64,
+     "lvl": 19,
+     "x": -0.7944,
+     "dmgMul": 1.24,
+     "rateMul": 1.24
+    },
+    "units": 68,
+    "unitsP": 0,
+    "trees": 365,
+    "fences": 0,
+    "rockets": 0,
+    "hash": "855dc677"
+   }
+  },
+  {
+   "name": "autumn arena 2 full match",
+   "seed": 2024,
+   "level": 1,
+   "steps": 5400,
+   "inputs": [
+    {
+     "at": 0,
+     "action": "aim",
+     "value": 140
+    }
+   ],
+   "expect": {
+    "time": 90,
+    "state": "lose",
+    "P": {
+     "hp": 0,
+     "gold": 53,
+     "lvl": 10,
+     "x": -1.1077,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 3500,
+     "gold": 35,
+     "lvl": 8,
+     "x": -1.1114,
+     "dmgMul": 1.12,
+     "rateMul": 1.08
+    },
+    "units": 22,
+    "unitsP": 0,
+    "trees": 389,
+    "fences": 0,
+    "rockets": 0,
+    "hash": "7fcfca19"
+   }
+  },
+  {
+   "name": "snapshot round-trip mid match equals continuous run",
+   "seed": 42,
+   "level": 0,
+   "steps": 5400,
+   "roundTripAt": 2000,
+   "expect": {
+    "time": 90,
+    "state": "lose",
+    "P": {
+     "hp": 0,
+     "gold": 38,
+     "lvl": 3,
+     "x": 0,
+     "dmgMul": 1,
+     "rateMul": 1
+    },
+    "E": {
+     "hp": 2592.5,
+     "gold": 54,
+     "lvl": 10,
+     "x": 1.0621,
+     "dmgMul": 1.2,
+     "rateMul": 1.2
+    },
+    "units": 7,
+    "unitsP": 0,
+    "trees": 409,
+    "fences": 1,
+    "rockets": 0,
+    "hash": "e606a66"
+   }
+  }
+ ]
+}

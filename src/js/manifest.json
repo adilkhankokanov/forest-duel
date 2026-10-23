@@ -1,0 +1,28 @@
+{
+ "game": [
+  "core/data.js",
+  "core/tween.js",
+  "core/rng.js",
+  "core/dmath.js",
+  "core/events.js",
+  "core/flow.js",
+  "data/config.js",
+  "data/meta.js",
+  "render/canvas.js",
+  "core/clock.js",
+  "sim/noise.js",
+  "sim/state.js",
+  "input/input.js",
+  "sim/helpers.js",
+  "audio/audio.js",
+  "sim/sim.js",
+  "render/fx.js",
+  "render/render.js",
+  "app/loop.js"
+ ],
+ "menu": [
+  "ui/menu.js",
+  "ui/hud.js",
+  "app/debug.js"
+ ]
+}

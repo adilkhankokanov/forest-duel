@@ -1,0 +1,41 @@
+{
+ "storageKey": "forestDuel.meta.v1",
+ "winTrophies": 30,
+ "loseTrophies": 15,
+ "nodesPerArena": 4,
+ "nodeGold": 40,
+ "nodeGoldStep": 10,
+ "maxLv": 15,
+ "botPerArena": 0.15,
+ "per": {
+  "cDmg": 0.08,
+  "cRate": 0.06,
+  "ult": 0.15,
+  "wave": 0.15,
+  "sold": 0.1,
+  "tank": 0.1,
+  "fence": 0.1,
+  "barrel": 0.1
+ },
+ "defaults": {
+  "trophies": 0,
+  "maxTrophies": 0,
+  "gold": 150,
+  "lv": {
+   "cDmg": 1,
+   "cRate": 1,
+   "ult": 1,
+   "wave": 1,
+   "sold": 1,
+   "tank": 1,
+   "fence": 1,
+   "barrel": 1
+  },
+  "claimed": {},
+  "settings": {
+   "sound": true,
+   "music": true,
+   "vib": true
+  }
+ }
+}

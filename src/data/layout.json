@@ -1,0 +1,43 @@
+{
+ "ref": {
+  "w": 393,
+  "h": 852
+ },
+ "ui": {
+  "wallX": -4,
+  "wallW": 401,
+  "wallH": 42,
+  "eWall": 86,
+  "pWall": 572,
+  "eTankY": 54,
+  "pTankY": 652,
+  "flaskY": 548,
+  "pause": {
+   "x": 356,
+   "y": 44,
+   "s": 40
+  },
+  "fullscreen": {
+   "x": 308,
+   "y": 44,
+   "s": 40
+  }
+ },
+ "world": {
+  "pxPerUnitX": 55,
+  "refFieldPx": 470,
+  "pxPerUnitZRef": 50
+ },
+ "textAnchors": {
+  "levelUpDy": -14,
+  "flaskDy": -34,
+  "flaskClamp": 75,
+  "pWallDy": -36,
+  "eWallDy": 26
+ },
+ "unitPx": {
+  "soldier": 18,
+  "giant": 46
+ },
+ "notes": "ui: reference-pixel positions of walls, tanks, flask row and HUD buttons; world: how world units map to screen pixels (Z is squeezed so the field fits between the walls)"
+}

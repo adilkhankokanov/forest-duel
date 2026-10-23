@@ -1,0 +1,199 @@
+{
+ "mixer": {
+  "masterGain": 0.55,
+  "lowpassHz": 5200,
+  "lowpassQ": 0.5,
+  "compressor": "WebAudio defaults (threshold -24 dB, knee 30, ratio 12, attack 3 ms, release 250 ms)"
+ },
+ "maxVoices": 14,
+ "prerender": [
+  "shot",
+  "treeHit",
+  "hup",
+  "hya",
+  "unitDie",
+  "flaskHit",
+  "hitBase",
+  "tankShot",
+  "blast",
+  "tree",
+  "goldTree"
+ ],
+ "alwaysPlay": [
+  "bigBoom",
+  "win",
+  "lose",
+  "rush",
+  "level",
+  "tankSpawn"
+ ],
+ "voiceHoldMs": {
+  "prerendered": 400,
+  "live": 900
+ },
+ "sfx": {
+  "shot": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "treeHit": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "tree": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "goldTree": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "flaskHit": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "flask": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "upgrade": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "level": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "unitDie": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "hup": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "hya": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "tankSpawn": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "giantDie": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "hitBase": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "squad": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "giant": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "wave": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "fence": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "rocket": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "boom": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "tankShot": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "blast": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "bugle": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "bigBoom": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "pop": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "rush": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "win": {
+   "variants": 3,
+   "len": 2.5
+  },
+  "lose": {
+   "variants": 3,
+   "len": 2.5
+  }
+ },
+ "loops": {
+  "rocket": {
+   "gain": 0.16
+  },
+  "wave": {
+   "gain": 0.22
+  },
+  "fence": {
+   "gain": 0.13
+  }
+ },
+ "music": {
+  "step": 0.3,
+  "chords": [
+   [
+    261.6,
+    329.6,
+    392,
+    523.3
+   ],
+   [
+    220,
+    261.6,
+    329.6,
+    440
+   ],
+   [
+    174.6,
+    220,
+    261.6,
+    349.2
+   ],
+   [
+    196,
+    246.9,
+    293.7,
+    392
+   ]
+  ],
+  "pattern": [
+   0,
+   1,
+   2,
+   3,
+   2,
+   1,
+   2,
+   3
+  ],
+  "inBattleVolume": 0.6
+ }
+}

@@ -1,0 +1,138 @@
+{
+ "game": {
+  "levelUp": "LEVEL {n}!",
+  "rocketOwn": "ROCKET!",
+  "rocketFoe": "Enemy rocket!",
+  "enemyPrefix": "Enemy: ",
+  "comebackOwn": "YOUR COMEBACK",
+  "comebackFoe": "ENEMY COMEBACK",
+  "tempo": "UPGRADES +{n}%",
+  "pause": "PAUSED",
+  "resume": "Resume",
+  "restart": "Restart",
+  "toMenu": "Main menu",
+  "win": "VICTORY",
+  "lose": "DEFEAT"
+ },
+ "upg": {
+  "dmg": "Damage",
+  "rate": "Fire rate",
+  "doubles": "Ultimate",
+  "squad": "Squad",
+  "giant": "Tank",
+  "wave": "Wave",
+  "barrel": "Barrel",
+  "fence": "Fence"
+ },
+ "upgVal": {
+  "dmg": "+{n}%",
+  "rate": "+{n}%",
+  "doubles": "{n} s",
+  "squad": "×{n}",
+  "giant": "{n} HP",
+  "wave": "{n} dmg",
+  "barrel": "fire ×{n}",
+  "fence": "{n} HP"
+ },
+ "arenaNames": [
+  "Forest Glade",
+  "Autumn Woods",
+  "Winter Woods",
+  "Fire Valley",
+  "Quiet Grove",
+  "Rusty Thicket",
+  "Snowy Pass",
+  "Ashen Lands"
+ ],
+ "arenaLaps": [
+  "II",
+  "III",
+  "IV",
+  "V",
+  "VI",
+  "VII",
+  "VIII",
+  "IX",
+  "X",
+  "XI",
+  "XII",
+  "XIII"
+ ],
+ "menu": {
+  "settings": "Settings",
+  "tabShop": "SHOP",
+  "tabHero": "HERO",
+  "tabBattle": "BATTLE",
+  "tabUp": "ARMY",
+  "tabLeague": "LEAGUE",
+  "soonTitle": "Coming soon",
+  "soonBody": "this section is still in development. Check back later!",
+  "shop": "Shop",
+  "league": "League",
+  "buyGold": "Buying gold",
+  "arena": "ARENA {n}",
+  "nextReward": "Next reward:",
+  "fight": "BATTLE",
+  "lv": "Lv. {n}",
+  "max": "MAX",
+  "heroName": "Tank “Guardian”",
+  "ultTitle": "Ultimate: Double Fire",
+  "ultBody": "The Ultimate flask fires two blazing bullets for a few seconds.",
+  "stats": "Stats",
+  "comeback": "Comeback",
+  "comebackBody": "When your base runs low on HP, a free wave rolls out and pushes enemies back.",
+  "armyTitle": "Army and buildings",
+  "armyBody": "Upgrades apply to everything that comes out of flasks in battle.",
+  "maxLevel": "Max level",
+  "noGold": "Not enough gold",
+  "chest": "Arena chest:",
+  "pathTitle": "Arena path",
+  "on": "ON",
+  "off": "OFF",
+  "sound": "Sound",
+  "music": "Music",
+  "vib": "Vibration",
+  "privacy": "Privacy Policy",
+  "privacyBody": "Forest Duel is a game prototype. The game does not collect personal data, show ads, or share data with third parties. Your progress (trophies, gold, upgrade levels and settings) is stored only in this browser on your device and is deleted together with the site data.",
+  "pathRewards": "Arena path rewards",
+  "newArena": "New arena unlocked:",
+  "win": "VICTORY",
+  "lose": "DEFEAT",
+  "trophies": "Trophies: {n}",
+  "continue": "CONTINUE"
+ },
+ "metaUp": {
+  "cDmg": [
+   "Damage",
+   "DMG"
+  ],
+  "cRate": [
+   "Fire rate",
+   "shots/s"
+  ],
+  "ult": [
+   "Ultimate",
+   "power"
+  ],
+  "wave": [
+   "Wave",
+   "dmg"
+  ],
+  "sold": [
+   "Squad",
+   "HP"
+  ],
+  "tank": [
+   "Tank",
+   "HP"
+  ],
+  "fence": [
+   "Fence",
+   "HP"
+  ],
+  "barrel": [
+   "Barrel",
+   "fire"
+  ]
+ }
+}

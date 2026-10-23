@@ -1,0 +1,9 @@
+/* Layout: one phone-sized canvas (iPhone 15 Pro, 393×852) centered on a dark table */
+:root{--bg:#1c1e22;--ink:#e8efe9;color-scheme:dark}
+html,body{height:100%}
+html{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);margin:0;display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#c{display:block;border-radius:30px;box-shadow:0 0 0 7px #0a0b0d,0 24px 70px rgba(0,0,0,.6);touch-action:none}
+body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overscroll-behavior:none}
+/* phones: full-bleed game, no frame */
+@media (max-width:600px),(pointer:coarse){body{padding-left:0;padding-right:0;background:#efede7}#c{border-radius:0;box-shadow:none}}

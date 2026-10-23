@@ -1,0 +1,30 @@
+{
+ "layers": [
+  "paper",
+  "slickOil",
+  "forest",
+  "walls",
+  "xpBar",
+  "waves",
+  "barrels",
+  "splats",
+  "slickFire",
+  "actors",
+  "bullets",
+  "hitFx",
+  "shells",
+  "booms",
+  "rockets",
+  "tanks",
+  "flasks",
+  "particles",
+  "floatTexts",
+  "banners",
+  "endScreen"
+ ],
+ "notes": {
+  "slickFire": "queues flames that 'actors' depth-sorts together with units and fences, so it must come before 'actors'",
+  "forest": "cached tree layers + pedestals + live-drawn damaged trees in Y order",
+  "hud": "pause / fullscreen buttons and the pause menu are DOM (ui/hud.js), above the canvas"
+ }
+}

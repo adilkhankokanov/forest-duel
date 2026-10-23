@@ -1,0 +1,35 @@
+{
+ "dmg": {
+  "img": "flaskDmg",
+  "pal": "teamP"
+ },
+ "rate": {
+  "img": "flaskRate",
+  "pal": "teamP"
+ },
+ "doubles": {
+  "img": "flaskDoubles",
+  "pal": "upgPurple"
+ },
+ "squad": {
+  "img": "flaskSquad",
+  "pal": "teamE"
+ },
+ "giant": {
+  "img": "flaskGiant",
+  "pal": "teamE"
+ },
+ "wave": {
+  "img": "flaskWave",
+  "pal": "upgTeal"
+ },
+ "fence": {
+  "img": "flaskFence",
+  "pal": "upgYellow"
+ },
+ "barrel": {
+  "img": "flaskBarrel",
+  "pal": "upgOrange",
+  "icon": "barrel"
+ }
+}

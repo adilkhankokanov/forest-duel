@@ -1,0 +1,252 @@
+{
+ "baseHp": 3500,
+ "cannon": {
+  "dmg": 7.5,
+  "interval": 0.19555555555555557,
+  "bulletSpeed": 12.6,
+  "range": 30,
+  "jitter": 0.04,
+  "xLimit": 3.35,
+  "playerSpeed": 60,
+  "vsSoldier": 4,
+  "vsGiant": 2.55
+ },
+ "tree": {
+  "green": {
+   "hp": 40,
+   "gold": 8
+  },
+  "golden": {
+   "hp": 66.6667,
+   "gold": 39
+  },
+  "max": 800,
+  "xMin": -3.35,
+  "xMax": 3.35,
+  "zMin": -3.25,
+  "zMax": 2.5,
+  "minDist": 0.21,
+  "roadHalf": 0.9,
+  "radius": 0.155,
+  "pedestalClear": 0.275,
+  "densityFreq": 0.65,
+  "goldFreq": 1.25,
+  "densityCut": -0.42,
+  "midZ": -0.375,
+  "centerSpan": 2.875,
+  "beltGold": [
+   0.2,
+   0.35,
+   0.5,
+   0.65
+  ],
+  "balanceTries": 30
+ },
+ "level": {
+  "first": 20,
+  "second": 40,
+  "step": 5
+ },
+ "killGold": {
+  "soldier": 2,
+  "giant": 8
+ },
+ "flask": {
+  "hp": 24,
+  "radius": 0.3,
+  "side": 1.365,
+  "xLimit": 2.75,
+  "minGap": 1.5,
+  "drawPx": 38
+ },
+ "rankStep": 0.2,
+ "tempo": {
+  "interval": 15,
+  "step": 0.5,
+  "start": 0.5333333333333333,
+  "cannonStart": 0.4,
+  "bannerBlock": 2.6
+ },
+ "dmgUp": {
+  "first": 0.2,
+  "step": 0.04,
+  "maxPicks": 5
+ },
+ "rateUp": {
+  "first": 0.2,
+  "step": 0.04,
+  "maxPicks": 5
+ },
+ "doubles": {
+  "offset": 0.12,
+  "dmgMul": 0.75,
+  "dur": 4,
+  "durStep": 0.8
+ },
+ "squad": {
+  "base": 15
+ },
+ "soldier": {
+  "aggro": 1,
+  "vsSoldierMul": 2,
+  "vsTankMul": 2,
+  "retaliate": 4,
+  "hp": 50,
+  "speed": 0.825,
+  "radius": 0.16,
+  "mass": 1,
+  "atkInterval": 0.25,
+  "dmgUnit": 4,
+  "dmgFence": 4,
+  "dmgBase": 8,
+  "engage": 0.08
+ },
+ "giant": {
+  "hw": 0.4,
+  "hl": 0.5,
+  "hp": 440,
+  "dmg": 20,
+  "atkInterval": 1,
+  "barrelMul": 1,
+  "speed": 0.75,
+  "radius": 0.4,
+  "mass": 5,
+  "shotBasePct": 0.025,
+  "shellHp": 30,
+  "shellR": 0.15,
+  "sizeStep": 0.025,
+  "sizeMax": 0.25,
+  "maxTargets": 4,
+  "frontMin": -0.03,
+  "frontMax": 1,
+  "side": 0.52,
+  "gun": {
+   "interval": 2.1,
+   "firstShot": 1,
+   "blastR": 0.54,
+   "unitDmg": 40,
+   "speed": 4,
+   "range": 30,
+   "hitPad": 0.05,
+   "dmgMul": 4
+  },
+  "hitScale": 0.96
+ },
+ "army": {
+  "spawnOffset": 0.6,
+  "spiralAngle": 2.39996,
+  "spiralR": 0.19,
+  "baseGap": 0.22,
+  "limit": 200,
+  "releasePerStep": 4,
+  "sepIters": 3
+ },
+ "wave": {
+  "comebackHp": 0.4,
+  "pushFrac": 0.4,
+  "dmg": 24,
+  "speed": 1.6,
+  "width": 3.025,
+  "length": 1.625,
+  "hitHalf": 1.5125,
+  "push": 0.8,
+  "pushFMax": 2,
+  "slow": 0.55,
+  "slowDur": 1.5,
+  "knockDecay": 6
+ },
+ "fence": {
+  "hp": 1050,
+  "width": 2.5,
+  "widthMax": 5.4,
+  "maxAlive": 2,
+  "zPlayer": 3.1,
+  "zBot": -3.85,
+  "secondLine": 0.4,
+  "speed": 1.8,
+  "thick": 0.12
+ },
+ "pedestal": {
+  "x": 1.65,
+  "z": -0.375,
+  "hp": 400,
+  "radius": 0.17
+ },
+ "rocket": {
+  "visScale": 0.65,
+  "hp": 12.75,
+  "dmg": 875,
+  "speed": 3,
+  "w": 1.05,
+  "h": 2.25,
+  "halfLen": 0.65,
+  "radius": 0.4,
+  "wobble": 0.28,
+  "wobbleFreq": 4.5
+ },
+ "bag": {
+  "dmg": 1,
+  "rate": 1,
+  "doubles": 1,
+  "squad": 2,
+  "giant": 2,
+  "fence": 1,
+  "barrel": 1
+ },
+ "barrel": {
+  "speed": 4.8,
+  "radius": 0.34,
+  "spawnOffset": 0.3,
+  "blastDmg": 17,
+  "blastR": 0.6,
+  "slickR": 0.8,
+  "slickTime": 5,
+  "slowMul": 0.25,
+  "hp": 15,
+  "burnDmg": 8,
+  "burnInterval": 0.5,
+  "growPerRank": 0.25
+ },
+ "bot": {
+  "retarget": 0.35,
+  "aimErr": 0.1,
+  "smooth": 4,
+  "threatDist": 3.5,
+  "pedestalValue": 60,
+  "baseValue": 1.2,
+  "movePenalty": 0.35,
+  "score": {
+   "cannon": 4,
+   "other": 3,
+   "favorite": 2,
+   "styleFit": 1,
+   "wave6": 4,
+   "fence3": 3,
+   "squad3": 2,
+   "squadLow": 1
+  },
+  "nearDist": 3,
+  "bestChance": 0.85
+ },
+ "rush": {
+  "time": 85,
+  "baseHp": 1750,
+  "treesLeft": 0.35,
+  "farmMul": 3
+ },
+ "splats": false,
+ "splatTime": 5,
+ "sim": {
+  "dt": 0.016666666666666666,
+  "maxSteps": 6
+ },
+ "world": {
+  "zAxis": "down-screen (towards the player); Unity worldY = -z",
+  "pFront": 4.325000000000001,
+  "eFront": -5.074999999999999,
+  "pMuzzle": 5.383558558558559,
+  "eMuzzle": -6.0065315315315315,
+  "pFlaskZ": 3.816891891891893,
+  "eFlaskZ": -5.519594594594595
+ }
+}

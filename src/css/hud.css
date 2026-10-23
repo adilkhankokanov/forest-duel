@@ -1,0 +1,22 @@
+/* ===== in-battle HUD (DOM over the canvas, 393×852 reference px) ===== */
+.h-root{position:absolute;left:0;top:0;width:393px;height:852px;pointer-events:none;font-family:"Rubik","Arial Rounded MT Bold",system-ui,sans-serif}
+.h-root[hidden]{display:none}
+.h-icon{position:absolute;width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+.h-icon--pause{left:336px;top:24px}
+.h-icon--full{left:288px;top:24px}
+.h-icon__img{width:40px;display:block}
+.h-hit{position:absolute;pointer-events:auto;cursor:pointer}
+.h-hit--pause{left:330px;top:18px;width:52px;height:52px}
+.h-hit--full{left:284px;top:20px;width:48px;height:48px}
+.is-off{display:none}
+.h-pause{position:absolute;left:0;top:0;width:393px;height:852px;background:rgba(20,22,28,.6);display:none;pointer-events:auto}
+.h-pause.is-on{display:block}
+.h-pause__title{position:absolute;left:0;top:343px;width:393px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:40px;color:#fff;-webkit-text-stroke:3.5px #22252c;paint-order:stroke fill}
+.h-btn{position:absolute;left:101.5px;width:190px;height:48px;padding:0;border:0;border-radius:14px;background:#22252c;cursor:pointer;pointer-events:auto}
+.h-btn--green{top:412px}.h-btn--red{top:472px}.h-btn--blue{top:532px}
+.h-btn__face{position:absolute;left:3px;top:3px;width:184px;height:40px;border-radius:11px}
+.h-btn__hi{position:absolute;left:0;top:0;width:184px;height:14px;border-radius:7px}
+.h-btn__txt{position:absolute;left:0;top:-4px;width:184px;height:48px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;-webkit-text-stroke:3.5px #22252c;paint-order:stroke fill}
+.h-btn--green .h-btn__face{background:#2f9b3f}.h-btn--green .h-btn__hi{background:#45c457}
+.h-btn--red .h-btn__face{background:#c9452f}.h-btn--red .h-btn__hi{background:#ec6a4f}
+.h-btn--blue .h-btn__face{background:#2a6fd6}.h-btn--blue .h-btn__hi{background:#4a90f0}

@@ -1,0 +1,13 @@
+{
+ "about": "Reference frames: open the build with these URL params (the match runs N fixed steps and freezes), screenshot the 393×852 field. Unity loads the same seed/level, steps N times, renders, and the two images are compared.",
+ "viewport": {"width": 393, "height": 852, "deviceScaleFactor": 2},
+ "frames": [
+  {"name": "start_forest", "params": "seed=42&level=0&frame=1"},
+  {"name": "early_fight", "params": "seed=42&level=0&frame=900"},
+  {"name": "mid_match", "params": "seed=42&level=0&frame=2400"},
+  {"name": "autumn_arena", "params": "seed=7&level=1&frame=1200"},
+  {"name": "winter_arena", "params": "seed=7&level=2&frame=1200"},
+  {"name": "fire_arena", "params": "seed=7&level=3&frame=1200"},
+  {"name": "match_end", "params": "seed=42&level=0&frame=5460"}
+ ]
+}
