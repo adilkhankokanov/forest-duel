@@ -302,7 +302,7 @@ function oilMul(u){for(const o of G.slicks)if(o.side!==u.side&&DM.hypot(u.x-o.x,
 function stepBarrels(dt){
   const C=CFG.barrel;
   for(const b of G.barrels){
-    if(b.done)continue;if(b.hit>0)b.hit-=dt;
+    if(b.done)continue;if(b.wait>0){b.wait-=dt;continue}if(b.hit>0)b.hit-=dt;
     const st=C.speed*dt,k=b.sc||1,BR=C.radius;b.z+=b.dir*st;b.roll+=st;b.age+=dt;
     const foe=b.side==='p'?G.E:G.P;let hit=false;
     for(const u of G.units)if(u.side!==b.side&&DM.hypot(u.x-b.x,u.z-b.z)<u.r+BR){hit=true;break}

@@ -6,10 +6,10 @@
   "walls",
   "xpBar",
   "waves",
-  "barrels",
   "splats",
   "slickFire",
   "actors",
+  "barrels",
   "bullets",
   "hitFx",
   "shells",
@@ -25,6 +25,7 @@
  "notes": {
   "slickFire": "queues flames that 'actors' depth-sorts together with units and fences, so it must come before 'actors'",
   "forest": "cached tree layers + pedestals + live-drawn damaged trees in Y order",
-  "hud": "pause / fullscreen buttons and the pause menu are DOM (ui/hud.js), above the canvas"
+  "hud": "pause / fullscreen buttons and the pause menu are DOM (ui/hud.js), above the canvas",
+  "barrels": "drawn above units (after actors)"
  }
 }

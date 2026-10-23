@@ -31,7 +31,7 @@
   "squad": "×{n}",
   "giant": "{n} HP",
   "wave": "{n} dmg",
-  "barrel": "fire ×{n}",
+  "barrel": "×{n}",
   "fence": "{n} HP"
  },
  "arenaNames": [

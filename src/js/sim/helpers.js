@@ -11,6 +11,8 @@ const fencesOf=id=>G.fences.filter(f=>f.side===id).length;
 
 // --- upgrade values (labels read the same numbers that are applied) ---
 const upInc=(c,picks)=>c.first+c.step*picks;
+// number of barrels per flask: grows with the match tempo (+1 every tempoStepsPerExtra steps), read from the flask's frozen tempo factor
+function barrelCount(){const C=CFG.barrel,tn=Math.round((tempoF()/CFG.tempo.start-1)/CFG.tempo.step);return Math.min(C.maxCount,1+Math.floor(tn/C.tempoStepsPerExtra))}
 let TF_LOCK=null; // tempo factors frozen on a flask when it appeared
 function tempoF(cannon){if(TF_LOCK)return cannon?TF_LOCK[1]:TF_LOCK[0];return (cannon?CFG.tempo.cannonStart:CFG.tempo.start)*(1+CFG.tempo.step*((G&&G.tempoN)||0))}
 function upgInfo(s,type){
@@ -21,7 +23,7 @@ function upgInfo(s,type){
     case'squad':return{t:T.upg.squad,v:tx(T.upgVal.squad,Math.round(CFG.squad.base*tempoF()))};
     case'giant':return{t:T.upg.giant,v:tx(T.upgVal.giant,Math.round(CFG.giant.hp*tempoF()*M(s,'tank')))};
     case'wave':return{t:T.upg.wave,v:tx(T.upgVal.wave,fmt(CFG.wave.dmg*tempoF()))};
-    case'barrel':return{t:T.upg.barrel,v:tx(T.upgVal.barrel,fmt(tempoF()/CFG.tempo.start))};
+    case'barrel':return{t:T.upg.barrel,v:tx(T.upgVal.barrel,barrelCount())};
     case'fence':return{t:T.upg.fence,v:tx(T.upgVal.fence,Math.round(CFG.fence.hp*tempoF()*M(s,'fence')))};
   }
 }
@@ -73,7 +75,11 @@ function applyUpg0(s,type,at){
   else if(type==='squad'){spawnArmy(s,false,Math.round(CFG.squad.base*tempoF()))}
   else if(type==='giant'){spawnArmy(s,true,1)}
   else if(type==='wave'){const F=tempoF();G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*.4,F,hit:[],done:false})}
-  else if(type==='barrel'){const TF=tempoF()/CFG.tempo.start;G.barrels.push({side:s.id,dir:s.dir,x:0,z:s.front+s.dir*CFG.barrel.spawnOffset,roll:0,age:0,hp:CFG.barrel.hp,hit:0,sc:Math.sqrt(TF),dmgK:tempoF()*M(s,'barrel')})}
+  else if(type==='barrel'){
+    // barrels roll in a symmetric fan centred on the road; the centre one(s) go first, outer ones a bit later
+    const C=CFG.barrel,n=barrelCount(),dmgK=tempoF()*M(s,'barrel');
+    for(let i=0;i<n;i++){const o=i-(n-1)/2;
+      G.barrels.push({side:s.id,dir:s.dir,x:o*C.laneGap,z:s.front+s.dir*C.spawnOffset,roll:0,age:0,hp:C.hp,hit:0,sc:1,dmgK,wait:Math.floor(Math.abs(o))*C.stagger})}}
   else if(type==='fence'){
     if(fencesOf(s.id)<CFG.fence.maxAlive){
       const C=CFG.fence,z1=s.id==='p'?C.zPlayer:C.zBot,z2=z1-s.dir*C.secondLine;

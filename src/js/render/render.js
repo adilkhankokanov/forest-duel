@@ -291,7 +291,7 @@ function L_waves(){
   for(const w of G.waves)drawWave(w);
 }
 function L_barrels(){
-  for(const b of G.barrels){const x=sx(b.x),y=sy(b.z),bob=Math.abs(Math.sin(b.roll*7))*2;
+  for(const b of G.barrels){if(b.wait>0)continue;const x=sx(b.x),y=sy(b.z),bob=Math.abs(Math.sin(b.roll*7))*2;
     ctx.fillStyle=PAL.c3c372d_22;const bw=44*CFG.barrel.radius/.44;ctx.beginPath();ctx.ellipse(x,y+bw*.32,bw/2,bw*.16,0,0,7);ctx.fill();
     drawBarrelShape(x,y-bob*2,bw,b.roll,'',false,b.hit>0?1:0)}
 }
@@ -304,12 +304,14 @@ function L_slickFire(){
     ctx.globalAlpha=.35*a;const gr=ctx.createRadialGradient(x,y,2,x,y,o.r*PX);gr.addColorStop(0,PAL.cff9628_90);gr.addColorStop(1,PAL.cff5a14_0);
     ctx.fillStyle=gr;ctx.beginPath();ctx.ellipse(x,y,o.r*PX,o.r*PZ*.85,0,0,7);ctx.fill();
     const area=Math.max(1,(o.r/CFG.barrel.slickR)**2);
-    for(let i=0;i<Math.round(26*area);i++){const ph=((G.time*.9+i*.137+o.seed)%1),ang=o.seed*3.1+i*2.39996,rad=Math.sqrt((i*.381+o.seed)%1)*.85;
+    // flames and embers scattered evenly over the whole patch (seeded per slick, stable between frames)
+    const hr=n=>{const v=Math.sin(n*127.1+o.seed*311.7)*43758.5453;return v-Math.floor(v)};
+    for(let i=0;i<Math.round(20*area);i++){const ph=((G.time*.9+i*.137+o.seed)%1),ang=hr(i+.31)*6.283,rad=Math.sqrt(hr(i+.77))*.85;
       const ex=x+Math.cos(ang)*o.r*PX*rad+Math.sin(G.time*4+i)*3,ey=y+Math.sin(ang)*o.r*PZ*rad*.85-ph*34;
       ctx.globalAlpha=a*(1-ph);ctx.fillStyle=i%3?PAL.goldTree:PAL.ember;ctx.fillRect(ex-1.3,ey-1.3,2.6,2.6)}
     ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.55*a;const gl=ctx.createRadialGradient(x,y,2,x,y,o.r*PX*1.1);gl.addColorStop(0,PAL.cffaa3c_100);gl.addColorStop(1,PAL.cff3c00_0);
     ctx.fillStyle=gl;ctx.beginPath();ctx.ellipse(x,y-6,o.r*PX*1.1,o.r*PZ,0,0,7);ctx.fill();ctx.globalCompositeOperation='source-over';
-    for(let i=0;i<Math.round(34*area);i++){const ang=o.seed*7.3+i*2.39996,rad=Math.sqrt(((o.seed*13.7+i*.618)%1))*.9,
+    for(let i=0;i<Math.round(24*area);i++){const ang=hr(i+50.13)*6.283,rad=Math.sqrt(hr(i+80.59))*.9,
       fx=x+Math.cos(ang)*o.r*PX*rad,fy=y+Math.sin(ang)*o.r*PZ*rad*.85,t=G.time*10+i*1.7,
       fh=(22+9*Math.sin(t)+6*Math.sin(t*2.3))*a*(1.2-rad*.45),fw=(8+2*Math.sin(t*1.3))*a,sw=Math.sin(t*.8)*3;FLAMES.push([fy,fx,fh,fw,sw,a])}
     for(let i=0;i<Math.round(8*area);i++){const ph=((G.time*.5+i*.125+o.seed)%1),px=x+Math.sin(o.seed+i*2.1)*o.r*PX*.6+Math.sin(G.time*2+i)*5,py=y-20-ph*45;

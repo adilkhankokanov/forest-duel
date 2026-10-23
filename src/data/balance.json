@@ -68,12 +68,12 @@
   "bannerBlock": 2.6
  },
  "dmgUp": {
-  "first": 0.2,
+  "first": 0.25,
   "step": 0.04,
   "maxPicks": 5
  },
  "rateUp": {
-  "first": 0.2,
+  "first": 0.25,
   "step": 0.04,
   "maxPicks": 5
  },
@@ -195,17 +195,20 @@
  },
  "barrel": {
   "speed": 4.8,
-  "radius": 0.34,
+  "radius": 0.28,
   "spawnOffset": 0.3,
   "blastDmg": 17,
-  "blastR": 0.6,
-  "slickR": 0.8,
+  "blastR": 0.45,
+  "slickR": 0.55,
   "slickTime": 5,
   "slowMul": 0.25,
   "hp": 15,
   "burnDmg": 8,
   "burnInterval": 0.5,
-  "growPerRank": 0.25
+  "laneGap": 0.45,
+  "stagger": 0.25,
+  "maxCount": 4,
+  "tempoStepsPerExtra": 2
  },
  "bot": {
   "retarget": 0.35,
