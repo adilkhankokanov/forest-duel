@@ -1,5 +1,6 @@
 // =====================================================================
-//  FLOW — explicit app state machine: menu -> battle <-> paused -> result -> menu
+//  FLOW — explicit app state machine: menu -> intro -> battle <-> paused -> result -> menu
+//  intro: the battle scene is shown behind the VS / FIGHT animation, the match does not run yet
 //  Unity: enum AppState + a GameFlow class; screens subscribe to onChange.
 // =====================================================================
 const Flow={

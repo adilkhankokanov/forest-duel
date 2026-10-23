@@ -95,6 +95,7 @@ function stepBullets(dt){
       for(const u of G.units)if(u.side!==b.side&&u.hp>0)consider(circleEntry(b,u.x,u.z,u.r,z0,travel),'unit',u);
       for(const sh of G.shells)if(sh.side!==b.side&&!sh.done&&sh.hp!==undefined)consider(circleEntry(b,sh.x,sh.z,CFG.giant.shellR,z0,travel),'shell',sh);
       for(const p of G.peds)if(!p.dead)consider(circleEntry(b,p.x,p.z,CFG.pedestal.radius,z0,travel),'ped',p);
+      for(const br of G.barrels)if(br.side!==b.side&&!br.done&&!(br.wait>0))consider(circleEntry(b,br.x,br.z,CFG.barrel.radius,z0,travel),'barrel',br);
       for(const f of G.fences)if(f.side!==b.side&&Math.abs(b.x-f.x)<f.w/2){
         const face=f.z-s*CFG.fence.thick,p=(face-z0)*s;if(p>=-CFG.fence.thick*2&&p<=travel)consider(Math.max(0,p),'fence',f)}
       const pb=(foe.front-z0)*s;if(pb<=travel)consider(Math.max(0,pb),'base',foe);
@@ -239,6 +240,10 @@ function stepArmies(dt){
       if(ahead<u.r&&ahead>-Wc.length){
         if(!w.hit.includes(u.id)){w.hit.push(u.id);u.dmgAcc+=Wc.dmg*w.F;u.killer=w.side;u.hit=.15;u.slow=Wc.slowDur}
         u.z=front+w.dir*u.r;u.vz=0;u.kz=0}}
+    // the wave also wipes out enemy cannon bullets and tank shells inside it
+    const zA=Math.min(front,front-w.dir*Wc.length),zB=Math.max(front,front-w.dir*Wc.length);
+    for(let i=G.bullets.length-1;i>=0;i--){const b=G.bullets[i];if(b.side!==w.side&&Math.abs(b.x)<Wc.hitHalf&&b.z>=zA&&b.z<=zB)G.bullets.splice(i,1)}
+    for(const sh of G.shells)if(sh.side!==w.side&&!sh.done&&Math.abs(sh.x)<Wc.hitHalf&&sh.z>=zA&&sh.z<=zB){sh.done=true;Ev.burst(sh.x,sh.z,'brass',8)}
     const foe=w.side==='p'?G.E:G.P;
     if((foe.front-front)*w.dir<=0){baseHits.push([foe,Wc.dmg*w.F,0]);w.done=true}
     else if(w.trav>=maxD){w.fade=(w.fade||0)+dt;if(w.fade>.4)w.done=true}

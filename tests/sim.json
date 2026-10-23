@@ -51,19 +51,19 @@
      "rateMul": 1
     },
     "E": {
-     "hp": 2517.5,
-     "gold": 43,
+     "hp": 2510,
+     "gold": 51,
      "lvl": 13,
-     "x": 1.2064,
+     "x": 1.273,
      "dmgMul": 1.5,
      "rateMul": 1
     },
     "units": 27,
     "unitsP": 0,
-    "trees": 394,
+    "trees": 393,
     "fences": 0,
     "rockets": 0,
-    "hash": "125cc33d"
+    "hash": "6582e9b3"
    }
   },
   {
@@ -76,7 +76,7 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 16,
+     "gold": 18,
      "lvl": 3,
      "x": 0,
      "dmgMul": 1,
@@ -86,16 +86,16 @@
      "hp": 1925,
      "gold": 64,
      "lvl": 18,
-     "x": -1.6531,
-     "dmgMul": 1.85,
-     "rateMul": 1.75
+     "x": -2.1021,
+     "dmgMul": 1.8,
+     "rateMul": 1.8
     },
-    "units": 18,
+    "units": 17,
     "unitsP": 0,
     "trees": 384,
     "fences": 0,
     "rockets": 0,
-    "hash": "38dd5818"
+    "hash": "68d4e285"
    }
   },
   {
@@ -138,9 +138,9 @@
     },
     "E": {
      "hp": 3500,
-     "gold": 54,
-     "lvl": 11,
-     "x": -1.3132,
+     "gold": 0,
+     "lvl": 12,
+     "x": -1.3107,
      "dmgMul": 1.25,
      "rateMul": 1.1
     },
@@ -149,7 +149,7 @@
     "trees": 369,
     "fences": 0,
     "rockets": 0,
-    "hash": "7498ea69"
+    "hash": "9711609d"
    }
   },
   {
@@ -194,7 +194,7 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 11,
+     "gold": 19,
      "lvl": 9,
      "x": -3.35,
      "dmgMul": 1,
@@ -202,18 +202,18 @@
     },
     "E": {
      "hp": 3500,
-     "gold": 33,
-     "lvl": 8,
-     "x": 0.1909,
+     "gold": 2,
+     "lvl": 9,
+     "x": -2.0165,
      "dmgMul": 1,
      "rateMul": 1
     },
     "units": 12,
     "unitsP": 0,
-    "trees": 401,
+    "trees": 399,
     "fences": 0,
     "rockets": 0,
-    "hash": "41c507b0"
+    "hash": "93252a14"
    }
   },
   {
@@ -226,7 +226,7 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 24,
+     "gold": 28,
      "lvl": 2,
      "x": 0,
      "dmgMul": 1,
@@ -234,18 +234,18 @@
     },
     "E": {
      "hp": 3470,
-     "gold": 43,
-     "lvl": 20,
-     "x": -1.709,
-     "dmgMul": 1.25,
-     "rateMul": 1.2
+     "gold": 120,
+     "lvl": 19,
+     "x": -1.3787,
+     "dmgMul": 1.1,
+     "rateMul": 1.5
     },
-    "units": 72,
+    "units": 69,
     "unitsP": 0,
-    "trees": 352,
+    "trees": 358,
     "fences": 0,
     "rockets": 0,
-    "hash": "13f55e6f"
+    "hash": "3027ba53"
    }
   },
   {
@@ -305,19 +305,19 @@
      "rateMul": 1
     },
     "E": {
-     "hp": 2517.5,
-     "gold": 43,
+     "hp": 2510,
+     "gold": 51,
      "lvl": 13,
-     "x": 1.2064,
+     "x": 1.273,
      "dmgMul": 1.5,
      "rateMul": 1
     },
     "units": 27,
     "unitsP": 0,
-    "trees": 394,
+    "trees": 393,
     "fences": 0,
     "rockets": 0,
-    "hash": "8cc14de7"
+    "hash": "a12f62c7"
    }
   },
   {

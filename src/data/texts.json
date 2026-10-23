@@ -108,7 +108,14 @@
   "lvShort": "LV {n}",
   "statAtk": "Attack",
   "statHp": "Health",
-  "statSpd": "Speed"
+  "statSpd": "Speed",
+  "searching": "Searching for opponent…",
+  "vs": "VS",
+  "profile": "Profile",
+  "nickname": "Nickname",
+  "avatar": "Avatar",
+  "save": "SAVE",
+  "fightBanner": "FIGHT!"
  },
  "metaUp": {
   "cDmg": [

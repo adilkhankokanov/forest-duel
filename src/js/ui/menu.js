@@ -30,6 +30,7 @@ const cost=L=>Math.round(40*L*(1+.15*(L-1)));
 ui.innerHTML=`
 <div class="m-root au au-screen" id="mroot">
  <div class="m-top">
+  <button class="m-ava" data-act="profile" id="mAva"></button>
   <div class="au-resbar m-grow">
    <div class="au-res" id="rTro"><span class="au-res__icon">${icf('icTrophy')}</span><span class="au-res__value au-outline" id="vTro">0</span></div>
    <div class="au-res" id="rGold"><span class="au-res__icon">${icf('icCoin')}</span><span class="au-res__value au-outline" id="vGold">0</span><span class="au-res__plus au-outline" data-act="soon">+</span></div>
@@ -78,6 +79,7 @@ ui.addEventListener('click',e=>{
   const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;
   if(act==='soon')soon(U.buyGold);
   else if(act==='settings')openSettings();
+  else if(act==='profile')openProfile(modal,render);
   else if(act==='fight')startBattle();
   else if(act==='path')openPath();
   else if(act==='item')openItem(a.dataset.id);
@@ -92,6 +94,7 @@ function arenaOf(tr){return arenaIdx(tr)}
 function render(){
   document.getElementById('vTro').textContent=fmtN(META.trophies);
   document.getElementById('vGold').textContent=fmtN(META.gold);
+  document.getElementById('mAva').innerHTML=avatarHTML(profile().avatar);
   if(TAB==='battle')renderBattle();else if(TAB==='up')renderUp();
 }
 function renderBattle(){
@@ -196,8 +199,7 @@ applySettings();
 const isPhone=()=>/Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent)||(matchMedia('(pointer:coarse)').matches&&navigator.maxTouchPoints>0);
 function startBattle(){
   try{audioInit()}catch(_){}if(isPhone())try{goFull()}catch(_){}
-  CUR_ARENA=arenaIdx(META.maxTrophies);newMatch();
-  root.style.display='none';layer.innerHTML='';
+  CUR_ARENA=arenaIdx(META.maxTrophies);openMatchmaking(); // search screen; it starts the match itself
 }
 Flow.on(()=>{root.style.display=Flow.inGame()?'none':'';if(Flow.inGame())layer.innerHTML=''}); // any route into a battle hides the menu
 window.toMenu=function(){Flow.go('menu');root.style.display='';layer.innerHTML='';CUR_ARENA=arenaIdx(META.maxTrophies);setTab('battle')};

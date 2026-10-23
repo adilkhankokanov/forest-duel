@@ -1,7 +1,7 @@
 {
  "storageKey": "forestDuel.meta.v1",
  "winTrophies": 30,
- "loseTrophies": 15,
+ "loseTrophies": 0,
  "nodesPerArena": 4,
  "nodeGold": 40,
  "nodeGoldStep": 10,
@@ -45,6 +45,10 @@
    "reinforcements": "rein0",
    "comebacks": "cb0",
    "gadgets": "gad0"
+  },
+  "profile": {
+   "name": "Player",
+   "avatar": 0
   }
  }
 }

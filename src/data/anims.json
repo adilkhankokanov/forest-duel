@@ -304,5 +304,114 @@
     "loop": "restart"
    }
   ]
+ },
+ "mmPop": {
+  "length": 0.45,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 0,
+    "to": 1,
+    "duration": 0.45,
+    "easing": "backOut"
+   },
+   {
+    "property": "alpha",
+    "from": 0,
+    "to": 1,
+    "duration": 0.15
+   }
+  ]
+ },
+ "mmVsIn": {
+  "length": 0.4,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 2.6,
+    "to": 1,
+    "duration": 0.4,
+    "easing": "backOut"
+   },
+   {
+    "property": "alpha",
+    "from": 0,
+    "to": 1,
+    "duration": 0.2
+   }
+  ]
+ },
+ "mmPanelsOut": {
+  "length": 0.55,
+  "tracks": [
+   {
+    "property": "shift",
+    "from": 0,
+    "to": 1,
+    "duration": 0.55,
+    "easing": "cubicIn"
+   }
+  ]
+ },
+ "mmTextOut": {
+  "length": 0.25,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 1,
+    "to": 1.7,
+    "duration": 0.25,
+    "easing": "quadIn"
+   },
+   {
+    "property": "alpha",
+    "from": 1,
+    "to": 0,
+    "duration": 0.25
+   }
+  ]
+ },
+ "mmFightIn": {
+  "length": 0.4,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 0.2,
+    "to": 1,
+    "duration": 0.4,
+    "easing": "elasticOut"
+   },
+   {
+    "property": "alpha",
+    "from": 0,
+    "to": 1,
+    "duration": 0.12
+   }
+  ]
+ },
+ "mmRoll": {
+  "length": 0,
+  "tracks": [
+   {
+    "property": "y",
+    "from": 0,
+    "to": 1,
+    "duration": 0.5,
+    "loop": "restart"
+   }
+  ]
+ },
+ "mmPulse": {
+  "length": 0,
+  "tracks": [
+   {
+    "property": "alpha",
+    "from": 0.45,
+    "to": 1,
+    "duration": 0.6,
+    "easing": "sineInOut",
+    "loop": "yoyo"
+   }
+  ]
  }
 }

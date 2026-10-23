@@ -21,6 +21,7 @@
   "app/loop.js"
  ],
  "menu": [
+  "ui/matchmaking.js",
   "ui/menu.js",
   "ui/hud.js",
   "app/debug.js"

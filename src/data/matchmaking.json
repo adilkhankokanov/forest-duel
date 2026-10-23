@@ -1,0 +1,65 @@
+{
+ "about": "Opponent search screen before a battle: timings in seconds from opening, bot names, avatars.",
+ "timeline": {
+  "found": 2.5,
+  "vsIn": 3.15,
+  "panelsOut": 3.85,
+  "vsOut": 4.75,
+  "fightIn": 5.0,
+  "fightOut": 5.85,
+  "start": 6.1
+ },
+ "angleDeg": 5,
+ "botNames": [
+  "TankBuster",
+  "ForestFox",
+  "IronMole",
+  "PineSniper",
+  "Boomer77",
+  "Captain Oak",
+  "LeafStorm",
+  "RoadRoller",
+  "NutCracker",
+  "WildBerry",
+  "MapleKing",
+  "ShellShock",
+  "Turbo Toad",
+  "BarkBite",
+  "MossyRaider",
+  "TreeHugger"
+ ],
+ "avatars": [
+  {
+   "img": "tankP",
+   "bg": "blue"
+  },
+  {
+   "img": "manB",
+   "bg": "teal"
+  },
+  {
+   "img": "giant",
+   "bg": "green"
+  },
+  {
+   "img": "tankE",
+   "bg": "red"
+  },
+  {
+   "img": "manR",
+   "bg": "orange"
+  },
+  {
+   "img": "giantE",
+   "bg": "pink"
+  },
+  {
+   "img": "rocket",
+   "bg": "purple"
+  },
+  {
+   "img": "flaskDoubles",
+   "bg": "yellow"
+  }
+ ]
+}
