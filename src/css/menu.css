@@ -51,7 +51,7 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 .au-nav__item--wide{flex-grow:1.45}
 .au-nav__item.is-active .au-nav__icon{width:60px;height:60px;transform:translateY(-14px);animation:nav-pop .32s cubic-bezier(.3,1.6,.5,1)}
 .au-nav__item.is-active .au-nav__label{display:block;position:absolute;bottom:10px}
-.au-nav__lock{position:absolute;left:50%;top:50%;width:26px;height:26px;transform:translate(-50%,-50%)}
+.au-nav__item img.au-nav__lock{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:0;transform:translate(-50%,-50%)} /* centred on the icon both ways */
 .au-nav__item--locked .au-nav__icon{opacity:.5;filter:grayscale(.85) drop-shadow(0 2px 0 var(--ink))}
 .au-nav__item--locked img.au-nav__lock{opacity:1;filter:drop-shadow(0 2px 0 var(--ink))}
 .au-nav__item img{object-fit:contain}
@@ -212,7 +212,7 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 .pf-input{height:44px;padding:0 12px;font:400 20px/1 var(--font-display);color:var(--text-dark);background:#fff;border:var(--outline) solid var(--ink);border-radius:var(--radius-md);outline:none}
 .pf-grid{display:flex;flex-wrap:wrap;gap:8px}
 .pf-pick{width:68px;height:68px;padding:3px;border:3px solid transparent;border-radius:14px;background:none;cursor:pointer}
-.pf-pick.is-on{border-color:var(--gold);background:rgba(251,225,73,.25)}
+.pf-pick.is-on{border-color:#3d9bff;background:rgba(61,155,255,.25);box-shadow:0 0 0 2px var(--ink)}
 .pf-save{margin-top:6px}
 
 /* ===== matchmaking: tilted red/blue halves, panels, VS / FIGHT ===== */
@@ -277,9 +277,9 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 .b-unlock{position:absolute;left:196px;top:260px;display:none;align-items:center;justify-content:center;white-space:nowrap;font-size:34px;color:var(--gold);-webkit-text-stroke:6px var(--ink);text-shadow:0 5px 0 var(--ink);pointer-events:none;z-index:6}
 
 /* ===== nav highlight, button feedback, entrances, switches ===== */
-.au-nav__hl{position:absolute;left:0;bottom:0;width:20%;height:96px;transition:transform .32s cubic-bezier(.3,1.25,.5,1);pointer-events:none;z-index:0}
+.au-nav__hl{position:absolute;left:0;bottom:0;width:78.6px;height:96px;transition:transform .32s cubic-bezier(.3,1.25,.5,1);pointer-events:none;z-index:0}
 .au-nav__hl::before{content:"";position:absolute;left:3px;right:3px;top:0;bottom:0;background:linear-gradient(180deg,#4a58bd,var(--nav-active));border:var(--outline) solid var(--ink);border-bottom:0;border-radius:14px 14px 0 0}
-.au-nav__item{z-index:1}
+.au-nav__item{z-index:1;flex:0 0 78.6px;width:78.6px} /* fixed equal slots: highlight is the same width on every screen */
 .au-nav__item.is-active .au-nav__label{bottom:12px}
 @keyframes nav-pop{0%{transform:translateY(-6px) scale(.7)}60%{transform:translateY(-16px) scale(1.12)}100%{transform:translateY(-14px) scale(1)}}
 .ui-pop{animation:ui-pop .22s ease-out}
@@ -319,9 +319,10 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 /* top bar floats over the content; on the battle tab the paper grid continues under it */
 .m-top{position:absolute;left:0;top:0;width:393px;z-index:4}
 .m-tab:not(.m-tab--flush){padding-top:74px}
-.b-scene{height:452px}.s-paper,.b-scene__lock{height:452px}
+.b-scene{height:424px}.b-scene__lock{height:424px}
+.s-paper{top:-200px;height:624px} /* paper reaches past the top edge, never a gap above */
 .b-scene__lock{padding-top:68px}
-.b-prog{top:386px}
+.b-prog{top:358px} /* bar centred on the screen middle (426) */
 .b-fx{top:0}
 
 /* background layers: doodle pattern (default) and blueprint grid (army tab) */
@@ -341,3 +342,9 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 /* paint containment: animating one card never repaints its neighbours */
 .b-sel__page{contain:layout paint} /* only boxes with nothing sticking out (paint containment clips overflow) */
 .m-tab{contain:layout paint}
+
+#t-battle.m-tab{animation:none} /* no slide-in on the battle tab: nothing may uncover the area above the paper */
+
+/* army tab: the list scrolls under a fixed line just below the top bar — nothing shows above it */
+#t-up.m-tab{top:68px;padding-top:8px}
+.m-root.is-army .m-top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--ink);box-shadow:0 2px 0 rgba(255,255,255,.12)}

@@ -62,6 +62,7 @@
   }
  },
  "aim": {
-  "edgeGain": 0.15
+  "edgeGain": 0.43,
+  "note": "finger at 70% of the way from centre to the edge already puts the cannon at the edge (1/(1+0.43))"
  }
 }

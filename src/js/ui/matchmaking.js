@@ -86,11 +86,13 @@ function openProfile(modal,onSave){
   const grid=MM.avatars.map((a,i)=>`<button class="pf-pick ${i===pick?'is-on':''}" data-ava="${i}">${avatarHTML(i)}</button>`).join('');
   const m=modal(T.menu.profile,`<div class="pf">
     <div class="pf-label au-outline-thin">${T.menu.nickname}</div>
-    <input class="pf-input" maxlength="14" spellcheck="false" autocomplete="off">
+    <input class="pf-input" maxlength="16" spellcheck="false" autocomplete="off" autocapitalize="off" inputmode="latin">
     <div class="pf-label au-outline-thin">${T.menu.avatar}</div>
     <div class="pf-grid">${grid}</div>
     <button class="au-btn au-btn--green pf-save" data-pf-save>${T.menu.save}</button></div>`,{cls:'au-modal--settings'});
-  const inp=m.querySelector('.pf-input');inp.value=P.name;
-  m.querySelectorAll('[data-ava]').forEach(b=>b.onclick=()=>{pick=+b.dataset.ava;m.querySelectorAll('.pf-pick').forEach(x=>x.classList.toggle('is-on',x===b))});
-  m.querySelector('[data-pf-save]').onclick=()=>{const n=inp.value.trim().slice(0,14);P.name=n||'Player';P.avatar=pick;saveMeta();m.remove();onSave&&onSave()};
+  const inp=m.querySelector('.pf-input');inp.value=P.name.replace(/[^A-Za-z]/g,'').slice(0,16);
+  // nickname: English letters only, up to 16
+  inp.addEventListener('input',()=>{const v=inp.value.replace(/[^A-Za-z]/g,'').slice(0,16);if(v!==inp.value)inp.value=v});
+  m.querySelectorAll('[data-ava]').forEach(b=>b.onclick=()=>{pick=+b.dataset.ava;const a=b.firstElementChild;a.classList.remove('ui-pop');void a.offsetWidth;a.classList.add('ui-pop');try{sfx('upgrade',.03)}catch(_){}m.querySelectorAll('.pf-pick').forEach(x=>x.classList.toggle('is-on',x===b))});
+  m.querySelector('[data-pf-save]').onclick=()=>{const n=inp.value.replace(/[^A-Za-z]/g,'').slice(0,16);P.name=n||'Player';P.avatar=pick;saveMeta();m.remove();onSave&&onSave()};
 }
