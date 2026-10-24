@@ -9,7 +9,7 @@ const cellKey=(x,z)=>(Math.floor(x/0.5)+20)*1000+(Math.floor(z/0.5)+40);
 
 function mkSide(id){
   const p=id==='p';
-  return{id,dir:p?-1:1,x:0,tx:0,cd:CFG.cannon.interval,dmgMul:1,rateMul:1,dmgPicks:0,ratePicks:0,
+  return{id,dir:p?-1:1,x:0,tx:0,cd:CFG.cannon.interval,dmgMul:1,rateMul:1,dmgPicks:0,ratePicks:0,pairs:0,
     rank:{dmg:1,rate:1,doubles:1,squad:1,giant:1,wave:1,fence:1,barrel:1},gold:0,lvl:1,pending:0,flasks:[],bag:[],
     buff:0,buffQ:[],hp:CFG.baseHp,hitT:0,reserve:[],recoil:0,
     front:p?P_FRONT:E_FRONT,foeFront:p?E_FRONT:P_FRONT,muzzle:p?P_MUZZLE:E_MUZZLE,flaskZ:p?P_FLASK_Z:E_FLASK_Z,

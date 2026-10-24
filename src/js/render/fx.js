@@ -21,28 +21,34 @@ function burst(X,Z,col,n){const B=FXD.burst;for(let i=0;i<n;i++){const a=VR()*6.
 function hitFx(X,Z,big,life){VIS.fx.push({x:sx(X),y:sy(Z),t:0,life:life||FXD.hit.life,rot:VR()*6.28,big:!!big})}
 // drain the simulation's event queue into sounds, haptics and effects
 function drainEvents(){
+  try{trackStats()}catch(e){}
   for(let i=0;i<EVQ.length;i++){const e=EVQ[i];
     switch(e.type){
-      case'sfx':sfx(e.name,e.gap);break;
+      case'sfx':sfx(e.name,e.gap);if(e.name==='tree'||e.name==='goldTree')MSTATS.trees++;else if(e.name==='flask')MSTATS.flasks++;break; // these sounds fire only for the player
       case'haptic':haptic(e.kind);break;
       case'burst':burst(e.x,e.z,col(e.col),e.n);break;
-      case'text':{const p=textPos(e);VIS.texts.push({x:p[0],y:p[1],txt:e.txt,col:col(e.col),t:0,size:e.size||12});break}
+      case'text':{const p=textPos(e);VIS.texts.push({x:p[0],y:p[1],txt:e.txt,col:col(e.col),t:0,size:e.size||12,tilt:(VR()-.5)*.3});break}
       case'hit':hitFx(e.x,e.z,e.big,e.life);break;
-      case'boom':VIS.booms.push({x:e.x,z:e.z,r:e.r,t:0});break;
-      case'rocketBoom':{const R=FXD.rocketBoom;for(let k=0;k<R.stars;k++)VIS.fx.push({x:sx(e.x)+rnd(-R.spreadX,R.spreadX),y:sy(e.z)+rnd(-R.spreadY,R.spreadY),t:-k*R.stagger,life:R.life,rot:VR()*6,big:true});break}
+      case'boom':VIS.booms.push({x:e.x,z:e.z,r:e.r,t:0});if(e.r>=FXD.camera.boomMinR)camPunch(FXD.camera.punchBoom,sx(e.x),sy(e.z));break;
+      case'rocketBoom':{camPunch(FXD.camera.punchRocket,sx(e.x),sy(e.z));const R=FXD.rocketBoom;for(let k=0;k<R.stars;k++)VIS.fx.push({x:sx(e.x)+rnd(-R.spreadX,R.spreadX),y:sy(e.z)+rnd(-R.spreadY,R.spreadY),t:-k*R.stagger,life:R.life,rot:VR()*6,big:true});break}
       case'levelUp':{const L=FXD.levelUp,x=sx(e.x),y=sy(e.z);burst(e.x,e.z,col('gold'),L.gold);burst(e.x,e.z,col('sparkYellow'),L.sparks);
         for(let k=0;k<L.rings;k++)VIS.rings.push({x,y,t:-k*L.stagger});
         for(let k=0;k<L.stars;k++)VIS.fx.push({x:x+rnd(-L.spreadX,L.spreadX),y:y+rnd(-L.spreadY,L.spreadY)-10,t:-k*L.starStagger,life:L.starLife,rot:VR()*6,big:false});break}
-      case'shake':VIS.shake=e.max?Math.max(VIS.shake,e.v):e.v;break;
+      case'shake':VIS.shake=Math.min(1,e.max?Math.max(VIS.shake,e.v):VIS.shake+e.v);break; // trauma: adds up, decays in updateVis
     }
   }
   EVQ.length=0;
 }
-function clearVis(){VIS.parts.length=0;VIS.texts.length=0;VIS.fx.length=0;VIS.booms.length=0;VIS.rings.length=0;VIS.shake=0;EVQ.length=0}
+// match stats for the result screen, counted by watching the field (enemy units / tanks that died); view only
+const MSTATS={units:0,tanks:0,trees:0,flasks:0,seen:new Set()};
+function trackStats(){if(!G||!G.units)return;const now=new Set(G.units);
+  for(const u of MSTATS.seen)if(!now.has(u)){if(u.side==='e'&&u.hp<=0){if(u.giant)MSTATS.tanks++;else MSTATS.units++}MSTATS.seen.delete(u)}
+  for(const u of G.units)if(u.side==='e')MSTATS.seen.add(u)}
+function clearVis(){MSTATS.units=0;MSTATS.tanks=0;MSTATS.trees=0;MSTATS.flasks=0;MSTATS.seen.clear();VIS.parts.length=0;VIS.texts.length=0;VIS.fx.length=0;VIS.booms.length=0;VIS.rings.length=0;VIS.shake=0;EVQ.length=0}
 // effects age with real time while the match is running (they freeze on pause)
 function updateVis(dt){
   for(const t of VIS.texts)t.t+=dt;VIS.texts=VIS.texts.filter(t=>t.t<animLen('floatText'));
-  for(const p of VIS.parts){p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=FXD.burst.dragPerFrame;p.vy*=FXD.burst.dragPerFrame}VIS.parts=VIS.parts.filter(p=>p.t<p.life);
+  for(const p of VIS.parts){p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=FXD.burst.dragPerFrame;p.vy*=FXD.burst.dragPerFrame;p.vy+=FXD.burst.gravity*dt}VIS.parts=VIS.parts.filter(p=>p.t<p.life);
   for(const r of VIS.rings)r.t+=dt;VIS.rings=VIS.rings.filter(r=>r.t<FXD.levelUp.life);
   for(const b of VIS.booms)b.t+=dt;VIS.booms=VIS.booms.filter(b=>b.t<animLen('boom'));
   for(const f of VIS.fx)f.t+=Math.min(.05,dt);VIS.fx=VIS.fx.filter(f=>f.t<f.life);

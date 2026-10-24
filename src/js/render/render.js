@@ -18,18 +18,35 @@ function outlined(txt,x,y,size,fill,stroke=PAL.ink,lw=3.5){
   ctx.lineJoin='round';ctx.lineWidth=lw;ctx.strokeStyle=stroke;ctx.strokeText(txt,x,y);ctx.fillStyle=fill;ctx.fillText(txt,x,y)}
 function bar(x,y,w,h,f,col){ctx.fillStyle=PAL.barBack;rr(x-1,y-1,w+2,h+2,3);ctx.fill();ctx.fillStyle=col;rr(x,y,Math.max(1,w*clamp(f,0,1)),h,2);ctx.fill()}
 
+// the broken base explodes: shockwave + flash, then every wall block flies outward from the blast, arcs up (fake height),
+// bounces, spins and settles; small stones and dust follow. Driven by G.endT, so the end-of-match slow motion slows it too.
+const hh=n=>{const v=Math.sin(n*12.9898)*43758.5453;return v-Math.floor(v)};
+function wallStone(x0,y0,t,k,B,cx,cy){
+  const a=Math.atan2(y0-cy,x0-cx)+(hh(k*3.1)-.5)*1.1,v=B.speed*(.45+hh(k*7.7)),gd=v*(1-Math.exp(-t*B.drag))/B.drag;
+  const vz=B.lift*(.5+hh(k*5.3)),T1=2*vz/B.g;let h;if(t<T1)h=vz*t-.5*B.g*t*t;else{const t2=t-T1,v2=vz*.33,T2=2*v2/B.g;h=t2<T2?v2*t2-.5*B.g*t2*t2:0}
+  return{x:x0+Math.cos(a)*gd,y:y0+Math.sin(a)*gd*.8,h:Math.max(0,h),rot:(hh(k*9.1)-.5)*B.spin*(1-Math.exp(-t*2.5))}}
+function drawWallBlast(s,y,i,X,Wd,Hh){
+  const B=DATA.fx.wallBlast,t=G.endT,seg=Wd/8,cx=W/2,cy=y+Hh/2,al=t<B.fadeAt?1:Math.max(0,1-(t-B.fadeAt)/.8);
+  if(t<B.ring){const k=t/B.ring;ctx.strokeStyle=pa('white',1-k);ctx.lineWidth=10*(1-k)+1;ctx.beginPath();ctx.ellipse(cx,cy,30+k*B.ringR,(30+k*B.ringR)*.5,0,0,7);ctx.stroke();
+    ctx.fillStyle=pa('boomCore',.9*(1-k));ctx.beginPath();ctx.arc(cx,cy,26+k*60,0,7);ctx.fill()}
+  ctx.globalAlpha=al;
+  for(let k=0;k<B.chips;k++){const p=wallStone(cx+(hh(k*1.3)-.5)*Wd*.9,cy+(hh(k*2.9)-.5)*Hh,t,k+40,B,cx,cy);
+    ctx.fillStyle=PAL.c3c372d_20;ctx.fillRect(p.x-2,p.y-1,4,2);ctx.fillStyle=k%3?PAL.rubble:PAL.barBack;ctx.save();ctx.translate(p.x,p.y-p.h);ctx.rotate(p.rot);ctx.fillRect(-2.5,-2.5,5,5);ctx.restore()}
+  for(let k=0;k<16;k++){const col=k%8,row=k>>3,x0=X+col*seg+seg/2,y0=y+row*(Hh/2)+Hh/4,p=wallStone(x0,y0,t,k,B,cx,cy),sc=1+p.h/140;
+    ctx.fillStyle=PAL.c3c372d_22;ctx.beginPath();ctx.ellipse(p.x,p.y+Hh/4,seg*.4/sc,4/sc,0,0,7);ctx.fill();
+    ctx.save();ctx.translate(p.x,p.y-p.h);ctx.rotate(p.rot);ctx.scale(sc,sc);
+    ctx.drawImage(i,col*i.naturalWidth/8,0,i.naturalWidth/8,i.naturalHeight,-seg/2,-Hh/4,seg-2,Hh/2);ctx.restore()}
+  ctx.globalAlpha=1;
+  if(t<1.4&&VR()<.6)burst(rnd(-3,3),s.front,PAL.rubble,3);
+  if(t<.9&&VR()<.35)burst(rnd(-2.5,2.5),s.front,PAL.smoke,2);
+}
 function drawWall(s){
   const y=s===G.P?UI.pWall:UI.eWall,sh=s.hitT>0?rnd(-1.5,1.5):0,i=IMG.wall,X=UI.wallX,Wd=UI.wallW,Hh=UI.wallH;
-  if(s.hp<=0&&G.state!=='play'){if(!i.complete)return;const t=G.endT,seg=Wd/8,WA=anim('wallCollapse',t);
-    for(let k=0;k<16;k++){const col=k%8,row=k>>3,sd=Math.sin(k*12.9898)*43758.5453,rn=sd-Math.floor(sd);
-      const fall=WA.fall,dx=(rn-.5)*40*fall,dy=(row?14:6)*fall,rot=(rn-.5)*1.2*fall;
-      ctx.save();ctx.globalAlpha=WA.alpha;ctx.translate(X+col*seg+seg/2+dx,y+row*(Hh/2)+Hh/4+dy+rn*8*fall);ctx.rotate(rot);
-      ctx.drawImage(i,col*i.naturalWidth/8,0,i.naturalWidth/8,i.naturalHeight,-seg/2,-Hh/4,seg-2,Hh/2);ctx.restore()}
-    if(t<1.2&&VR()<.5)burst(rnd(-3,3),s.front,PAL.rubble,3);return}
+  if(s.hp<=0&&G.state!=='play'){if(!i.complete)return;drawWallBlast(s,y,i,X,Wd,Hh);return}
   if(i.complete&&i.naturalWidth){const half=Hh/2+1;
-    ctx.drawImage(i,X+sh,y,Wd,half);
-    ctx.save();ctx.beginPath();ctx.rect(X,y+half-2,Wd,half+2);ctx.clip();
-    ctx.drawImage(i,X-Wd/16+sh,y+half-2,Wd,half);ctx.drawImage(i,X+Wd*15/16+sh,y+half-2,Wd,half);ctx.restore()}
+    for(const o of[-Wd,0,Wd])ctx.drawImage(i,X+o+sh,y,Wd,half); // copies left and right: the wall runs on past the screen edges
+    ctx.save();ctx.beginPath();ctx.rect(X-Wd,y+half-2,Wd*3,half+2);ctx.clip();
+    for(const o of[-Wd,0,Wd]){ctx.drawImage(i,X+o-Wd/16+sh,y+half-2,Wd,half);ctx.drawImage(i,X+o+Wd*15/16+sh,y+half-2,Wd,half)}ctx.restore()}
   const bx=X+20,bw=Wd-40,by=y+11,bh=20,f=s.hp/CFG.baseHp;
   ctx.fillStyle=PAL.barBack;rr(bx-2,by-2,bw+4,bh+4,7);ctx.fill();
   ctx.fillStyle=PAL.barTrack;rr(bx,by,bw,bh,5);ctx.fill();
@@ -38,37 +55,37 @@ function drawWall(s){
   if(s.hitT>0){ctx.fillStyle=PAL.cffffff_35;rr(bx,by,bw,bh,5);ctx.fill()}
   outlined(Math.ceil(s.hp)+' / '+CFG.baseHp,W/2,by+bh/2+1,13,PAL.white);
 }
-const XPV={show:0,lvl:0,last:0,flash:0,t:0,sparks:[]};
+// XP bar: one bar = the next 5 levels, split into 5 segments; the last segment is the ULTIMATE (badge + arrow).
+// Filling it offers the ultimate flask pair. The fill eases towards its target; a completed block runs to the end, flashes and restarts.
+const XPV={show:0,blk:-1,flash:0,t:0,sparks:[]};
 function drawExp(){
   if(G.state==='lose')return;
-  const P=G.P,bx=UI.wallX+20,bw=UI.wallW-40,by=UI.pWall+11+20+3,bh=6,target=P.gold/levelCost(P);
+  const P=G.P,N=CFG.ult.every,bx=UI.wallX+20,bw=UI.wallW-40,by=UI.pWall+11+20+3,bh=9;
   const now=nowMs(),dt=Math.min(.05,(now-(XPV.t||now))/1000);XPV.t=now;
-  if(XPV.lvl===0||XPV.lvl>P.lvl){XPV.lvl=P.lvl;XPV.show=target;XPV.last=target}
-  // gain detected -> flash + sparks
-  if(P.lvl>XPV.lvl||target>XPV.last+1e-6){XPV.flash=1;}
-  XPV.last=target;
-  const goal=P.lvl>XPV.lvl?1:target;
-  XPV.show+=(goal-XPV.show)*Math.min(1,dt*7)+Math.sign(goal-XPV.show)*dt*.15;
-  if(goal>=XPV.show-1e-3&&Math.abs(goal-XPV.show)<.004)XPV.show=goal;
-  if(P.lvl>XPV.lvl&&XPV.show>=.995){XPV.lvl++;XPV.show=0;XPV.flash=1.4;
-    for(let i=0;i<18;i++)XPV.sparks.push({x:bx+VR()*bw,y:by+bh/2,vx:(VR()-.5)*60,vy:-30-VR()*70,t:0})}
-  const f=clamp(XPV.show,0,1),edge=bx+bw*f;
-  if(XPV.flash>0){XPV.flash=Math.max(0,XPV.flash-dt*2.2);if(VR()<.6&&f>0)XPV.sparks.push({x:edge,y:by+bh/2,vx:(VR()-.5)*40,vy:-20-VR()*50,t:0})}
-  const fl=Math.min(1,XPV.flash);
-  ctx.fillStyle=PAL.barBack;rr(bx-2,by-1.5,bw+4,bh+3,4);ctx.fill();
-  ctx.fillStyle=PAL.barTrack;rr(bx,by,bw,bh,3);ctx.fill();
-  // ghost of the target ahead of the animated fill
-  if(goal>f+.002){ctx.fillStyle=pa('xpGhost',.45+.35*Math.sin(now/60));rr(edge,by,bw*(goal-f),bh,3);ctx.fill()}
-  if(f>0){
-    if(fl>0){ctx.save();ctx.fillStyle=pa('gold',.35*fl);rr(bx-4,by-4,Math.max(4,bw*f)+8,bh+8,6);ctx.fill()}
-    ctx.fillStyle=fl>0?lerpCol('gold','xpFlash',fl):PAL.gold;rr(bx,by,Math.max(4,bw*f),bh,3);ctx.fill();
-    if(fl>0)ctx.restore();
-    ctx.fillStyle=PAL.cffffff_40;rr(bx+2,by+1,Math.max(1,bw*f-4),2,1);ctx.fill();
-    // moving shine
-    const sh=bx+((now/700)%1.6-.3)*bw;if(sh<edge){ctx.save();ctx.beginPath();ctx.rect(bx,by,bw*f,bh);ctx.clip();
-      ctx.fillStyle=PAL.cffffff_35;ctx.beginPath();ctx.moveTo(sh,by);ctx.lineTo(sh+10,by);ctx.lineTo(sh+4,by+bh);ctx.lineTo(sh-6,by+bh);ctx.fill();ctx.restore()}
-    if(fl>0){ctx.fillStyle=pa('white',fl);ctx.beginPath();ctx.arc(edge,by+bh/2,3+3*fl,0,7);ctx.fill()}
-  }
+  const done=P.lvl-1,blk=Math.floor(done/N),target=((done%N)+Math.min(1,P.gold/levelCost(P)))/N;
+  if(XPV.blk<0||blk<XPV.blk){XPV.blk=blk;XPV.show=target}
+  const goal=blk>XPV.blk?1:target;
+  if(goal>XPV.show+1e-4){const prev=XPV.show;XPV.show=Math.min(goal,XPV.show+(goal-XPV.show)*Math.min(1,dt*7)+dt*.12);
+    if(Math.floor(prev*N+1e-6)<Math.floor(XPV.show*N+1e-6)){XPV.flash=1;const ex=bx+bw*Math.floor(XPV.show*N+1e-6)/N;for(let i=0;i<10;i++)XPV.sparks.push({x:ex,y:by+bh/2,vx:(VR()-.5)*70,vy:-30-VR()*60,t:0})}}
+  else if(goal<XPV.show)XPV.show=goal;
+  if(blk>XPV.blk&&XPV.show>=.999){XPV.blk=blk;XPV.show=0;XPV.flash=1.6;for(let i=0;i<26;i++)XPV.sparks.push({x:bx+VR()*bw,y:by+bh/2,vx:(VR()-.5)*80,vy:-40-VR()*80,t:0})}
+  if(XPV.flash>0)XPV.flash=Math.max(0,XPV.flash-dt*2.2);
+  const f=clamp(XPV.show,0,1),edge=bx+bw*f,seg=bw/N,ux=bx+seg*(N-1),fl=Math.min(1,XPV.flash),pul=.5+.5*Math.sin(now/180);
+  ctx.fillStyle=PAL.barBack;rr(bx-2,by-1.5,bw+4,bh+3,5);ctx.fill();
+  ctx.fillStyle=PAL.barTrack;rr(bx,by,bw,bh,4);ctx.fill();
+  ctx.fillStyle=pa('upgPurple',.35+.2*pul);rr(ux,by,seg,bh,4);ctx.fill();               // the ultimate segment glows while empty
+  if(f>0){ctx.save();ctx.beginPath();rr(bx,by,bw,bh,4);ctx.clip();
+    ctx.fillStyle=fl>0?lerpCol('gold','xpFlash',fl):PAL.gold;ctx.fillRect(bx,by,bw*f,bh);
+    if(f>(N-1)/N){ctx.fillStyle=lerpCol('upgPurple','xpFlash',.25*pul);ctx.fillRect(ux,by,edge-ux,bh)}
+    ctx.fillStyle=PAL.cffffff_40;ctx.fillRect(bx,by+1,bw*f,2);
+    const sh=bx+((now/700)%1.6-.3)*bw;if(sh<edge){ctx.fillStyle=PAL.cffffff_35;ctx.beginPath();ctx.moveTo(sh,by);ctx.lineTo(sh+10,by);ctx.lineTo(sh+4,by+bh);ctx.lineTo(sh-6,by+bh);ctx.fill()}
+    ctx.restore();ctx.fillStyle=pa('white',.6+.4*fl);ctx.beginPath();ctx.arc(edge,by+bh/2,2.5+2*fl,0,7);ctx.fill()}
+  ctx.fillStyle=PAL.barBack;for(let k=1;k<N;k++)ctx.fillRect(bx+seg*k-1.2,by-1,2.4,bh+2);   // segment dividers
+  // ULT badge above the last segment, with a little arrow pointing down at it
+  const cx=ux+seg/2,cy=by-11,bob=Math.sin(now/220)*1.5;
+  ctx.fillStyle=PAL.barBack;ctx.beginPath();ctx.moveTo(cx-5,cy+5+bob);ctx.lineTo(cx+5,cy+5+bob);ctx.lineTo(cx,cy+10+bob);ctx.fill();
+  ctx.fillStyle=PAL.upgPurple;rr(cx-17,cy-7+bob,34,13,6);ctx.fill();ctx.strokeStyle=PAL.barBack;ctx.lineWidth=2;ctx.stroke();
+  outlined(T.game.ult,cx,cy+bob,10,PAL.white,PAL.ink,3);
   for(const p of XPV.sparks){p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=160*dt;
     ctx.globalAlpha=Math.max(0,1-p.t/.6);ctx.fillStyle=p.t<.15?PAL.white:PAL.gold;ctx.fillRect(p.x-1.5,p.y-1.5,3,3)}
   ctx.globalAlpha=1;XPV.sparks=XPV.sparks.filter(p=>p.t<.6);
@@ -165,8 +182,11 @@ function drawFlask(f){
   const by=y+24,bw=40;if(f.hp<CFG.flask.hp)bar(x-bw/2,by,bw,7,f.hp/CFG.flask.hp,PAL.hpGreen);
   TF_LOCK=f.tf||null;const info=upgInfo(s,f.type);TF_LOCK=null;outlined(info.t,x,y-42,12,PAL.white);outlined(info.v,x,y-28,12,u.col===PAL.cc9c2b4?PAL.white:u.col);
 }
+// spawn pop (view only): every unit scales in with an overshoot the first time it is drawn
+const BORN=new WeakMap();
+function spawnK(u){const now=nowMs();if(!BORN.has(u))BORN.set(u,now);return anim('unitSpawn',(now-BORN.get(u))/1000).scale}
 function drawUnit(u){
-  let x=sx(u.x),y=sy(u.z);const pop=u.hit>0?(u.giant?CFG.giant.hitScale:1.15):1;
+  let x=sx(u.x),y=sy(u.z);const pop=(u.hit>0?(u.giant?CFG.giant.hitScale:1.15):1)*spawnK(u);
   if(u.giant){
     const w=GIANT_PX*u.vis*pop,fd=u.side==='p'?-1:1,rec=u.fire>0?Math.sin(Math.min(1,u.fire/.2)*Math.PI)*4:0;
     y-=fd*rec;
@@ -216,15 +236,22 @@ function drawRocket(r){
   const g=ctx.createLinearGradient(0,len*.15,0,len*.15+fl);g.addColorStop(0,PAL.cffdc5a_95);g.addColorStop(1,PAL.cff5a28_0);
   ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(-w*.18,len*.15);ctx.quadraticCurveTo(0,len*.15+fl*1.2,w*.18,len*.15);ctx.fill();
   ctx.restore();
+  // speed streaks: thin lines sliding back along the flight path (motion read)
+  ctx.save();ctx.translate(x,y);ctx.rotate(ang);ctx.strokeStyle=PAL.cffffff_60;ctx.lineCap='round';
+  for(let k=0;k<4;k++){const q=((G.time*3.2+k*.25)%1),sxo=(k-1.5)*w*.32,y0=len*.2+q*len*1.3;ctx.globalAlpha=.7*(1-q);ctx.lineWidth=2-q;
+    ctx.beginPath();ctx.moveTo(sxo,y0);ctx.lineTo(sxo,y0+len*.45);ctx.stroke()}
+  ctx.restore();ctx.globalAlpha=1;
   FLASH=r.hit>0?r.hit/.1:0;drawFlyObj(ARENAS[G.arena||0].obj,x,y,w,ang);FLASH=0;
 }
 // ---- render layers: each one draws one sorting layer; the order comes from data/render.json ----
 function L_paper(){
   // squared notebook paper, cached at screen resolution so the lines stay crisp
-  const AR=ARENAS[G.arena||0];if(PAPER.k!==K+':'+(G.arena||0)){const c=PAPER.c;c.width=cv.width;c.height=cv.height;const p=c.getContext('2d');p.setTransform(K,0,0,K,0,0);
-    p.fillStyle=AR.paper;p.fillRect(0,0,W,H);p.strokeStyle=AR.grid;p.lineWidth=1/K*1.2;const step=13;
-    p.beginPath();for(let x=step/2;x<W;x+=step){p.moveTo(x,0);p.lineTo(x,H)}for(let y=step/2;y<H;y+=step){p.moveTo(0,y);p.lineTo(W,y)}p.stroke();PAPER.k=K+':'+(G.arena||0)}
-  ctx.drawImage(PAPER.c,0,0,W,H);
+  // the cache reaches M px past every edge, so the camera can glide sideways without showing a border
+  const M=FOREST_M,AR=ARENAS[G.arena||0];if(PAPER.k!==K+':'+(G.arena||0)){const c=PAPER.c;c.width=Math.round((W+2*M)*K);c.height=Math.round((H+2*M)*K);const p=c.getContext('2d');p.setTransform(K,0,0,K,M*K,M*K);
+    p.fillStyle=AR.paper;p.fillRect(-M,-M,W+2*M,H+2*M);p.strokeStyle=AR.grid;p.lineWidth=1/K*1.2;const step=13,x0=step/2-Math.ceil(M/step)*step;
+    p.beginPath();for(let x=x0;x<W+M;x+=step){p.moveTo(x,-M);p.lineTo(x,H+M)}for(let y=x0;y<H+M;y+=step){p.moveTo(-M,y);p.lineTo(W+M,y)}p.stroke();PAPER.k=K+':'+(G.arena||0)}
+  // depth: the paper is the farthest layer, so it follows the camera less than the forest and the units (parallax)
+  const c=CAM.last,px=c?-c.x*.4:0,py=c?-c.y*.4:0;ctx.drawImage(PAPER.c,px-M,py-M,W+2*M,H+2*M);
 }
 function L_slickOil(){
   for(const o of G.slicks){const x=sx(o.x),y=sy(o.z),a=Math.min(1,o.t*4)*Math.min(1,(CFG.barrel.slickTime-o.t)/1.2);
@@ -235,6 +262,14 @@ function L_slickOil(){
     ctx.fillStyle=PAL.cb478ff_18;ctx.beginPath();ctx.ellipse(x+o.r*PX*.2,y+o.r*PZ*.15,o.r*PX*.22,o.r*PZ*.1,.4,0,7);ctx.fill();
     ctx.globalAlpha=1}
 }
+// the forest runs on past both screen edges (decoration only, never part of the match): the outer bands of the
+// real forest are copied one band-width further out, so the pattern continues seamlessly
+const FOREST_M=130;
+function decoTrees(){if(FOREST.decoG===G)return FOREST.deco;const B=W*DATA.fx.forestExtra,out=[];
+  // copy the band that starts at the forest's real edge, shifted by exactly the band width: no seam between real and copied trees
+  let lo=1e9,hi=-1e9;for(const t of G.trees){const x=sx(t.x);if(x<lo)lo=x;if(x>hi)hi=x}
+  for(const t of G.trees){const x=sx(t.x);if(x<lo+B)out.push({x:wx(x-B),z:t.z,g:t.g,deco:1});if(x>hi-B)out.push({x:wx(x+B),z:t.z,g:t.g,deco:1})}
+  FOREST.decoG=G;return FOREST.deco=out}
 function L_forest(){
   // forest & pedestals, back-to-front
   const peds=G.peds.slice().sort((a,b)=>a.z-b.z);let pi=0;
@@ -244,11 +279,13 @@ function L_forest(){
     if(p.hp<CFG.pedestal.hp)bar(x-15,y-58,30,4,p.hp/CFG.pedestal.hp,PAL.hpGreen)};
   // forest cached in two images (behind / in front of the rocket pedestals); only a small patch is repainted when a tree falls
   const cachedT=t=>!t.dead&&t.hp>=t.max,PZc=CFG.pedestal.z,layerOf=t=>t.z<PZc?0:1,drawTS=t=>{ctx.fillStyle=PAL.c3c3223_25;ctx.beginPath();ctx.ellipse(sx(t.x)+1,sy(t.z)+7,8,3,0,0,7);ctx.fill()},drawT=t=>spr(treeKey(t.g,G.arena||0),sx(t.x),sy(t.z)+7,21,.5,.85);
-  const sig=K+':'+G.treesInit+':'+G.trees.length;
+  const sig=K+':'+G.treesInit+':'+G.trees.length,MF=FOREST_M;
   if(FOREST.g!==G||FOREST.sig!==sig){
     if(IMG.treeG.complete&&IMG.treeY.complete){
-      const fcs=FOREST.L.map(c=>{c.width=cv.width;c.height=cv.height;const x=c.getContext('2d');x.setTransform(K,0,0,K,0,0);return x});
-      const keep=ctx;for(const t of G.trees){t.gone=!cachedT(t);if(!t.gone){ctx=fcs[layerOf(t)];drawTS(t)}}for(const t of G.trees)if(cachedT(t)){ctx=fcs[layerOf(t)];drawT(t)}ctx=keep;FOREST.sig=sig;FOREST.g=G}
+      const D=decoTrees();
+      const fcs=FOREST.L.map(c=>{c.width=Math.round((W+2*MF)*K);c.height=cv.height;const x=c.getContext('2d');x.setTransform(K,0,0,K,MF*K,0);return x});
+      const keep=ctx;for(const t of D){ctx=fcs[layerOf(t)];drawTS(t)}for(const t of D){ctx=fcs[layerOf(t)];drawT(t)}
+      for(const t of G.trees){t.gone=!cachedT(t);if(!t.gone){ctx=fcs[layerOf(t)];drawTS(t)}}for(const t of G.trees)if(cachedT(t)){ctx=fcs[layerOf(t)];drawT(t)}ctx=keep;FOREST.sig=sig;FOREST.g=G}
   }else{
     for(const d of G.trees)if(!cachedT(d)&&!d.gone){d.gone=true;
       const x0=sx(d.x)-14,y0=sy(d.z)-18,w=28,h=32,keep=ctx;
@@ -256,9 +293,9 @@ function L_forest(){
         const nb=[];for(const t of G.trees)if(cachedT(t)&&layerOf(t)===li){const tx=sx(t.x),ty=sy(t.z);if(tx>x0-20&&tx<x0+w+14&&ty>y0-12&&ty<y0+h+30)nb.push(t)}nb.forEach(drawTS);nb.forEach(drawT)
         fc.restore()});ctx=keep}
   }
-  ctx.drawImage(FOREST.L[0],0,0,W,H);
+  ctx.drawImage(FOREST.L[0],-MF,0,W+2*MF,H);
   while(pi<peds.length){drawPed(peds[pi]);pi++}
-  ctx.drawImage(FOREST.L[1],0,0,W,H);
+  ctx.drawImage(FOREST.L[1],-MF,0,W+2*MF,H);
   // damaged trees are drawn live: they shrink with lost HP and sway from the trunk when hit
   // damaged trees are drawn live (sway on hit); the healthy trees just in front are redrawn on top to keep the depth order
   const dmgT=G.trees.filter(t=>!t.dead&&t.hp<t.max);
@@ -364,11 +401,11 @@ function L_flasks(){
   for(const f of G.P.flasks)drawFlask(f); // flasks always on top
 }
 function L_particles(){
-  for(const p of VIS.parts){ctx.globalAlpha=Math.max(0,1-p.t/p.life);ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill()}
+  for(const p of VIS.parts){const k=p.t/p.life;ctx.globalAlpha=Math.max(0,1-k*k);ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.r*(1-k*.55),0,7);ctx.fill()}
   ctx.globalAlpha=1;
 }
 function L_floatTexts(){
-  for(const t of VIS.texts){const A=anim('floatText',t.t);ctx.globalAlpha=A.alpha;outlined(t.txt,t.x,t.y+A.dy,t.size,t.col)}
+  for(const t of VIS.texts){const A=anim('floatText',t.t);ctx.globalAlpha=A.alpha;ctx.save();ctx.translate(t.x,t.y+A.dy);ctx.rotate((t.tilt||0)*A.tilt);ctx.scale(A.scale,A.scale);outlined(t.txt,0,0,t.size,t.col);ctx.restore()}
   ctx.globalAlpha=1;
 }
 function L_banners(){
@@ -381,10 +418,62 @@ function L_banners(){
 function L_endScreen(){
   if(G.state!=='play')drawEnd();
 }
+// ---- living camera (view only): slow handheld drift, lean towards the aim, damped shake from sim shake events,
+// punch-ins on big impacts, a dolly-in when the match appears and a push-in on the broken base at the end.
+// Smooth sine noise instead of random jitter, so shakes have weight. Unity: Cinemachine noise + impulse.
+const RMOT=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CAM={lean:0,pz:0,pfx:W/2,pfy:H/2,t0:0};
+function camPunch(amt,x,y){if(amt>CAM.pz){CAM.pfx=x;CAM.pfy=y}CAM.pz=Math.min(.09,CAM.pz+amt)}
+function camera(){
+  const C=DATA.fx.camera,t=nowMs()/1000,run=Flow.running()&&!Clock.frozen;
+  if(RMOT)return CAM.last={x:0,y:0,z:C.baseZoom,r:0,fx:W/2,fy:H/2}; // reduced motion: steady camera
+  let z=C.baseZoom,fx=W/2,fy=H/2,x=Math.sin(t*.31)*C.drift+Math.sin(t*.17+1.3)*C.drift*.6,y=Math.sin(t*.23+2.1)*C.drift*.8,r=Math.sin(t*.13)*C.roll;
+  // follow: the camera stays centred while the cannon is in the middle and glides after it near the edges,
+  // just enough to keep the whole tank in view (smoothstep dead zone + critically damped spring)
+  const F=C.follow,d=sx(G.P.x)-W/2,ad=Math.abs(d),k=Math.min(1,Math.max(0,(ad-F.start)/(F.end-F.start))),want=-Math.sign(d)*k*k*(3-2*k)*F.px;
+  const dt=Math.min(.05,(nowMs()-(CAM.tl||nowMs()))/1000);CAM.tl=nowMs();const w=F.speed;
+  CAM.v=(CAM.v||0)+(w*w*(want-CAM.lean)-2*w*(CAM.v||0))*dt;CAM.lean+=CAM.v*dt;x+=CAM.lean;
+  const it=(nowMs()-CAM.t0)/1000;if(it<C.introTime){const k=1-Math.pow(1-it/C.introTime,3);z+=(C.introZoom-C.baseZoom)*(1-k);y+=C.introRise*(1-k)}
+  if(G.state!=='play'){const E=DATA.fx.endSlowmo,r=ENDV.g===G?(performance.now()-ENDV.t0)/1000:0,wy=G.state==='win'?UI.eWall+UI.wallH/2:UI.pWall+UI.wallH/2;
+    // close in on the broken base during the slow motion, then ease back a little
+    const kin=EASE.cubicOut(Math.min(1,r/E.zoomIn)),kout=EASE.cubicInOut(Math.max(0,Math.min(1,(r-E.hold)/(E.ramp+.6))));
+    z+=E.zoom*kin-(E.zoom-C.endZoom)*kout;fx=W/2;fy=wy;y+=((G.state==='win'?H*.3:H*.7)-wy)*kin*(1-kout*.6)} // and pan it towards the middle
+  if(CAM.pz>.0005){z+=CAM.pz;fx+=(CAM.pfx-fx)*.5;fy+=(CAM.pfy-fy)*.5;if(run)CAM.pz*=C.punchDecay}
+  const tr=Math.min(1,VIS.shake),s=tr*tr;
+  if(s>0){const n=(a,b,c)=>Math.sin(t*a)*.55+Math.sin(t*b+1.7)*.3+Math.sin(t*c+4.1)*.15;
+    x+=n(53,97,161)*s*C.shakePx;y+=n(61,89,173)*s*C.shakePx;r+=n(47,79,131)*s*C.shakeRoll}
+  return CAM.last={x,y,z,r,fx,fy};
+}
+// INTRO3D.k: 1 = low perspective close-up of the field (set by the matchmaking timeline), 0 = normal battle view.
+// The flat ground is warped strip by strip; trees, pedestals and tanks are drawn upright at their projected foot.
+const INTRO3D={k:0},OFF={c:document.createElement('canvas')};
+function proj(x,y,P){const d=P.fy-y,s=P.f/(P.f+d*P.sin);return[W/2+(x-W/2)*s*P.z,P.sy-d*P.cos*s*P.z,s*P.z]}
+function drawIntro3D(k){
+  const C=DATA.fx.intro3d,e=k*k*(3-2*k),a=C.angle*e*Math.PI/180,P={f:C.focal,sin:Math.sin(a),cos:Math.cos(a),z:1+(C.zoom-1)*e,fy:C.focusY,sy:C.focusY+(C.screenY-C.focusY)*e};
+  // ground: paper, walls and HP bars rendered flat off-screen, then warped in horizontal strips
+  const o=OFF.c;if(o.width!==cv.width||o.height!==cv.height){o.width=cv.width;o.height=cv.height}
+  const keep=ctx;ctx=o.getContext('2d');ctx.setTransform(K,0,0,K,0,0);ctx.clearRect(0,0,W,H);L_paper();L_walls();ctx=keep;
+  const AR=ARENAS[G.arena||0];ctx.fillStyle=AR.paper;ctx.fillRect(-60,-60,W+120,H+120); // beyond the far edge: plain paper, then a haze
+  const st=C.strip;for(let y=0;y<H;y+=st){const[,y0,s0]=proj(W/2,y,P),[,y1]=proj(W/2,y+st,P),w=W*s0;if(y1<-2||y0>H+2)continue;
+    ctx.drawImage(o,0,y*K,o.width,st*K,W/2-w/2-1,y0,w+2,Math.max(.5,y1-y0)+.6)}
+  const hz=ctx.createLinearGradient(0,-10,0,H*C.haze*e);hz.addColorStop(0,AR.paper);hz.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=hz;ctx.fillRect(-60,-60,W+120,H*C.haze*e+60);
+  // upright sprites, far to near
+  const items=[];const MFt=t=>!t.dead;
+  for(const t of decoTrees())items.push([sy(t.z),0,t]);for(const t of G.trees)if(MFt(t))items.push([sy(t.z),0,t]);
+  for(const p of G.peds)if(!p.dead)items.push([sy(p.z),1,p]);items.push([UI.eTankY,2,G.E],[UI.pTankY,2,G.P]);
+  items.sort((a,b)=>a[0]-b[0]);
+  for(const[,kind,o_]of items){let fx,fy;
+    if(kind===0){fx=sx(o_.x);fy=sy(o_.z)+7}else if(kind===1){fx=sx(o_.x);fy=sy(o_.z)+10}else{fx=sx(o_.x);fy=(o_===G.P?UI.pTankY:UI.eTankY)+22}
+    const[X,Y,S]=proj(fx,fy,P);if(Y<-60||Y>H+80||X<-60||X>W+60)continue;
+    ctx.save();ctx.translate(X,Y);ctx.scale(S,S);ctx.translate(-fx,-fy);
+    if(kind===0)spr(treeKey(o_.g,G.arena||0),fx,fy,21,.5,.85);else if(kind===1)drawPedObj(ARENAS[G.arena||0].obj,fx,fy-10,1);else drawTank(o_);
+    ctx.restore()}
+}
 function draw(){
   if(Clock.frozen)VRNG.seed((G.time*60|0)+1); // repeatable frame while frozen
   ctx.setTransform(K,0,0,K,0,0);
-  if(VIS.shake>0){const m=VIS.shake*DATA.fx.shake.pxPerUnit;ctx.translate(rnd(-m,m),rnd(-m,m))}
+  const c=camera();ctx.translate(c.fx+c.x,c.fy+c.y);ctx.rotate(c.r);ctx.scale(c.z,c.z);ctx.translate(-c.fx,-c.fy);
+  if(INTRO3D.k>.001&&!RMOT){drawIntro3D(INTRO3D.k);return}
   for(const n of DATA.render.layers)LAYERS[n]();
 }
 const LAYERS={paper:L_paper,slickOil:L_slickOil,forest:L_forest,walls:L_walls,xpBar:L_xpBar,waves:L_waves,barrels:L_barrels,splats:L_splats,slickFire:L_slickFire,actors:L_actors,bullets:L_bullets,hitFx:L_hitFx,shells:L_shells,booms:L_booms,rockets:L_rockets,tanks:L_tanks,flasks:L_flasks,particles:L_particles,floatTexts:L_floatTexts,banners:L_banners,endScreen:L_endScreen};
@@ -393,11 +482,10 @@ const LAYERS={paper:L_paper,slickOil:L_slickOil,forest:L_forest,walls:L_walls,xp
 const CONF=[];const CCOL=[PAL.teamE,PAL.gold,PAL.teamP,PAL.hpGreen,PAL.upgPurple,PAL.upgOrange,PAL.white];
 function drawEnd(){
   const now=nowMs(),dt=Math.min(.05,(now-(drawEnd.t||now))/1000);drawEnd.t=now;
-  if(G.endT<3.5&&!Flow.paused()&&!(Clock.frozen&&CONF.length)){const n=G.endT<.1&&CONF.length<70?70:(VR()<.7?1:0);for(let i=0;i<n;i++)CONF.push({x:VR()*W,y:CONF.length<70?-VR()*H*.6:-10,vy:60+VR()*90,vx:(VR()-.5)*40,
+  if(G.state==='win'&&G.endT<3.5&&!Flow.paused()&&!(Clock.frozen&&CONF.length)){/* confetti only for a win */const n=G.endT<.1&&CONF.length<70?70:(VR()<.7?1:0);for(let i=0;i<n;i++)CONF.push({x:VR()*W,y:CONF.length<70?-VR()*H*.6:-10,vy:60+VR()*90,vx:(VR()-.5)*40,
     r:VR()*6.28,vr:(VR()-.5)*10,w:5+VR()*5,h:3+VR()*4,c:CCOL[Math.floor(VR()*CCOL.length)],ph:VR()*6})}
   for(const c of CONF){if(!Flow.paused()){c.y+=c.vy*dt;c.x+=(c.vx+Math.sin(now/300+c.ph)*25)*dt;c.r+=c.vr*dt}
     ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.r);ctx.scale(1,Math.abs(Math.cos(now/200+c.ph))+.2);ctx.fillStyle=c.c;ctx.fillRect(-c.w/2,-c.h/2,c.w,c.h);ctx.restore()}
   for(let i=CONF.length-1;i>=0;i--)if(CONF[i].y>H+20)CONF.splice(i,1);
-  const win=G.state==='win';ctx.save();ctx.translate(W/2,H*.42);const sc=anim('bannerEnd',G.endT).scale;ctx.scale(sc,sc);
-  bounceText(win?T.game.win:T.game.lose,0,0,46,win?PAL.gold:PAL.loseRed,G.endT%DATA.anims.bannerEnd.letterLoop);ctx.restore();
+  // no VICTORY / DEFEAT text here: the result screen shows it
 }

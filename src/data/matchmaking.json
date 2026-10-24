@@ -67,5 +67,18 @@
   "rightPct": 47.7,
   "width": 8
  },
- "bgScroll": 26
+ "bgScroll": 26,
+ "words": {
+  "vs": {
+   "from": 230,
+   "dur": 0.42,
+   "hit": 0.24
+  },
+  "fight": {
+   "from": 150,
+   "dur": 0.36,
+   "stagger": 0.045,
+   "hit": 0.42
+  }
+ }
 }

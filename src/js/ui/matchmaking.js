@@ -32,22 +32,37 @@ function openMatchmaking(onCancel){
    <svg class="mm-seam" viewBox="0 0 393 852" preserveAspectRatio="none"><line x1="-2" y1="${852*MM.seam.leftPct/100}" x2="395" y2="${852*MM.seam.rightPct/100}" stroke="#0d0b1a" stroke-width="${MM.seam.width}"/></svg>
    <div class="mm-search au-outline">${U_.searching}</div>
    <button class="mm-cancel" aria-label="cancel"><svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5 5 15" stroke="#0d0b1a" stroke-width="6" stroke-linecap="round"/><path d="M5 5l10 10M15 5 5 15" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></button>
-   <div class="mm-word mm-word--vs au-outline">${U_.vs}</div>
-   <div class="mm-word mm-word--fight au-outline">${U_.fightBanner}</div>`;
+   <div class="mm-lines"></div><div class="mm-flash"></div>
+   <div class="mm-word mm-word--vs">${[...U_.vs].map(c=>`<span class="mm-l">${c}</span>`).join('')}</div>
+   <div class="mm-word mm-word--fight">${[...U_.fightBanner].map(c=>`<span class="mm-l">${c}</span>`).join('')}</div>`;
   el.querySelector('.mm-panel--me .mm-name').textContent=P.name;
   el.querySelector('.mm-cancel').onclick=()=>{closeMatchmaking();onCancel&&onCancel()};
   document.getElementById('ui').appendChild(el);
-  MMS.el=el;MMS.t0=performance.now();MMS.phase='search';
+  MMS.el=el;MMS.t0=performance.now();MMS.phase='search';MMS.vsOn=MMS.fgOn=0;
   MMS.raf=requestAnimationFrame(tickMatchmaking);
 }
-function closeMatchmaking(){cancelAnimationFrame(MMS.raf);if(MMS.el)MMS.el.remove();MMS.el=null;MMS.phase=''}
+// VS: the letters fly in from opposite sides and clash in the middle; FIGHT: letters drop one by one and land with a squash.
+// Web Animations API, transform/opacity/filter only; timings in data/matchmaking.json -> words.
+function wordIn(box,kind){const W_=MM.words[kind],ls=[...box.querySelectorAll('.mm-l')];
+  ls.forEach((l,i)=>{let k;
+    if(kind==='vs'){const s=i===0?-1:1;k=[{transform:`translate(${s*W_.from}px,0) rotate(${s*-28}deg) scale(1.6)`,opacity:0,filter:'blur(8px)'},
+      {transform:'translate(0,0) rotate(0) scale(1.35,.72)',opacity:1,filter:'blur(0)',offset:.55,easing:'cubic-bezier(.2,.9,.3,1)'},
+      {transform:'scale(.9,1.12)',offset:.75},{transform:'none',opacity:1}]}
+    else k=[{transform:`translateY(${-W_.from}px) scale(.8,1.5)`,opacity:0,filter:'blur(6px)'},
+      {transform:'translateY(0) scale(1.3,.7)',opacity:1,filter:'blur(0)',offset:.5,easing:'cubic-bezier(.5,0,.8,.6)'},
+      {transform:'translateY(-6px) scale(.9,1.1)',offset:.72},{transform:'none',opacity:1}];
+    l.animate(k,{duration:W_.dur*1000,delay:(kind==='vs'?0:i*W_.stagger)*1000,easing:'linear',fill:'both'})});
+  if(kind==='fight')box.animate([{transform:'translate(-50%,-50%) scale(1)'},{transform:'translate(-50%,-50%) scale(1.14)',offset:.4},{transform:'translate(-50%,-50%) scale(1)'}],
+    {duration:260,delay:(W_.hit)*1000,easing:'ease-out'});
+}
+function closeMatchmaking(){INTRO3D.k=0;cancelAnimationFrame(MMS.raf);if(MMS.el)MMS.el.remove();MMS.el=null;MMS.phase=''}
 const fmtNum=n=>String(Math.round(n));
 // one frame of the timeline; every visual value comes from anim() tracks
 function tickMatchmaking(now){
   const el=MMS.el;if(!el)return;MMS.raf=requestAnimationFrame(tickMatchmaking);
   const t=(now-MMS.t0)/1000,TL=MM.timeline,q=s=>el.querySelector(s),set=(n,o)=>{if(n)Object.assign(n.style,o)};
   // drifting stripes on both halves (same edges the seam is drawn from, so it lines up at any screen size)
-  const bp=(t*MM.bgScroll).toFixed(1);set(q('.mm-half--top'),{backgroundPosition:`0 0,${bp}px ${bp}px,0 0`});set(q('.mm-half--bot'),{backgroundPosition:`0 0,${-bp}px ${-bp}px,0 0`});
+  const bp=(t*MM.bgScroll).toFixed(1);const pos=`${bp}px ${bp}px,${bp}px ${bp}px,0 0,0 0`;set(q('.mm-half--top'),{backgroundPosition:pos});set(q('.mm-half--bot'),{backgroundPosition:pos}); // both halves drift together, same direction
   // searching: avatar strip rolls, label pulses
   if(t<TL.found){
     const y=anim('mmRoll',t).y,n=MM.avatars.length;set(q('.mm-roll__strip'),{transform:`translateY(${-y*n*76}px)`});
@@ -62,8 +77,13 @@ function tickMatchmaking(now){
     set(q('.mm-name--opp'),{transform:`scale(${A.scale})`,opacity:A.alpha})}
   // VS in, stays while the halves leave, then out
   const vs=q('.mm-word--vs');
-  if(t>=TL.vsIn&&t<TL.vsOut){const A=anim('mmVsIn',t-TL.vsIn);set(vs,{display:'flex',transform:`translate(-50%,-50%) rotate(${-MM.angleDeg}deg) scale(${A.scale})`,opacity:A.alpha})}
+  if(t>=TL.vsIn&&t<TL.vsOut){if(!MMS.vsOn){MMS.vsOn=1;set(vs,{display:'flex',transform:`translate(-50%,-50%) rotate(${-MM.angleDeg}deg)`,opacity:1});wordIn(vs,'vs')}}
   else if(t>=TL.vsOut){const A=anim('mmTextOut',t-TL.vsOut);set(vs,{transform:`translate(-50%,-50%) rotate(${-MM.angleDeg}deg) scale(${A.scale})`,opacity:A.alpha})}
+  // slams: the screen kicks on contact and a white flash fades; FIGHT also fires radial speed lines
+  const hitAt=[TL.vsIn+MM.words.vs.hit,TL.fightIn+MM.words.fight.hit];let kick=0,flash=0;
+  for(const h of hitAt){const d=t-h;if(d>=0&&d<.45){{const v=Math.exp(-d*9)*Math.sin(d*70);if(Math.abs(v)>Math.abs(kick))kick=v};flash=Math.max(flash,Math.max(0,1-d/.25))}}
+  set(el,{transform:kick?`translate(${(kick*7).toFixed(1)}px,${(kick*-5).toFixed(1)}px)`:''});set(q('.mm-flash'),{opacity:(flash*.35).toFixed(3)});
+  if(t>=TL.fightIn&&t<TL.fightIn+.7){const A=anim('mmLines',t-TL.fightIn);set(q('.mm-lines'),{display:'block',opacity:A.alpha,transform:`translate(-50%,-50%) scale(${A.scale}) rotate(${A.rot}deg)`})}else set(q('.mm-lines'),{display:'none'})
   if(t>=TL.vsIn&&MMS.phase==='found'){MMS.phase='vs';try{sfx('bugle',.1)}catch(_){}}
   // halves slide away and uncover the battle scene (match created, not running yet)
   if(t>=TL.panelsOut){
@@ -72,12 +92,14 @@ function tickMatchmaking(now){
     set(q('.mm-seam'),{opacity:Math.max(0,1-s*4)});
     set(q('.mm-half--top'),{transform:`translateY(${-s*110}%)`});set(q('.mm-half--bot'),{transform:`translateY(${s*110}%)`});
   }
+  // perspective intro: held while the halves open, flattens into the battle view between FIGHT and the start
+  if(t>=TL.panelsOut){const a=TL.fightIn,b=TL.start;INTRO3D.k=t<a?1:Math.max(0,1-(t-a)/(b-a))}
   // FIGHT! in and out, then the match starts
   const fg=q('.mm-word--fight');
-  if(t>=TL.fightIn&&t<TL.fightOut){const A=anim('mmFightIn',t-TL.fightIn);set(fg,{display:'flex',transform:`translate(-50%,-50%) scale(${A.scale})`,opacity:A.alpha});
+  if(t>=TL.fightIn&&t<TL.fightOut){if(!MMS.fgOn){MMS.fgOn=1;set(fg,{display:'flex',transform:'translate(-50%,-50%)',opacity:1});wordIn(fg,'fight')}
     if(MMS.phase==='out'){MMS.phase='fight';try{sfx('fight',.1)}catch(_){}}}
   else if(t>=TL.fightOut){const A=anim('mmTextOut',t-TL.fightOut);set(fg,{transform:`translate(-50%,-50%) scale(${A.scale})`,opacity:A.alpha})}
-  if(t>=TL.start){closeMatchmaking();if(Flow.state==='intro')Flow.go('battle')}
+  if(t>=TL.start){INTRO3D.k=0;closeMatchmaking();if(Flow.state==='intro')Flow.go('battle')}
 }
 
 // ---------- profile: nickname + avatar (opened from the avatar button in the menu) ----------

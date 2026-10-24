@@ -103,6 +103,28 @@
     "to": 0,
     "duration": 0.6,
     "delay": 0.6
+   },
+   {
+    "property": "scale",
+    "from": 0.3,
+    "to": 1.25,
+    "duration": 0.14,
+    "easing": "quadOut"
+   },
+   {
+    "property": "scale",
+    "from": 1.25,
+    "to": 1,
+    "duration": 0.18,
+    "delay": 0.14,
+    "easing": "backOut"
+   },
+   {
+    "property": "tilt",
+    "from": 1,
+    "to": 0,
+    "duration": 0.4,
+    "easing": "cubicOut"
    }
   ]
  },
@@ -324,20 +346,35 @@
   ]
  },
  "mmVsIn": {
-  "length": 0.4,
+  "length": 0.42,
   "tracks": [
    {
     "property": "scale",
     "from": 2.6,
     "to": 1,
-    "duration": 0.4,
+    "duration": 0.24,
+    "easing": "cubicIn"
+   },
+   {
+    "property": "scale",
+    "from": 0.88,
+    "to": 1,
+    "duration": 0.18,
+    "delay": 0.24,
     "easing": "backOut"
    },
    {
     "property": "alpha",
     "from": 0,
     "to": 1,
-    "duration": 0.2
+    "duration": 0.12
+   },
+   {
+    "property": "blur",
+    "from": 9,
+    "to": 0,
+    "duration": 0.24,
+    "easing": "quadIn"
    }
   ]
  },
@@ -372,20 +409,35 @@
   ]
  },
  "mmFightIn": {
-  "length": 0.4,
+  "length": 0.42,
   "tracks": [
    {
     "property": "scale",
-    "from": 0.2,
+    "from": 3.0,
     "to": 1,
-    "duration": 0.4,
+    "duration": 0.14,
+    "easing": "cubicIn"
+   },
+   {
+    "property": "scale",
+    "from": 0.85,
+    "to": 1,
+    "duration": 0.28,
+    "delay": 0.14,
     "easing": "elasticOut"
    },
    {
     "property": "alpha",
     "from": 0,
     "to": 1,
-    "duration": 0.12
+    "duration": 0.08
+   },
+   {
+    "property": "blur",
+    "from": 10,
+    "to": 0,
+    "duration": 0.14,
+    "easing": "quadIn"
    }
   ]
  },
@@ -535,6 +587,43 @@
     "to": 0,
     "duration": 0.35,
     "easing": "bounceOut"
+   }
+  ]
+ },
+ "unitSpawn": {
+  "length": 0.28,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 0.2,
+    "to": 1,
+    "duration": 0.28,
+    "easing": "backOut"
+   }
+  ]
+ },
+ "mmLines": {
+  "length": 0.7,
+  "tracks": [
+   {
+    "property": "scale",
+    "from": 0.4,
+    "to": 1.6,
+    "duration": 0.7,
+    "easing": "cubicOut"
+   },
+   {
+    "property": "alpha",
+    "from": 0.9,
+    "to": 0,
+    "duration": 0.7,
+    "easing": "quadIn"
+   },
+   {
+    "property": "rot",
+    "from": 0,
+    "to": 12,
+    "duration": 0.7
    }
   ]
  }

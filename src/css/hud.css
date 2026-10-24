@@ -20,3 +20,13 @@
 .h-btn--green .h-btn__face{background:#2f9b3f}.h-btn--green .h-btn__hi{background:#45c457}
 .h-btn--red .h-btn__face{background:#c9452f}.h-btn--red .h-btn__hi{background:#ec6a4f}
 .h-btn--blue .h-btn__face{background:#2a6fd6}.h-btn--blue .h-btn__hi{background:#4a90f0}
+/* TEMP test buttons at the very bottom of the battle */
+.h-test{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:12px;pointer-events:auto}
+.h-test__b{min-width:96px;height:36px;border:2px solid #0d0b1a;border-radius:10px;font:800 16px/1 "Rubik",system-ui,sans-serif;color:#fff;cursor:pointer;box-shadow:0 3px 0 #0d0b1a}
+.h-test__b--win{background:#3fbf5a}.h-test__b--lose{background:#d9443f}
+/* pause-menu buttons in the same chunky style */
+.h-btn{background:#2b2223;border-radius:18px;height:50px}
+.h-btn__face{left:3.5px;top:3.5px;width:183px;height:38px;border-radius:15px;box-shadow:inset 0 0 0 2.5px rgba(255,255,255,.45),inset 0 -6px 0 rgba(0,0,0,.18)}
+.h-btn__hi{left:9px;top:6px;width:12px;height:6px;border-radius:4px;background:rgba(255,255,255,.9)!important;rotate:-12deg}
+.h-btn--green .h-btn__face{background:#69c47f}.h-btn--red .h-btn__face{background:#ef5a55}.h-btn--blue .h-btn__face{background:#3fa2f0}
+.h-btn__txt{-webkit-text-stroke:4px #2b2223;text-shadow:0 3px 0 #2b2223}

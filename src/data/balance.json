@@ -70,17 +70,17 @@
  "dmgUp": {
   "first": 0.25,
   "step": 0.04,
-  "maxPicks": 5
+  "cap": 3.0
  },
  "rateUp": {
   "first": 0.25,
   "step": 0.04,
-  "maxPicks": 5
+  "cap": 3.0
  },
  "doubles": {
   "offset": 0.12,
   "dmgMul": 0.75,
-  "dur": 4,
+  "dur": 6,
   "durStep": 0.8
  },
  "squad": {
@@ -188,7 +188,6 @@
  "bag": {
   "dmg": 1,
   "rate": 1,
-  "doubles": 1,
   "squad": 2,
   "giant": 2,
   "barrel": 1
@@ -252,5 +251,9 @@
   "pFlaskZ": 3.816891891891893,
   "eFlaskZ": -5.519594594594595,
   "baseWidth": 7.1455
+ },
+ "ult": {
+  "every": 5,
+  "triple": 3
  }
 }

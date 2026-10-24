@@ -348,3 +348,148 @@ img.au-nav__lock{width:24px;height:24px;filter:drop-shadow(0 2px 0 var(--ink))}
 /* army tab: the list scrolls under a fixed line just below the top bar — nothing shows above it */
 #t-up.m-tab{top:68px;padding-top:8px}
 .m-root.is-army .m-top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--ink);box-shadow:0 2px 0 rgba(255,255,255,.12)}
+
+/* ===== motion pass (docs/MOTION.md) ===== */
+/* menu scene: the world layer drifts on a slow figure-8, the paper drifts less (parallax), trees sway in a travelling gust */
+.s-world{position:absolute;left:0;top:0;width:393px;height:424px;animation:s-drift 11s ease-in-out infinite;will-change:transform}
+@keyframes s-drift{0%,100%{transform:translate(0,0)}25%{transform:translate(3px,-2px)}50%{transform:translate(0,-3px)}75%{transform:translate(-3px,-1px)}}
+.s-paper{animation:s-pdrift 11s ease-in-out infinite}
+@keyframes s-pdrift{0%,100%{translate:0 0}25%{translate:1px -.6px}50%{translate:0 -1px}75%{translate:-1px -.3px}}
+.s-swap[data-tree] .s-obj{transform-origin:50% 85%;animation:s-sway 3.4s ease-in-out infinite;animation-delay:var(--wd,0s)}
+@keyframes s-sway{0%,100%{rotate:-1.6deg}50%{rotate:2.2deg}}
+.s-tank{animation:s-idle 1.6s ease-in-out infinite}
+@keyframes s-idle{0%,100%{scale:1 1}50%{scale:1.015 .985}}
+.s-cloud{position:absolute;left:0;top:20px;width:380px;height:220px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(30,40,70,.10),rgba(30,40,70,.05) 55%,rgba(30,40,70,0));animation:s-cloud 16s linear infinite}
+@keyframes s-cloud{from{transform:translate(-300px,10px)}to{transform:translate(440px,110px)}}
+/* BATTLE: breathing (scale property, so it stacks with the pop/entrance transforms) + a shine sweep */
+.b-fight{overflow:hidden;animation:b-breathe 2.6s ease-in-out infinite}
+.b-fight.ui-in{animation:ui-in .34s cubic-bezier(.3,1.5,.6,1) backwards,b-breathe 2.6s ease-in-out .34s infinite}
+.b-fight.ui-pop{animation:ui-pop .22s ease-out,b-breathe 2.6s ease-in-out .22s infinite}
+@keyframes b-breathe{0%,100%{scale:1}50%{scale:1.045}}
+.b-fight::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-40%;width:28%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));
+  transform:skewX(-20deg);animation:b-shine 2.6s ease-in-out infinite;pointer-events:none}
+@keyframes b-shine{0%,55%{left:-40%}85%,100%{left:125%}}
+/* entrances come from the side of the chosen tab */
+@keyframes ui-in{from{opacity:0;transform:translateX(var(--dx,0)) skewX(var(--sk,0)) scale(.6)}to{opacity:1;transform:none}}
+/* gold gain: pill pops, coin spins */
+.gold-pop{animation:gold-pop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes gold-pop{0%{scale:1}30%{scale:1.14}100%{scale:1}}
+.gold-pop .au-res__icon{animation:coin-spin .6s cubic-bezier(.3,1.2,.5,1)}
+@keyframes coin-spin{from{rotate:y -360deg}to{rotate:y 0deg}}
+/* matchmaking slams */
+.mm-flash{position:absolute;left:0;top:0;width:393px;height:852px;background:#fff;opacity:0;pointer-events:none;z-index:2}
+.mm-lines{position:absolute;left:196px;top:426px;width:900px;height:900px;display:none;pointer-events:none;border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,255,255,.75) 0 2.2deg,rgba(255,255,255,0) 2.2deg 9deg);
+  -webkit-mask:radial-gradient(closest-side,transparent 22%,#000 45%,transparent 100%);mask:radial-gradient(closest-side,transparent 22%,#000 45%,transparent 100%)}
+.mm-word{z-index:3}
+/* reduced motion: the menu holds still */
+@media (prefers-reduced-motion:reduce){.s-world,.s-paper,.s-swap .s-obj,.s-tank,.s-cloud,.b-fight,.b-fight::after,.gold-pop,.gold-pop .au-res__icon{animation:none!important}.s-cloud{display:none}}
+/* matchmaking: compact cards (−30%), VS / FIGHT in Bungee, animated letter by letter (matchmaking.js wordIn) */
+.mm-panel{scale:.7}
+.mm-word{gap:0}
+.mm-l{display:inline-block;will-change:transform,opacity,filter}
+.mm-word--vs{font:400 70px/1 "Bungee","Lilita One",sans-serif;color:var(--gold);-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink)}
+.mm-word--fight{font:400 58px/1 "Bungee","Lilita One",sans-serif;color:#fff;-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink),0 0 24px rgba(255,214,80,.55)}
+/* battle tab scene in light perspective: the notebook plane tilts away, objects ride on it */
+.b-scene{perspective:760px;perspective-origin:50% 8%}
+.s-paper{left:-130px;width:653px;transform:rotateX(18deg);transform-origin:50% 100%}
+.s-world{transform:rotateX(18deg);transform-origin:50% 100%;animation-name:s-drift2}
+@keyframes s-drift2{0%,100%{translate:0 0}25%{translate:3px -2px}50%{translate:0 -3px}75%{translate:-3px -1px}}
+/* level-up impact (menu.js lvFx) */
+.a-card{position:relative}
+.lv-flash{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;z-index:3}
+.lv-fx{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:visible}
+.lv-spark{position:absolute;width:9px;height:9px;border-radius:2px;border:2px solid #140D38;rotate:45deg}
+.lv-text{position:absolute;white-space:nowrap;font:900 18px/1 "Unbounded","Lilita One",sans-serif;color:#FFE14D;-webkit-text-stroke:4px #140D38;paint-order:stroke fill;text-shadow:0 3px 0 #140D38;opacity:0}
+.lv-text--big{font-size:30px;-webkit-text-stroke:6px #140D38;text-shadow:0 5px 0 #140D38}
+
+/* ===== result screen (menu.js showResult) ===== */
+.rs{position:absolute;left:0;top:0;width:393px;height:852px;z-index:40;overflow:hidden;font-family:var(--font-display)}
+.rs-bg{position:absolute;inset:0}
+.rs--win .rs-bg{background:radial-gradient(ellipse at 50% 30%,rgba(92,70,210,.92),rgba(20,13,56,.96) 70%)}
+.rs--lose .rs-bg{background:radial-gradient(ellipse at 50% 28%,rgba(196,72,84,.93),rgba(92,28,46,.96) 58%,rgba(40,12,26,.97) 100%)}
+.rs-vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(0,0,0,0) 45%,rgba(30,6,16,.55) 100%)}
+.rs-rays{position:absolute;left:196px;top:200px;width:900px;height:900px;margin:-450px 0 0 -450px;border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,225,77,.22) 0 8deg,rgba(255,225,77,0) 8deg 20deg);
+  -webkit-mask:radial-gradient(closest-side,#000 25%,transparent 100%);mask:radial-gradient(closest-side,#000 25%,transparent 100%);animation:rs-spin 18s linear infinite}
+@keyframes rs-spin{to{rotate:360deg}}
+.rs-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.rs-stage{position:absolute;left:0;top:0;width:393px;height:852px;display:flex;flex-direction:column;align-items:center;padding-top:96px}
+.rs-emblem{position:relative;width:150px;height:150px;display:flex;align-items:flex-end;justify-content:center}
+.rs-trophy{width:140px;height:140px;object-fit:contain;filter:drop-shadow(0 6px 0 #140D38) drop-shadow(0 0 24px rgba(255,225,77,.6))}
+.rs-star{position:absolute;color:#FFE14D;font-size:26px;text-shadow:0 2px 0 #140D38;animation:rs-tw 1.4s ease-in-out infinite}
+.rs-star--a{left:0;top:18px}.rs-star--b{right:4px;top:0;animation-delay:-.5s;font-size:20px}.rs-star--c{right:-6px;top:80px;animation-delay:-.9s;font-size:16px}
+@keyframes rs-tw{50%{scale:.5;opacity:.4}}
+/* defeat: shield pierced by a bullet, then split in two */
+.rs-shieldbox{position:relative;width:120px;height:140px;margin-bottom:4px}
+.rs-half{position:absolute;left:0;top:0;width:120px;height:140px;filter:drop-shadow(0 6px 0 rgba(20,13,56,.45));transform-origin:50% 100%}
+.rs-hole{position:absolute;left:58px;top:60px;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#140D38 0 45%,#5a1a22 60%,rgba(90,26,34,0) 72%);transform:translate(-50%,-50%) scale(0)}
+.rs-bullet{position:absolute;left:50%;top:60px;width:22px;height:auto;opacity:0;filter:drop-shadow(0 0 6px rgba(255,225,77,.9))}
+.rs-trail{position:absolute;left:-120px;top:57px;width:380px;height:5px;border-radius:3px;transform-origin:0 50%;transform:scaleX(0);opacity:0;
+  background:linear-gradient(90deg,rgba(255,225,77,0),rgba(255,225,77,.9) 60%,#fff)}
+.rs-chip{position:absolute;left:60px;top:60px;width:9px;height:9px;background:#d9625a;border:2px solid #140D38;rotate:30deg}
+.rs-title{display:flex;margin-top:14px;font:400 50px/1 "Bungee","Lilita One",sans-serif;-webkit-text-stroke:6px #140D38;paint-order:stroke fill;text-shadow:0 6px 0 #140D38}
+.rs--win .rs-title{color:#FFE14D}
+.rs--lose .rs-title{color:#ffd9d4}
+.rs-l{display:inline-block}
+.rs-tro{display:flex;align-items:center;gap:8px;margin-top:16px;padding:6px 18px 6px 10px;background:rgba(20,13,56,.6);border:3px solid #140D38;border-radius:999px;
+  font:900 30px/1 "Unbounded","Lilita One",sans-serif;color:#FFE14D;-webkit-text-stroke:4px #140D38;paint-order:stroke fill;position:relative}
+.rs-tro img{width:38px;height:38px;object-fit:contain}
+.rs-tro__v{display:inline-flex}
+.rs-sub{margin-top:16px;font-size:18px;color:#ffe3df}
+/* stats: 2×2 tiles with rolling digits */
+.rs-grid{width:330px;margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rs-tile{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px 12px;background:rgba(20,13,56,.55);border:3px solid #140D38;border-radius:18px;box-shadow:inset 0 3px 0 rgba(255,255,255,.12)}
+.rs--lose .rs-tile{background:rgba(48,10,24,.5)}
+.rs-tile__ic{width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.rs-tile__ic img,.rs-tile__ic svg{max-width:40px;max-height:40px;object-fit:contain;filter:drop-shadow(0 3px 0 rgba(20,13,56,.6))}
+.rs-tile__v{display:inline-flex;font:900 28px/1 "Unbounded","Lilita One",sans-serif;color:#FFE14D;-webkit-text-stroke:4px #140D38;paint-order:stroke fill}
+.rs--lose .rs-tile__v{color:#fff1ee}
+.rs-tile__l{font-size:14px;color:#fff;-webkit-text-stroke:3px #140D38;paint-order:stroke fill;text-align:center}
+.odo-c{display:inline-block;height:1em;overflow:hidden;line-height:1;vertical-align:top}
+.odo-s{display:flex;flex-direction:column}
+.odo-s i{font-style:normal;height:1em;line-height:1;display:block}
+.odo-x{display:inline-block;line-height:1}
+.rs-sp{position:absolute;left:50%;top:50%;width:8px;height:8px;background:#FFE14D;border:2px solid #140D38;rotate:45deg;pointer-events:none}
+.rs-note{margin-top:14px;font-size:16px;color:#fff;display:flex;align-items:center;gap:6px;-webkit-text-stroke:3px #140D38;paint-order:stroke fill}
+.rs-note b{display:inline-flex;align-items:center;gap:4px;color:#FFE14D}
+.rs-cont{margin-top:auto;margin-bottom:104px;min-width:160px;min-height:48px;font-size:22px;padding:0 22px}
+@media (prefers-reduced-motion:reduce){.rs-rays,.rs-star{animation:none}}
+/* settings: compact panel */
+.au-modal--small{width:290px;padding:14px}
+.au-modal--small .au-modal__title{font-size:26px}
+.au-modal--small .m-row{font-size:17px;padding:6px 4px}
+.au-modal--small .au-btn{min-height:44px;font-size:18px}
+/* arena arrows: just the arrow, bigger */
+.b-arrow{background:none!important;border:0!important;box-shadow:none!important;width:52px;height:52px;top:22px}
+.b-arrow svg{width:38px;height:38px;filter:drop-shadow(0 3px 0 rgba(13,11,26,.55))}
+.b-arrow--l{left:8px}.b-arrow--r{right:8px}
+/* podium level-up effects */
+.lv-flash--soft{border-radius:0}
+.lv-beam{position:absolute;top:0;bottom:40px;width:120px;background:linear-gradient(180deg,rgba(255,225,77,0),rgba(255,225,77,.55) 60%,rgba(255,255,255,.8));filter:blur(4px);opacity:0}
+.lv-ring{position:absolute;width:180px;height:60px;border-radius:50%;border:5px solid #FFE14D;box-shadow:0 0 18px rgba(255,225,77,.8);opacity:0}
+.lv-rise{position:absolute;width:10px;height:10px;background:#FFE14D;rotate:45deg;border-radius:2px;box-shadow:0 0 8px rgba(255,225,77,.9);opacity:0}
+.lv-rise:nth-child(3n){background:#fff}.lv-rise:nth-child(4n){background:#FF6F61}
+/* matchmaking halves: tinted notebook paper (grid + doodles) instead of gradients, scrolling together */
+.mm-half{background-size:13px 13px,13px 13px,100% 100%,100% 100%;background-blend-mode:normal}
+.mm-half--top{background-image:linear-gradient(rgba(196,52,64,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(196,52,64,.22) 1px,transparent 1px),radial-gradient(ellipse at 50% 30%,rgba(255,255,255,.45),rgba(255,255,255,0) 65%),linear-gradient(#f4c9c5,#f4c9c5)!important}
+.mm-half--bot{background-image:linear-gradient(rgba(42,96,190,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(42,96,190,.22) 1px,transparent 1px),radial-gradient(ellipse at 50% 70%,rgba(255,255,255,.45),rgba(255,255,255,0) 65%),linear-gradient(#c9dbf5,#c9dbf5)!important}
+.mm-search{color:#fff}
+/* ===== buttons: chunky cartoon style (reference "Random Match"): thick dark outline, flat face with a light inner rim,
+   darker inner bottom band, a thick base under the button and little white glints top-left / bottom-right ===== */
+.au-btn{background:var(--b-face,var(--b-top));border:3.5px solid #2b2223;border-radius:18px;padding:6px 24px 10px;
+  box-shadow:inset 0 0 0 2.5px var(--b-hi),inset 0 -6px 0 var(--b-bot),0 5px 0 #2b2223;
+  -webkit-text-stroke:4px #2b2223;text-shadow:0 3px 0 #2b2223;transition:transform .08s ease,box-shadow .08s ease}
+.au-btn::before{left:9px;top:7px;width:12px;height:6px;border-radius:4px;background:rgba(255,255,255,.9);box-shadow:15px -1px 0 -1px rgba(255,255,255,.85);rotate:-12deg}
+.au-btn::after{content:"";position:absolute;right:10px;bottom:11px;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.75);pointer-events:none}
+.au-btn:active{transform:translateY(4px);box-shadow:inset 0 0 0 2.5px var(--b-hi),inset 0 -4px 0 var(--b-bot),0 1px 0 #2b2223}
+.au-btn--green{--b-face:#69c47f;--b-bot:#4fa866;--b-hi:#9fe3ae}
+.au-btn--blue{--b-face:#3fa2f0;--b-bot:#2a7fd0;--b-hi:#8ed0ff}
+.au-btn--red{--b-face:#ef5a55;--b-bot:#c9413f;--b-hi:#ff9e9a}
+.au-btn--grey,.au-btn[disabled]{--b-face:#c7cad1;--b-bot:#a5a9b3;--b-hi:#eef0f3}
+.au-btn--hero{border-radius:20px;border-width:4px;box-shadow:inset 0 0 0 3px var(--b-hi),inset 0 -8px 0 var(--b-bot),0 6px 0 #2b2223}
+/* BATTLE: a little more orange */
+.b-fight{--b-face:#ffa62b;--b-bot:#e67e16;--b-hi:#ffd58a}
+/* close (X) buttons in the same drawing style */
+.au-close{border:3px solid #2b2223;border-radius:12px;background:#ef5a55;box-shadow:inset 0 0 0 2px #ff9e9a,inset 0 -4px 0 #c9413f,0 4px 0 #2b2223}

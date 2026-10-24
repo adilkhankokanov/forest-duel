@@ -12,7 +12,8 @@
   "restart": "Restart",
   "toMenu": "Main menu",
   "win": "VICTORY",
-  "lose": "DEFEAT"
+  "lose": "DEFEAT",
+  "ult": "ULT"
  },
  "upg": {
   "dmg": "Damage",
@@ -22,7 +23,9 @@
   "giant": "Tank",
   "wave": "Wave",
   "barrel": "Barrel",
-  "fence": "Fence"
+  "fence": "Fence",
+  "squad3": "Squad",
+  "giant3": "Tanks"
  },
  "upgVal": {
   "dmg": "+{n}%",
@@ -32,7 +35,9 @@
   "giant": "{n} HP",
   "wave": "{n} dmg",
   "barrel": "×{n}",
-  "fence": "{n} HP"
+  "fence": "{n} HP",
+  "squad3": "×{n}",
+  "giant3": "×{n}"
  },
  "arenaNames": [
   "Forest Glade",
@@ -119,7 +124,15 @@
   "locked": "LOCKED",
   "unlocksAt": "Unlocks at {n}",
   "arenaUnlocked": "ARENA {n} UNLOCKED!",
-  "chestInfo": "{n} 🏆 → +{g} gold"
+  "chestInfo": "{n} 🏆 → +{g} gold",
+  "loseSub": "The forest stands. Try again!",
+  "levelUpFx": "LEVEL {n}!",
+  "statTime": "Battle time",
+  "statUpg": "Upgrades",
+  "statTrees": "Trees cut",
+  "statKills": "Enemies defeated",
+  "clearData": "CLEAR DATA",
+  "clearConfirm": "TAP AGAIN TO ERASE"
  },
  "metaUp": {
   "cDmg": [

@@ -11,27 +11,27 @@
     "time": 30,
     "state": "play",
     "P": {
-     "hp": 2266,
-     "gold": 18,
-     "lvl": 2,
+     "hp": 1811.25,
+     "gold": 12,
+     "lvl": 3,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 2847.5,
-     "gold": 13,
+     "hp": 2922.5,
+     "gold": 37,
      "lvl": 7,
-     "x": 1.4216,
+     "x": 0.6352,
      "dmgMul": 1.1,
      "rateMul": 1
     },
-    "units": 17,
+    "units": 28,
     "unitsP": 0,
-    "trees": 421,
+    "trees": 418,
     "fences": 0,
     "rockets": 0,
-    "hash": "570175f6"
+    "hash": "888f635f"
    }
   },
   {
@@ -44,26 +44,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 3,
+     "gold": 43,
      "lvl": 4,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 2510,
-     "gold": 43,
-     "lvl": 13,
-     "x": 1.273,
-     "dmgMul": 1.5,
-     "rateMul": 1
+     "hp": 2682.5,
+     "gold": 61,
+     "lvl": 11,
+     "x": 1.4254,
+     "dmgMul": 1.3,
+     "rateMul": 1.15
     },
-    "units": 27,
+    "units": 67,
     "unitsP": 0,
-    "trees": 394,
+    "trees": 402,
     "fences": 0,
     "rockets": 0,
-    "hash": "b12d340f"
+    "hash": "305981d"
    }
   },
   {
@@ -76,26 +76,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 16,
+     "gold": 18,
      "lvl": 3,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 1940,
-     "gold": 56,
-     "lvl": 18,
-     "x": -2.1021,
-     "dmgMul": 1.8,
-     "rateMul": 1.8
+     "hp": 1880,
+     "gold": 66,
+     "lvl": 15,
+     "x": -1.4309,
+     "dmgMul": 1.45,
+     "rateMul": 1.7
     },
-    "units": 18,
+    "units": 25,
     "unitsP": 0,
-    "trees": 385,
+    "trees": 394,
     "fences": 0,
     "rockets": 0,
-    "hash": "9ea95e25"
+    "hash": "ff414521"
    }
   },
   {
@@ -130,26 +130,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 47,
-     "lvl": 10,
-     "x": -0.0122,
+     "gold": 67,
+     "lvl": 9,
+     "x": -3.3278,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
      "hp": 3500,
-     "gold": 16,
-     "lvl": 10,
-     "x": -1.7052,
-     "dmgMul": 1.35,
-     "rateMul": 1.1
+     "gold": 35,
+     "lvl": 9,
+     "x": -1.5346,
+     "dmgMul": 1,
+     "rateMul": 1.25
     },
     "units": 19,
     "unitsP": 0,
-    "trees": 375,
+    "trees": 384,
     "fences": 0,
     "rockets": 0,
-    "hash": "be1885be"
+    "hash": "f762806"
    }
   },
   {
@@ -194,7 +194,7 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 19,
+     "gold": 74,
      "lvl": 9,
      "x": -3.35,
      "dmgMul": 1,
@@ -202,18 +202,18 @@
     },
     "E": {
      "hp": 3500,
-     "gold": 33,
-     "lvl": 8,
-     "x": -2.0165,
-     "dmgMul": 1,
+     "gold": 18,
+     "lvl": 9,
+     "x": -0.9666,
+     "dmgMul": 1.1,
      "rateMul": 1
     },
-    "units": 12,
+    "units": 8,
     "unitsP": 0,
-    "trees": 400,
+    "trees": 394,
     "fences": 0,
     "rockets": 0,
-    "hash": "b61eca40"
+    "hash": "bffa149d"
    }
   },
   {
@@ -226,26 +226,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 28,
+     "gold": 10,
      "lvl": 2,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 3470,
-     "gold": 26,
-     "lvl": 19,
-     "x": -1.3787,
+     "hp": 3417.5,
+     "gold": 65,
+     "lvl": 21,
+     "x": -0.1448,
      "dmgMul": 1.1,
-     "rateMul": 1.5
+     "rateMul": 1.25
     },
-    "units": 69,
+    "units": 131,
     "unitsP": 0,
-    "trees": 362,
+    "trees": 364,
     "fences": 0,
     "rockets": 0,
-    "hash": "fa220b2b"
+    "hash": "2e1ff7ab"
    }
   },
   {
@@ -265,26 +265,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 12,
+     "gold": 18,
      "lvl": 10,
      "x": -1.3774,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 3500,
-     "gold": 5,
-     "lvl": 11,
-     "x": -1.5045,
-     "dmgMul": 1.3,
-     "rateMul": 1.25
+     "hp": 3387.5,
+     "gold": 31,
+     "lvl": 10,
+     "x": -1.4361,
+     "dmgMul": 1,
+     "rateMul": 1.45
     },
-    "units": 34,
+    "units": 51,
     "unitsP": 0,
-    "trees": 384,
+    "trees": 383,
     "fences": 0,
     "rockets": 0,
-    "hash": "1f32c9a6"
+    "hash": "719be36c"
    }
   },
   {
@@ -298,26 +298,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 3,
+     "gold": 41,
      "lvl": 4,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 2510,
-     "gold": 43,
-     "lvl": 13,
-     "x": 1.273,
-     "dmgMul": 1.5,
-     "rateMul": 1
+     "hp": 2667.5,
+     "gold": 61,
+     "lvl": 11,
+     "x": 1.3783,
+     "dmgMul": 1.3,
+     "rateMul": 1.15
     },
-    "units": 27,
+    "units": 68,
     "unitsP": 0,
-    "trees": 394,
+    "trees": 402,
     "fences": 0,
     "rockets": 0,
-    "hash": "ed92f3fa"
+    "hash": "82e16d6e"
    }
   },
   {
@@ -333,26 +333,26 @@
     "state": "lose",
     "P": {
      "hp": 0,
-     "gold": 30,
-     "lvl": 3,
+     "gold": 21,
+     "lvl": 4,
      "x": 0,
      "dmgMul": 1,
      "rateMul": 1
     },
     "E": {
-     "hp": 2540,
-     "gold": 54,
-     "lvl": 12,
-     "x": 2.1702,
-     "dmgMul": 1.5,
-     "rateMul": 1
+     "hp": 2795,
+     "gold": 31,
+     "lvl": 10,
+     "x": 0.3493,
+     "dmgMul": 1.3,
+     "rateMul": 1.15
     },
-    "units": 16,
+    "units": 17,
     "unitsP": 0,
-    "trees": 400,
+    "trees": 408,
     "fences": 0,
     "rockets": 0,
-    "hash": "b3843fc"
+    "hash": "8bc872ab"
    }
   }
  ]

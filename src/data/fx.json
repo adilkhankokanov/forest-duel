@@ -12,7 +12,8 @@
    2,
    4
   ],
-  "dragPerFrame": 0.92
+  "dragPerFrame": 0.92,
+  "gravity": 140
  },
  "hit": {
   "life": 0.28,
@@ -42,5 +43,58 @@
   "starStagger": 0.06,
   "starLife": 0.55,
   "col": "#ffd23c"
+ },
+ "camera": {
+  "baseZoom": 1.02,
+  "drift": 1.6,
+  "roll": 0.0025,
+  "introZoom": 1.02,
+  "introTime": 1.4,
+  "introRise": -10,
+  "endZoom": 0.05,
+  "endTime": 1.6,
+  "punchBoom": 0.03,
+  "punchRocket": 0.05,
+  "boomMinR": 1.2,
+  "punchDecay": 0.9,
+  "shakePx": 10,
+  "shakeRoll": 0.014,
+  "follow": {
+   "start": 95,
+   "end": 184,
+   "px": 32,
+   "speed": 4.5
+  }
+ },
+ "forestExtra": 0.3,
+ "intro3d": {
+  "angle": 52,
+  "zoom": 1.9,
+  "focal": 520,
+  "focusY": 430,
+  "screenY": 470,
+  "strip": 3,
+  "hold": "fightIn",
+  "end": "start",
+  "haze": 0.22
+ },
+ "wallBlast": {
+  "speed": 210,
+  "drag": 3.2,
+  "lift": 240,
+  "g": 900,
+  "spin": 9,
+  "chips": 26,
+  "ring": 0.45,
+  "ringR": 170,
+  "fadeAt": 3.2
+ },
+ "endSlowmo": {
+  "stopMs": 140,
+  "scale": 0.25,
+  "hold": 2.4,
+  "ramp": 0.6,
+  "zoom": 0.3,
+  "zoomIn": 0.6
  }
 }

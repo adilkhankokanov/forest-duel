@@ -31,5 +31,13 @@
   "img": "flaskBarrel",
   "pal": "upgOrange",
   "icon": "barrel"
+ },
+ "squad3": {
+  "img": "flaskSquad",
+  "pal": "upgPurple"
+ },
+ "giant3": {
+  "img": "flaskGiant",
+  "pal": "upgPurple"
  }
 }

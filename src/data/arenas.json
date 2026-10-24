@@ -72,6 +72,26 @@
    "speed": 20,
    "bpTile": 96,
    "bpSpeed": 14
+  },
+  "result": {
+   "t": {
+    "emblem": 0.55,
+    "title": 0.55,
+    "titleLose": 0.5,
+    "letter": 0.36,
+    "stagger": 0.05,
+    "trophies": 1.15,
+    "stats": 1.45,
+    "rowStagger": 0.14
+   },
+   "shield": {
+    "hit": 0.75,
+    "fly": 0.36,
+    "split": 0.45,
+    "dx": 26,
+    "dy": 14,
+    "rot": 16
+   }
   }
  }
 }

@@ -7,7 +7,9 @@ const IN=DATA.input;
 const Input={held:{},aim:null};
 // binding "key/a" | "ui/pause" | "pointer/x" -> action names
 const BIND={};for(const a in IN.actions)for(const b of IN.actions[a].bindings)(BIND[b]=BIND[b]||[]).push(a);
-function toScreen(e){const b=cv.getBoundingClientRect();return{x:(e.clientX-b.left)/b.width*W,y:(e.clientY-b.top)/b.height*H}}
+function toScreen(e){const b=cv.getBoundingClientRect();let x=(e.clientX-b.left)/b.width*W,y=(e.clientY-b.top)/b.height*H;
+  const c=typeof CAM!=='undefined'&&CAM.last;if(c){x=(x-c.fx-c.x)/c.z+c.fx;y=(y-c.fy-c.y)/c.z+c.fy} // undo the camera, so the finger maps to the field it sees
+  return{x,y}}
 // finger near the edges pushes the cannon a bit further than the finger, so the edges are reachable
 const aimX=px=>{const n=clamp((px-CX)/(W/2),-1,1);return clamp(n*(1+IN.aim.edgeGain),-1,1)*CFG.cannon.xLimit};
 const fsOK=()=>!!(document.fullscreenEnabled||document.webkitFullscreenEnabled);

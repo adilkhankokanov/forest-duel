@@ -69,10 +69,10 @@ function soon(name){modal(U.soonTitle,`<div class="au-note">${name?name+' — ':
 
 // ---------- tabs ----------
 function setTab(t){
-  closeDetail();TAB=t;root.classList.toggle('is-army',t==='up');let idx=0;ui.querySelectorAll('.au-nav__item').forEach((b,i)=>{const on=b.dataset.tab===t;if(on)idx=i;b.setAttribute('aria-selected',on?'true':'false');b.classList.toggle('is-active',on)});
+  closeDetail();const prevIdx=setTab.idx??-1;TAB=t;root.classList.toggle('is-army',t==='up');let idx=0;ui.querySelectorAll('.au-nav__item').forEach((b,i)=>{const on=b.dataset.tab===t;if(on)idx=i;b.setAttribute('aria-selected',on?'true':'false');b.classList.toggle('is-active',on)});
   const hl=document.getElementById('navHl');if(hl)hl.style.transform=`translateX(${idx*100}%)`; // slides under the chosen tab (CSS transition)
   ui.querySelectorAll('.m-tab').forEach(x=>x.classList.toggle('on',x.id==='t-'+t));render();
-  const box=document.getElementById('t-'+t);box.scrollTop=0;staggerIn(box,t==='battle'?'.s-swap,.b-prog,.b-sel__view,.b-arrow:not(.is-off),.b-fight':'.m-sec,.a-cell');
+  const box=document.getElementById('t-'+t);box.scrollTop=0;setTab.idx=idx;staggerIn(box,t==='battle'?'.s-swap,.b-prog,.b-sel__view,.b-arrow:not(.is-off),.b-fight':'.m-sec,.a-cell',prevIdx<0?0:Math.sign(idx-prevIdx));
 }
 ui.addEventListener('click',e=>{
   try{audioInit()}catch(_){}
@@ -100,7 +100,8 @@ document.getElementById('ui').addEventListener('pointerdown',e=>{
   try{audioInit();sfx(b.matches('[data-tab]:not(.au-nav__item--locked)')?'whoosh':'flaskHit',.03)}catch(_){}try{haptic('tap')}catch(_){}
 },true);
 // entrance: elements pop in one after another along the diagonal, top-left to bottom-right
-function staggerIn(box,sel){if(!box)return;const els=[...box.querySelectorAll(sel)];
+function staggerIn(box,sel,dir){if(!box)return;const els=[...box.querySelectorAll(sel)];
+  box.style.setProperty('--dx',(dir||0)*28+'px');box.style.setProperty('--sk',(dir||0)*-6+'deg'); // enter from the side of the chosen tab
   // read all positions first, then write: one layout pass instead of one per element
   const R=box.getBoundingClientRect(),D=els.map(el=>{const r=el.getBoundingClientRect();return((r.left-R.left)+(r.top-R.top))/(R.width+R.height||1)});
   for(const el of els)el.classList.remove('ui-in');void box.offsetWidth;
@@ -111,11 +112,17 @@ function arenaOf(tr){return arenaIdx(tr)}
 // tabs keep their DOM; a tab is rebuilt only when something it shows changed (DIRTY), not on every switch
 const DIRTY={battle:true,up:true};let HUD_KEY='';
 function render(force){
-  const key=META.gold+'|'+profile().avatar;if(key!==HUD_KEY){HUD_KEY=key;document.getElementById('vGold').textContent=fmtN(META.gold);document.getElementById('mAva').innerHTML=avatarHTML(profile().avatar)}
+  const key=META.gold+'|'+profile().avatar;if(key!==HUD_KEY){HUD_KEY=key;countGold(META.gold);document.getElementById('mAva').innerHTML=avatarHTML(profile().avatar)}
   if(force===true){DIRTY.battle=DIRTY.up=true}
   if(TAB==='battle'&&DIRTY.battle){DIRTY.battle=false;renderBattle()}else if(TAB==='up'&&DIRTY.up){DIRTY.up=false;renderUp()}
 }
 const invalidate=()=>{DIRTY.battle=DIRTY.up=true;render()};
+// gold pill: the number counts to the new value; a gain also pops the pill and spins the coin
+const GC={v:null,raf:0};
+function countGold(to){const el=document.getElementById('vGold');if(GC.v===null){GC.v=to;el.textContent=fmtN(to);return}
+  const from=GC.v,t0=performance.now(),D=.6;GC.v=to;cancelAnimationFrame(GC.raf);
+  if(to>from){const p=document.getElementById('rGold');p.classList.remove('gold-pop');void p.offsetWidth;p.classList.add('gold-pop')}
+  (function f(n){const k=Math.min(1,(n-t0)/1000/D),e=1-Math.pow(1-k,3);el.textContent=fmtN(Math.round(from+(to-from)*e));if(k<1)GC.raf=requestAnimationFrame(f)})(t0)}
 // ---------- battle tab: arena scene (top half), trophy road, arena selector + BATTLE ----------
 const AM=DATA.arenas.menu;
 const unlocked=k=>META.maxTrophies>=ARENAS[k].min;
@@ -142,7 +149,8 @@ const sp=(k,x,y,w,ax,ay,cls)=>`<img class="s-obj ${cls||''}" alt="" src="${SPR[k
 const spB=(k,x,y,cls)=>{const m=DATA.sprites.baked[k];return sp(k,x,y,m.w,m.pivot[0],m.pivot[1],cls)};
 // one swappable object: a zero-size box at the object's foot, so flips scale small layers only
 function swapBox(fx,fy,attrs,build){const bx=fx*SCN.z,by=fy*SCN.z+SCN.oy;SB.x=bx;SB.y=by;const inner=build();SB.x=0;SB.y=0;
-  return `<span class="s-swap" style="left:${bx.toFixed(1)}px;top:${by.toFixed(1)}px" data-fx="${fx}" data-fy="${fy}" ${attrs}>${inner}</span>`}
+  // --wd: wind delay, so a gust travels across the forest from left to right
+  return `<span class="s-swap" style="left:${bx.toFixed(1)}px;top:${by.toFixed(1)}px;--wd:${(-fx/110-fy/400).toFixed(2)}s" data-fx="${fx}" data-fy="${fy}" ${attrs}>${inner}</span>`}
 function swapFill(el,build){const fx=+el.dataset.fx,fy=+el.dataset.fy;SB.x=fx*SCN.z;SB.y=fy*SCN.z+SCN.oy;el.innerHTML=build();SB.x=0;SB.y=0}
 function pedHTML(kind,x,y){
   if(kind==='rocket')return sp('rocket',x,y+10,32,.5,.84);
@@ -151,13 +159,13 @@ function pedHTML(kind,x,y){
   else{const n=kind==='ice'?'Ice':'Lava';h+=`<span class="s-bob">${spB('crystal'+n,x,cy)}${spB('glow'+n,x,cy,'s-glow')}</span>`}
   return h}
 const paperStyle=A=>`background-color:${A.paper};background-image:repeating-linear-gradient(90deg,transparent 0 5.6px,${A.grid} 5.6px 6.4px,transparent 6.4px 13px),repeating-linear-gradient(0deg,transparent 0 5.6px,${A.grid} 5.6px 6.4px,transparent 6.4px 13px)`;
-function sceneHTML(k){const A=ARENAS[k];let h=`<div class="s-paper" style="${paperStyle(A)}"></div>`;
+function sceneHTML(k){const A=ARENAS[k];let h=`<div class="s-paper" style="${paperStyle(A)}"></div><div class="s-world">`;
   for(const t of SCN.trees)h+=`<span class="s-shadow" style="left:${((t.x+1)*SCN.z).toFixed(1)}px;top:${((t.y+7)*SCN.z+SCN.oy).toFixed(1)}px"></span>`;
   const items=[];SCN.trees.forEach((t,i)=>items.push({y:t.y,h:swapBox(t.x,t.y+7,`data-x="${t.x}" data-tree="${i}" data-arena="${k}"`,()=>sp(treeKey(t.g,k),t.x,t.y+7,21,.5,.85))}));
   SCN.peds.forEach((p,i)=>items.push({y:p[1],h:swapBox(p[0],p[1]+10,`data-x="${p[0]}" data-ped="${i}" data-arena="${k}"`,()=>pedHTML(A.obj,p[0],p[1]))}));
   items.sort((a,b)=>a.y-b.y);for(const it of items)h+=it.h;
   h+=`<span class="s-shadow s-shadow--tank" style="left:${150*SCN.z}px;top:${226*SCN.z+SCN.oy}px"></span>`+sp('tankP',150,206,62,.5,.5,'s-tank');
-  return h}
+  return h+'</div><div class="s-cloud"></div>'}
 function renderBattle(){
   cancelAnimationFrame(SWS.raf);SWS.raf=0;SWS.pages=[];SWS.objs=null;
   const k=VIEW,open=unlocked(k),tro=SHOWN_TRO===null?META.trophies:SHOWN_TRO;
@@ -166,9 +174,9 @@ function renderBattle(){
     <div class="b-scene__lock ${open?'is-off':''}"><div class="b-lockbadge"><img class="b-lockbadge__ic" alt="" src="${SPR.icLock}"><span class="b-lockbadge__t au-outline">${U.locked}</span></div></div></div>
    <div class="b-prog">${progHTML(k,tro)}</div>
    <div class="b-lower">
-    <div class="b-sel"><button class="b-arrow b-arrow--l ${k>0?'':'is-off'}" data-act="arenaPrev" aria-label="previous"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="b-sel"><button class="b-arrow b-arrow--l ${k>0?'':'is-off'}" data-act="arenaPrev" aria-label="previous"><svg viewBox="0 0 24 24"><path d="M15 5 8 12l7 7" fill="none" stroke="#0d0b1a" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 5 8 12l7 7" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
      <div class="b-sel__view"><div class="b-sel__page">${selHTML(k)}</div></div>
-     <button class="b-arrow b-arrow--r ${k<AM.shown-1?'':'is-off'}" data-act="arenaNext" aria-label="next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+     <button class="b-arrow b-arrow--r ${k<AM.shown-1?'':'is-off'}" data-act="arenaNext" aria-label="next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="#0d0b1a" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 5l7 7-7 7" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <button class="au-btn au-btn--hero b-fight" data-act="fight">${U.fight}</button></div>
    <div class="b-unlock au-outline" id="bunlock"></div></div>`;
 }
@@ -314,7 +322,39 @@ function levelUp(id){
   const it=AI[id];if(!it||it.locked){toast(U.notAvailable);return}
   const k=it.metaKey,L=META.lv[k]||1;if(L>=META_CFG.maxLv){toast(U.maxLevel);return}
   const c=cost(L);if(META.gold<c){toast(U.noGold);try{sfx('treeHit',.05)}catch(_){}return}
-  META.gold-=c;META.lv[k]=L+1;saveMeta();try{sfx('levelUpBtn',.05)}catch(_){}invalidate();
+  META.gold-=c;META.lv[k]=L+1;saveMeta();try{sfx('levelUpBtn',.05)}catch(_){}invalidate();lvFx(id,L+1);
+}
+// level-up impact (Juicy Impact): a held squash pose (hit-stop), squash 1.3/0.7 -> 0.9/1.1 -> 1, white->lemon flash,
+// decaying shake, the model jumps and lands, the level badge pops, sparks burst and "LEVEL UP" rises and fades.
+function lvFx(id,L){
+  const det=DETAIL===id?document.getElementById('adetail'):null,card=det?det.querySelector('.a-card'):document.querySelector(`.a-tile[data-id="${id}"]`);if(!card)return;
+  const box=det||document.getElementById('t-up'),model=det?det.querySelector('.a-show__model'):card.querySelector('.a-tile__img'),
+    badge=det?det.querySelector('.a-card__lv'):card.querySelector('.a-tile__lv'),host=det?det.querySelector('.a-show'):card,big=!!det;
+  const A=(n,k,o)=>n&&n.animate(k,Object.assign({easing:'linear'},o)),stop=70;
+  if(!big)A(card,[{transform:'scale(1.3,.7)'},{transform:'scale(1.3,.7)',offset:stop/330},{transform:'scale(.9,1.1)',offset:(stop+90)/330,easing:'cubic-bezier(.2,.8,.3,1)'},{transform:'scale(1)'}],{duration:330});
+  const fl=document.createElement('div');fl.className='lv-flash'+(big?' lv-flash--soft':'');(big?host:card).appendChild(fl);A(fl,[{opacity:big?.4:.9,background:'#fff'},{opacity:big?.25:.6,background:'#FFE14D',offset:.3},{opacity:0,background:'#FFE14D'}],{duration:320,fill:'forwards'}).onfinish=()=>fl.remove();
+  const amp=big?0:7;if(amp)A(box,[0,1,2,3,4,5,6].map(i=>({transform:`translate(${(i%2?-1:1)*amp*Math.pow(.6,i)}px,${(i%2?1:-1)*amp*.4*Math.pow(.6,i)}px)`})).concat([{transform:'none'}]),{duration:360,delay:stop});
+  A(model,[{transform:'none'},{transform:'translateY(-30px) scale(1.12)',offset:.4,easing:'cubic-bezier(.2,.8,.4,1)'},{transform:'translateY(0) scale(1.25,.8)',offset:.7,easing:'cubic-bezier(.6,0,.9,.5)'},{transform:'scale(.95,1.06)',offset:.85},{transform:'none'}],{duration:520,delay:stop});
+  A(badge,[{transform:'scale(1)'},{transform:'scale(1.45)',offset:.35,easing:'cubic-bezier(.2,.8,.3,1)'},{transform:'scale(1)'}],{duration:420,delay:stop+60});
+  if(det)det.querySelectorAll('.a-stat__fill').forEach((f,i)=>A(f,[{transform:'scaleX(.8)'},{transform:'scaleX(1.06)',offset:.6},{transform:'scaleX(1)'}],{duration:420,delay:stop+120+i*70,easing:'ease-out'}));
+  // sparks + rising text, from the model
+  const hr=host.getBoundingClientRect(),mr=(model||card).getBoundingClientRect(),sc=hr.width/host.offsetWidth||1,cx=(mr.left+mr.width/2-hr.left)/sc,cy=(mr.top+mr.height/2-hr.top)/sc;
+  const fx=document.createElement('div');fx.className='lv-fx';host.appendChild(fx);
+  for(let i=0;i<(big?18:12);i++){const s=document.createElement('span');s.className='lv-spark';s.style.left=cx+'px';s.style.top=cy+'px';s.style.background=['#FFE14D','#FF6F61','#fff'][i%3];fx.appendChild(s);
+    const a=i/(big?18:12)*6.283+Math.random()*.3,r=(big?90:46)+Math.random()*(big?50:26);
+    A(s,[{transform:'translate(-50%,-50%) scale(1.2)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*r}px),calc(-50% + ${Math.sin(a)*r}px)) scale(0)`,opacity:0}],{duration:520+Math.random()*200,delay:stop,easing:'cubic-bezier(.2,.8,.3,1)',fill:'both'})}
+  const t=document.createElement('div');t.className='lv-text'+(big?' lv-text--big':'');t.textContent=U.levelUpFx.replace('{n}',L);t.style.left=cx+'px';t.style.top=(cy-(big?40:24))+'px';fx.appendChild(t);
+  A(t,[{transform:'translate(-50%,-50%) scale(.3)',opacity:0},{transform:'translate(-50%,-50%) scale(1.45)',opacity:1,offset:.18,easing:'cubic-bezier(.2,.8,.3,1)'},
+    {transform:'translate(-50%,-80%) scale(1)',opacity:1,offset:.35},{transform:'translate(-50%,-180%) scale(1)',opacity:1,offset:.75},{transform:'translate(-50%,-200%) scale(.95)',opacity:0}],{duration:1000,delay:stop,fill:'both'});
+  if(big){ // podium effects: light beam, expanding ring, sparkles rising around the model
+    const beam=document.createElement('div');beam.className='lv-beam';beam.style.left=cx+'px';fx.appendChild(beam);
+    A(beam,[{transform:'translateX(-50%) scaleX(.2)',opacity:0},{transform:'translateX(-50%) scaleX(1)',opacity:.85,offset:.25},{transform:'translateX(-50%) scaleX(.6)',opacity:0}],{duration:900,delay:stop,fill:'both'});
+    for(let r=0;r<2;r++){const ring=document.createElement('div');ring.className='lv-ring';ring.style.left=cx+'px';ring.style.top=(cy+40)+'px';fx.appendChild(ring);
+      A(ring,[{transform:'translate(-50%,-50%) scale(.2)',opacity:1},{transform:'translate(-50%,-50%) scale(1.6)',opacity:0}],{duration:650,delay:stop+r*140,easing:'cubic-bezier(.2,.8,.3,1)',fill:'both'})}
+    for(let i=0;i<22;i++){const s=document.createElement('span');s.className='lv-rise';const x=cx+(Math.random()-.5)*150;s.style.left=x+'px';s.style.top=(cy+50)+'px';fx.appendChild(s);
+      const h=90+Math.random()*120,dx=(Math.random()-.5)*40,sz=.6+Math.random()*.8;
+      A(s,[{transform:`translate(-50%,-50%) scale(${sz}) rotate(0deg)`,opacity:0},{opacity:1,offset:.2},{transform:`translate(calc(-50% + ${dx}px),calc(-50% - ${h}px)) scale(0) rotate(180deg)`,opacity:0}],{duration:900+Math.random()*500,delay:stop+Math.random()*350,easing:'cubic-bezier(.3,.6,.4,1)',fill:'both'})}}
+  setTimeout(()=>fx.remove(),1800);
 }
 function equip(id){const it=AI[id];if(!it||it.locked)return;META.equip[it.group]=id;saveMeta();sfxUI();invalidate()}
 
@@ -331,7 +371,10 @@ function claimRewards(){let g=0;const got=[];for(const r of rewardsList())if(r.a
 function openSettings(){
   const row=(k,name)=>`<div class="m-row au-outline-thin"><span>${name}</span><button class="m-switch ${META.settings[k]?'is-on':''}" data-set="${k}" aria-label="${name}"><span class="m-switch__knob"></span></button></div>`;
   const m=modal(U.settings,`<div class="m-stack">${row('sound',U.sound)}${row('music',U.music)}${row('vib',U.vib)}
-    <button class="au-btn au-btn--blue m-mt6" data-pp>${U.privacy}</button></div>`,{cls:'au-modal--settings'});
+    <button class="au-btn au-btn--blue m-mt6" data-pp>${U.privacy}</button>
+    <button class="au-btn au-btn--red m-mt6" data-clear>${U.clearData}</button></div>`,{cls:'au-modal--settings au-modal--small'});
+  const clr=m.querySelector('[data-clear]');clr.onclick=()=>{if(!clr.dataset.sure){clr.dataset.sure=1;clr.textContent=U.clearConfirm;return}
+    try{localStorage.removeItem(META_KEY)}catch(_){}location.reload()}; // second tap: wipe the save and start over
   m.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set;META.settings[k]=!META.settings[k];saveMeta();applySettings();
     b.classList.toggle('is-on',META.settings[k]);if(k==='vib'&&META.settings.vib)try{haptic('tap')}catch(_){}});
   m.querySelector('[data-pp]').onclick=()=>modal(U.privacy,`<div class="m-legal">${U.privacyBody}</div>`,{cls:'au-modal--settings'});
@@ -359,10 +402,80 @@ function onMatchEnd(win){
   const d=META.trophies-before;
   let rw='';if(got.length)rw=`<div class="au-note m-mt8">${U.pathRewards}</div><div class="m-rw au-outline">${icn('icCoin',24)} +${g}</div>`;
   if(newArena>prevArena)rw+=`<div class="au-note m-mt8">${U.newArena} <b>${ARENAS[newArena].name}</b>!</div>`;
-  const m=modal(win?U.win:U.lose,`<div class="m-result-big au-outline">${icn('icTrophy',46)} ${d>=0?'+':''}${d}</div>
-    <div class="au-note">${tx(U.trophies,META.trophies)}</div>${rw}
-    <div class="m-actions"><button class="au-btn" data-cont>${U.continue}</button></div>`,{cls:win?'':'au-modal--info',onClose:()=>toMenu()});
-  m.querySelector('[data-cont]').onclick=()=>{m.remove();toMenu()};
+  showResult(win,{d,g,got:got.length>0,newArena:newArena>prevArena?newArena:-1});
+}
+// ---------- result screen: VICTORY (gold rays, trophy, confetti on the field) / DEFEAT (rain, cracked shield) ----------
+// Everything is staged with the Web Animations API on transform/opacity/filter: emblem drops and lands with a squash,
+// title letters fall one by one, trophies and the three stats count up, the button pops in last.
+const RS=DATA.arenas.menu.result;
+// defeat emblem: a shield that a bullet shoots straight through; it then splits along the crack into two halves
+const SHIELD_PATH='M60 6 108 24v38c0 34-20 58-48 72C32 120 12 96 12 62V24Z',SHIELD_IN='M60 18 96 32v30c0 26-15 45-36 57C39 107 24 88 24 62V32Z',CRACK='M60 0 54 34 66 50 52 70 64 88 56 140';
+const shieldHalf=(side)=>`<svg viewBox="0 0 120 140" class="rs-half rs-half--${side}"><defs><clipPath id="rsc${side}"><path d="${side==='l'?'M-10 -10H60L54 34 66 50 52 70 64 88 56 150H-10Z':'M130 -10H60L54 34 66 50 52 70 64 88 56 150H130Z'}"/></clipPath></defs>
+  <g clip-path="url(#rsc${side})"><path d="${SHIELD_PATH}" fill="#b8453f" stroke="#140D38" stroke-width="6" stroke-linejoin="round"/><path d="${SHIELD_IN}" fill="#d9625a"/>
+  <path d="M60 30 84 40v22c0 18-10 31-24 40" fill="none" stroke="#f3a39b" stroke-width="5" stroke-linecap="round" opacity=".7"/></g>
+  <path d="${CRACK}" fill="none" stroke="#140D38" stroke-width="5" stroke-linejoin="round" clip-path="url(#rsc${side})"/></svg>`;
+// odometer: every digit is a strip 0..9 (twice) that rolls into place, the later digits land later, like a slot machine
+function odoHTML(txt){return [...String(txt)].map(c=>/\d/.test(c)?`<span class="odo-c" data-d="${c}"><span class="odo-s">${'01234567890123456789'.split('').map(n=>`<i>${n}</i>`).join('')}</span></span>`:`<span class="odo-x">${c}</span>`).join('')}
+function odoRun(el,delay){const cs=[...el.querySelectorAll('.odo-c')];cs.forEach((c,i)=>{const d=+c.dataset.d,s=c.querySelector('.odo-s');
+  s.animate([{transform:'translateY(0)'},{transform:`translateY(${-(10+d)}em)`}],{duration:700+i*160,delay,easing:'cubic-bezier(.15,.85,.25,1.08)',fill:'both'})});
+  return delay+700+Math.max(0,cs.length-1)*160}
+const mmss=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+function showResult(win,r){
+  const S=MSTATS,tiles=[['clock',U.statTime,mmss(G.time||0)],['flaskDmg',U.statUpg,S.flasks],['treeY',U.statTrees,S.trees],['manR',U.statKills,S.units+S.tanks]];
+  const CLOCK=`<svg viewBox="0 0 40 40"><circle cx="20" cy="21" r="15" fill="#fff" stroke="#140D38" stroke-width="4"/><path d="M20 12v10l6 4" fill="none" stroke="#140D38" stroke-width="4" stroke-linecap="round"/><rect x="16" y="1" width="8" height="6" rx="2" fill="#140D38"/></svg>`;
+  const tile=([ic,label,v])=>`<div class="rs-tile"><span class="rs-tile__ic">${ic==='clock'?CLOCK:`<img alt="" src="${SPR[ic]}">`}</span><span class="rs-tile__v">${odoHTML(v)}</span><span class="rs-tile__l">${label}</span></div>`;
+  const title=(win?U.win:U.lose).split('').map(c=>`<span class="rs-l">${c}</span>`).join('');
+  let rw='';if(win&&r.got)rw+=`<div class="rs-note">${U.pathRewards} <b>${icn('icCoin',20)} +${r.g}</b></div>`;
+  if(r.newArena>=0)rw+=`<div class="rs-note">${U.newArena} <b>${ARENAS[r.newArena].name}</b>!</div>`;
+  const el=document.createElement('div');el.className='au rs '+(win?'rs--win':'rs--lose');el.style.pointerEvents='auto';
+  el.innerHTML=`<div class="rs-bg"></div>${win?'<div class="rs-rays"></div>':'<div class="rs-vig"></div>'}<div class="rs-flash"></div>
+   <div class="rs-stage">
+    <div class="rs-emblem">${win?`<img class="rs-trophy" alt="" src="${SPR.icTrophy}"><span class="rs-star rs-star--a">✦</span><span class="rs-star rs-star--b">✦</span><span class="rs-star rs-star--c">✦</span>`
+      :`<div class="rs-shieldbox">${shieldHalf('l')}${shieldHalf('r')}<span class="rs-hole"></span></div><img class="rs-bullet" alt="" src="${SPR.bullet}"><span class="rs-trail"></span>`}</div>
+    <div class="rs-title">${title}</div>
+    ${win?`<div class="rs-tro"><img alt="" src="${SPR.icTrophy}"><span class="rs-tro__v">+${odoHTML(r.d)}</span></div>`:`<div class="rs-sub">${U.loseSub}</div>`}
+    <div class="rs-grid">${tiles.map(tile).join('')}</div>
+    ${rw}<button class="au-btn ${win?'':'au-btn--blue'} rs-cont" data-cont>${U.continue}</button>
+   </div>`;
+  layer.appendChild(el);el.querySelector('[data-cont]').onclick=()=>{el.remove();toMenu()};
+  const A=(n,k,o)=>n&&n.animate(k,Object.assign({easing:'linear',fill:'both'},o)),q=s=>el.querySelector(s),qa=s=>[...el.querySelectorAll(s)],T0=RS.t,ms=v=>v*1000;
+  const shake=(amp)=>A(q('.rs-stage'),[0,1,2,3,4,5,6].map(i=>({transform:`translate(${(i%2?-1:1)*amp*Math.pow(.55,i)}px,${(i%2?1:-1)*amp*.4*Math.pow(.55,i)}px)`})).concat([{transform:'none'}]),{duration:320,fill:'none'});
+  const flash=(a)=>A(q('.rs-flash'),[{opacity:a},{opacity:0}],{duration:220,fill:'none'});
+  const squash=[{transform:'translateY(-260px) scale(.7,1.4)',opacity:0,filter:'blur(8px)'},{transform:'translateY(0) scale(1.3,.7)',opacity:1,filter:'blur(0)',offset:.55,easing:'cubic-bezier(.5,0,.75,.6)'},
+    {transform:'translateY(-10px) scale(.9,1.1)',offset:.75},{transform:'none',opacity:1}];
+  A(q('.rs-bg'),[{opacity:0},{opacity:1}],{duration:260});A(q('.rs-rays')||q('.rs-vig'),[{opacity:0},{opacity:1}],{duration:500,delay:150});
+  if(win){A(q('.rs-emblem'),squash,{duration:ms(T0.emblem),delay:150});setTimeout(()=>{shake(7);flash(.35);try{sfx('blast',.05)}catch(_){}},150+ms(T0.emblem)*.55)}
+  else{ // shield drops in, a bullet streaks through it (hit-stop + shake + hole), then it breaks in two
+    const B=RS.shield;A(q('.rs-shieldbox'),[{transform:'translateY(-40px) scale(.6)',opacity:0},{transform:'scale(1.08)',opacity:1,offset:.7,easing:'cubic-bezier(.2,.8,.3,1)'},{transform:'none',opacity:1}],{duration:380,delay:120});
+    const hit=ms(B.hit);A(q('.rs-bullet'),[{transform:'translate(-230px,-50%) rotate(90deg)',opacity:1},{transform:'translate(-10px,-50%) rotate(90deg)',opacity:1,offset:.5},{transform:'translate(240px,-50%) rotate(90deg)',opacity:0}],{duration:ms(B.fly),delay:hit-ms(B.fly)/2,easing:'linear'});
+    A(q('.rs-trail'),[{transform:'scaleX(0)',opacity:.9},{transform:'scaleX(1)',opacity:.9,offset:.5},{transform:'scaleX(1)',opacity:0}],{duration:ms(B.fly)*1.4,delay:hit-ms(B.fly)/2});
+    A(q('.rs-hole'),[{transform:'translate(-50%,-50%) scale(0)'},{transform:'translate(-50%,-50%) scale(1.4)',offset:.4},{transform:'translate(-50%,-50%) scale(1)'}],{duration:240,delay:hit});
+    A(q('.rs-shieldbox'),[{transform:'scale(1.25,.8)'},{transform:'scale(1.25,.8)',offset:.35},{transform:'scale(.92,1.08)',offset:.65},{transform:'none'}],{duration:260,delay:hit,fill:'none'});
+    setTimeout(()=>{shake(10);flash(.25);try{sfx('treeHit',.05)}catch(_){}},hit);
+    const brk=hit+ms(B.split);
+    A(q('.rs-half--l'),[{transform:'none'},{transform:`translate(${-B.dx}px,${B.dy}px) rotate(${-B.rot}deg)`,offset:.6,easing:'cubic-bezier(.2,.8,.3,1)'},{transform:`translate(${-B.dx}px,${B.dy+4}px) rotate(${-B.rot-2}deg)`}],{duration:700,delay:brk});
+    A(q('.rs-half--r'),[{transform:'none'},{transform:`translate(${B.dx}px,${B.dy+2}px) rotate(${B.rot}deg)`,offset:.6,easing:'cubic-bezier(.2,.8,.3,1)'},{transform:`translate(${B.dx}px,${B.dy+6}px) rotate(${B.rot+2}deg)`}],{duration:700,delay:brk});
+    A(q('.rs-hole'),[{opacity:1},{opacity:0}],{duration:120,delay:brk});
+    setTimeout(()=>{shake(6);try{sfx('blast',.05)}catch(_){}
+      const box=q('.rs-shieldbox');for(let i=0;i<12;i++){const c=document.createElement('span');c.className='rs-chip';box.appendChild(c);const a=-Math.PI/2+(Math.random()-.5)*2.6,d=50+Math.random()*60;
+        A(c,[{transform:'translate(-50%,-50%) rotate(0)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d+60}px)) rotate(${(Math.random()-.5)*400}deg)`,opacity:0}],{duration:700+Math.random()*300,easing:'cubic-bezier(.2,.6,.5,1)'})}},brk)}
+  qa('.rs-l').forEach((l,i)=>A(l,win?[{transform:'translateY(-120px) scale(.8,1.5)',opacity:0,filter:'blur(6px)'},{transform:'translateY(0) scale(1.3,.7)',opacity:1,filter:'blur(0)',offset:.5,easing:'cubic-bezier(.5,0,.8,.6)'},
+    {transform:'translateY(-5px) scale(.9,1.1)',offset:.72},{transform:'none',opacity:1}]
+    :[{transform:'translateY(-60px)',opacity:0},{transform:'translateY(4px)',opacity:1,offset:.6,easing:'cubic-bezier(.5,0,.8,.6)'},{transform:`translateY(${i%2?3:1}px) rotate(${i%2?4:-3}deg)`,opacity:1}],
+    {duration:ms(T0.letter),delay:ms((win?T0.title:T0.titleLose)+i*T0.stagger)}));
+  const pop=[{transform:'scale(.3)',opacity:0},{transform:'scale(1.45)',opacity:1,offset:.45,easing:'cubic-bezier(.2,.8,.3,1)'},{transform:'scale(1)',opacity:1}];
+  const sparkle=(host)=>{for(let i=0;i<8;i++){const s=document.createElement('span');s.className='rs-sp';host.appendChild(s);const a=i/8*6.283,d=26+Math.random()*14;
+    A(s,[{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d}px)) scale(0)`,opacity:0}],{duration:520,easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish=()=>s.remove()}};
+  const after=win?0:ms(RS.shield.hit+RS.shield.split)-ms(T0.trophies)+200;
+  if(win){const tr=q('.rs-tro');A(tr,pop,{duration:420,delay:ms(T0.trophies)});const end=odoRun(tr,ms(T0.trophies)+120);
+    setTimeout(()=>{A(tr,[{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:260,easing:'cubic-bezier(.3,1.6,.5,1)',fill:'none'});sparkle(tr);try{sfx('upgrade',.05)}catch(_){}},end)}
+  else A(q('.rs-sub'),[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:400,delay:ms(T0.trophies)+after});
+  qa('.rs-tile').forEach((tl,i)=>{const d=ms(T0.stats+i*T0.rowStagger)+after;
+    A(tl,[{transform:'translateY(40px) scale(.6) rotate(-6deg)',opacity:0},{transform:'translateY(-4px) scale(1.08,.94) rotate(1deg)',opacity:1,offset:.65,easing:'cubic-bezier(.2,.9,.3,1)'},{transform:'none',opacity:1}],{duration:440,delay:d});
+    const v=tl.querySelector('.rs-tile__v'),end=odoRun(v,d+200);
+    setTimeout(()=>{A(v,[{transform:'scale(1.35)'},{transform:'scale(1)'}],{duration:280,easing:'cubic-bezier(.3,1.6,.5,1)',fill:'none'});sparkle(tl);try{sfx('pop',.03)}catch(_){}},end)});
+  qa('.rs-note').forEach((n,i)=>A(n,[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:350,delay:ms(T0.stats+4*T0.rowStagger+.9+i*.15)+after}));
+  A(q('.rs-cont'),pop,{duration:420,delay:ms(T0.stats+4*T0.rowStagger+1.1)+after});
 }
 setInterval(()=>{if(Flow.state==='result'&&G.endT>1.6&&!G.resultShown){G.resultShown=true;onMatchEnd(G.state==='win')}},200);
 

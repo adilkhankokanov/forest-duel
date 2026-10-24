@@ -20,7 +20,8 @@ function stepCannon(s,dt){
     }else G.bullets.push({...b,x,dmg});
   }
   if(s.flasks.length===0&&s.pending>0){
-    s.pending--;const types=drawPair(s),xs=placeFlasks(s);
+    // every 5th level: the ultimate (always) + triple units or triple tanks; otherwise a normal pair from the bag
+    s.pending--;s.pairs=(s.pairs||0)+1;const types=s.pairs%CFG.ult.every===0?['doubles',RNG.next()<.5?'squad3':'giant3']:drawPair(s),xs=placeFlasks(s);
     s.flasks=types.map((t,i)=>({type:t,tf:[tempoF(),tempoF(1)],x:xs[i],z:s.flaskZ,hp:CFG.flask.hp,hit:0,born:0}));if(s===G.P)Ev.sfx('flaskSpawn',.2);
     s.choice=-1;
   }
@@ -62,8 +63,8 @@ function botChoose(s){
   const near=G.units.filter(u=>u.side===foeId&&Math.abs(u.z-s.front)<B.nearDist).length;
   const own=aliveUnits(s.id);
   const sc=s.flasks.map(f=>{const t=f.type;let v=(t==='dmg'||t==='rate')?S.cannon:S.other;
-    if(s.style==='squad'&&t==='squad')v+=S.favorite;
-    if(s.style==='giant'&&t==='giant')v+=S.favorite;
+    if(s.style==='squad'&&(t==='squad'||t==='squad3'))v+=S.favorite;
+    if(s.style==='giant'&&(t==='giant'||t==='giant3'))v+=S.favorite;
     if(s.style==='defense'&&(t==='fence'||t==='wave'))v+=S.styleFit;
     if(s.style==='economy'&&(t==='dmg'||t==='rate'))v+=S.styleFit;
     if(near>=6&&t==='wave')v+=S.wave6;

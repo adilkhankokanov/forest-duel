@@ -17,9 +17,11 @@ let TF_LOCK=null; // tempo factors frozen on a flask when it appeared
 function tempoF(cannon){if(TF_LOCK)return cannon?TF_LOCK[1]:TF_LOCK[0];return (cannon?CFG.tempo.cannonStart:CFG.tempo.start)*(1+CFG.tempo.step*((G&&G.tempoN)||0))}
 function upgInfo(s,type){
   switch(type){
-    case'dmg':return{t:T.upg.dmg,v:tx(T.upgVal.dmg,Math.round(CFG.dmgUp.first*tempoF(1)*100))};
-    case'rate':return{t:T.upg.rate,v:tx(T.upgVal.rate,Math.round(CFG.rateUp.first*tempoF(1)*100))};
-    case'doubles':return{t:T.upg.doubles,v:tx(T.upgVal.doubles,fmt(CFG.doubles.dur*tempoF()*M(s,'ult')))};
+    case'dmg':return{t:T.upg.dmg,v:tx(T.upgVal.dmg,Math.round(Math.min(CFG.dmgUp.first*tempoF(1),CFG.dmgUp.cap-s.dmgMul)*100))};
+    case'rate':return{t:T.upg.rate,v:tx(T.upgVal.rate,Math.round(Math.min(CFG.rateUp.first*tempoF(1),CFG.rateUp.cap-s.rateMul)*100))};
+    case'doubles':return{t:T.upg.doubles,v:tx(T.upgVal.doubles,fmt(CFG.doubles.dur*M(s,'ult')))};
+    case'squad3':return{t:T.upg.squad3,v:tx(T.upgVal.squad3,Math.round(CFG.squad.base*tempoF())*CFG.ult.triple)};
+    case'giant3':return{t:T.upg.giant3,v:tx(T.upgVal.giant3,CFG.ult.triple)};
     case'squad':return{t:T.upg.squad,v:tx(T.upgVal.squad,Math.round(CFG.squad.base*tempoF()))};
     case'giant':return{t:T.upg.giant,v:tx(T.upgVal.giant,Math.round(CFG.giant.hp*tempoF()*M(s,'tank')))};
     case'wave':return{t:T.upg.wave,v:tx(T.upgVal.wave,fmt(CFG.wave.dmg*tempoF()))};
@@ -29,8 +31,8 @@ function upgInfo(s,type){
 }
 function available(s,type){
   const foeId=s.id==='p'?'e':'p';
-  if(type==='dmg')return s.dmgPicks<CFG.dmgUp.maxPicks;
-  if(type==='rate')return s.ratePicks<CFG.rateUp.maxPicks;
+  if(type==='dmg')return s.dmgMul<CFG.dmgUp.cap-1e-6;   // capped at 300%: no more damage flasks after that
+  if(type==='rate')return s.rateMul<CFG.rateUp.cap-1e-6;
   if(type==='wave')return false; // wave is now the comeback mechanic, not a flask
   // fence only shows up when an enemy unit is already on our half of the field
   // fence only when an enemy is already in the open strip between our base and the forest
@@ -68,10 +70,12 @@ function makeUnit(s,spec){
 function applyUpg(s,type,at){TF_LOCK=at&&at.tf||null;try{return applyUpg0(s,type,at)}finally{TF_LOCK=null}}
 function applyUpg0(s,type,at){
   const info=upgInfo(s,type);
-  Ev.sfx(type==='squad'?'squad':type==='giant'?'giant':type==='wave'?'wave':type==='fence'?'fence':s===G.P?'upgrade':'_',.05);
-  if(type==='dmg'){s.dmgMul+=CFG.dmgUp.first*tempoF(1);s.dmgPicks++}
-  else if(type==='rate'){s.rateMul+=CFG.rateUp.first*tempoF(1);s.ratePicks++}
-  else if(type==='doubles'){const d=CFG.doubles.dur*tempoF()*M(s,'ult');if(s.buff>0)s.buffQ.push(d);else{s.buff=d;s.buffMax=d}}
+  Ev.sfx(type==='squad'||type==='squad3'?'squad':type==='giant'||type==='giant3'?'giant':type==='wave'?'wave':type==='fence'?'fence':s===G.P?'upgrade':'_',.05);
+  if(type==='dmg'){s.dmgMul=Math.min(CFG.dmgUp.cap,s.dmgMul+CFG.dmgUp.first*tempoF(1));s.dmgPicks++}
+  else if(type==='rate'){s.rateMul=Math.min(CFG.rateUp.cap,s.rateMul+CFG.rateUp.first*tempoF(1));s.ratePicks++}
+  else if(type==='squad3'){spawnArmy(s,false,Math.round(CFG.squad.base*tempoF())*CFG.ult.triple)}
+  else if(type==='giant3'){spawnArmy(s,true,CFG.ult.triple)}
+  else if(type==='doubles'){const d=CFG.doubles.dur*M(s,'ult');if(s.buff>0)s.buffQ.push(d);else{s.buff=d;s.buffMax=d}}
   else if(type==='squad'){spawnArmy(s,false,Math.round(CFG.squad.base*tempoF()))}
   else if(type==='giant'){spawnArmy(s,true,1)}
   else if(type==='wave'){const F=tempoF();G.waves.push({side:s.id,dir:s.dir,z:s.front+s.dir*.4,F,hit:[],done:false})}

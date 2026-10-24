@@ -14,7 +14,8 @@ const HUD=(()=>{
     ${btn('h-btn--green','resume',T.game.resume)}${btn('h-btn--red','restart',T.game.restart)}${btn('h-btn--blue','menu',T.game.toMenu)}
    </div>
    <div class="h-hit h-hit--pause" data-input="pause"></div>
-   <div class="h-hit h-hit--full" data-input="fullscreen"></div>`;
+   <div class="h-hit h-hit--full" data-input="fullscreen"></div>
+   <div class="h-test"><button class="h-test__b h-test__b--win" data-test="win">WIN</button><button class="h-test__b h-test__b--lose" data-test="lose">LOSE</button></div>`; // TEMP: test buttons, remove before release
   const ui=document.getElementById('ui');ui.insertBefore(el,ui.firstChild); // under the menu layer, so modals cover the HUD
   return{el,pause:el.querySelector('.h-pause'),full:el.querySelectorAll('.h-icon--full,.h-hit--full'),fsImg:el.querySelector('#hudFs'),s:{}};
 })();
@@ -26,5 +27,7 @@ function updateHud(){
   if(S.ok!==ok){S.ok=ok;HUD.full.forEach(e=>e.classList.toggle('is-off',!ok))}
   if(S.fs!==fs){S.fs=fs;HUD.fsImg.src=fs?SPR.btnFullExit:SPR.btnFull}
 }
+HUD.el.querySelector('.h-test').addEventListener('click',e=>{const b=e.target.closest('[data-test]');if(!b||Flow.state!=='battle'||G.state!=='play')return;
+  if(b.dataset.test==='win')G.E.hp=0;else G.P.hp=0}); // TEMP: ends the match on the next tick
 Flow.on(()=>updateHud()); // sync right away on state changes, not only on the next frame
 updateHud();
