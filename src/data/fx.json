@@ -27,5 +27,20 @@
  },
  "shake": {
   "pxPerUnit": 8
+ },
+ "levelUp": {
+  "rings": 2,
+  "stagger": 0.14,
+  "life": 0.6,
+  "radius": 72,
+  "line": 6,
+  "gold": 30,
+  "sparks": 22,
+  "stars": 5,
+  "spreadX": 46,
+  "spreadY": 18,
+  "starStagger": 0.06,
+  "starLife": 0.55,
+  "col": "#ffd23c"
  }
 }

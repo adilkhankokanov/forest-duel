@@ -203,5 +203,36 @@
    3
   ],
   "inBattleVolume": 0.6
+ },
+ "alias": {
+  "_note": "events added after the synth set, mapped onto existing synth sounds",
+  "trophyAppear": {
+   "to": "upgrade"
+  },
+  "trophyPop": {
+   "to": "pop",
+   "vol": 0.7
+  },
+  "flaskSpawn": {
+   "to": "upgrade",
+   "vol": 0.5
+  },
+  "rocketBoom": {
+   "to": "bigBoom"
+  },
+  "barrelBoom": {
+   "to": "boom"
+  },
+  "tankShotFoe": {
+   "to": "tankShot",
+   "vol": 0.45,
+   "lowpass": 700
+  },
+  "levelUpBtn": {
+   "to": "upgrade"
+  },
+  "fight": {
+   "to": "rush"
+  }
  }
 }

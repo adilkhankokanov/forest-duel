@@ -32,7 +32,7 @@ ui.innerHTML=`
  <div class="m-top">
   <button class="m-ava" data-act="profile" id="mAva"></button>
   <div class="au-resbar m-grow">
-   <div class="au-res" id="rGold"><span class="au-res__icon">${icf('icCoin')}</span><span class="au-res__value au-outline" id="vGold">0</span><span class="au-res__plus au-outline" data-act="noop">+</span></div>
+   <div class="au-res" id="rGold"><span class="au-res__icon">${icf('icCoin')}</span><span class="au-res__value au-outline" id="vGold">0</span><span class="au-res__plus au-outline" data-act="testGold">+</span></div>
   </div>
   <button class="m-gear" data-act="settings" aria-label="${U.settings}">${icf('icGear')}</button>
  </div>
@@ -79,7 +79,8 @@ ui.addEventListener('click',e=>{
   const n=e.target.closest('[data-tab]');
   if(n){const t=n.dataset.tab;if(t==='shop'||t==='league'||t==='hero'){toast(U.soonTitle);return}if(t===TAB)return;setTab(t);return}
   const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act;
-  if(act==='settings')openSettings();
+  if(act==='testGold'){META.gold+=1000;saveMeta();invalidate();toast('+1000')} // TEMP: test gold, remove before release
+  else if(act==='settings')openSettings();
   else if(act==='profile')openProfile(modal,render);
   else if(act==='fight')startBattle();
   else if(act==='arenaPrev')switchArena(VIEW-1);
@@ -229,12 +230,14 @@ function playTrophyFx(from,to,newArena){
   const F=AM.trophyFx,host=document.querySelector('.b-root');if(!host){SHOWN_TRO=null;return}
   const cv=document.createElement('canvas');cv.className='b-fx';cv.width=393*2;cv.height=852*2;host.appendChild(cv); // created only for the effect
   const x=cv.getContext('2d'),img=new Image();img.src=SPR.icTrophy;
-  const bar=document.querySelector('.b-bar'),uiR=document.getElementById('ui').getBoundingClientRect(),sc=uiR.width/393;
-  const target=()=>{const r=bar.getBoundingClientRect(),[lo,hi]=arenaRange(VIEW),p=Math.max(0,Math.min(1,((SHOWN_TRO??to)-lo)/(hi-lo)));
-    return[(r.left-uiR.left)/sc+p*r.width/sc,(r.top-uiR.top)/sc+r.height/sc/2]};
+  const uiR=document.getElementById('ui').getBoundingClientRect(),sc=uiR.width/393;
+  // aim at the end of the gold fill as it is drawn right now; updateBar() rebuilds the bar, so look it up every frame
+  const target=()=>{const f=document.querySelector('.b-bar__fill'),bar=document.querySelector('.b-bar');
+    if(!f||!bar)return[196,426];const r=f.getBoundingClientRect(),rb=bar.getBoundingClientRect();
+    return[(Math.max(rb.left,Math.min(rb.right,r.right))-uiR.left)/sc,(rb.top-uiR.top)/sc+rb.height/sc/2]};
   const P=[];for(let i=0;i<F.count;i++){const a=i/F.count*6.283+Math.random()*.4,R=F.radius[0]+Math.random()*(F.radius[1]-F.radius[0]);
     P.push({a,R,trail:[],done:false,wob:Math.random()*6})}
-  SHOWN_TRO=from;let arrived=0;const t0=performance.now(),[ox,oy]=F.origin;
+  SHOWN_TRO=from;let arrived=0;const t0=performance.now(),[ox,oy]=F.origin;try{sfx('trophyAppear',.1)}catch(_){}
   (function f(now){const t=(now-t0)/1000;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,393,852);let live=0;
     const[tx_,ty_]=target();
     for(let i=0;i<P.length;i++){const p=P[i];if(p.done)continue;live++;
@@ -243,7 +246,7 @@ function playTrophyFx(from,to,newArena){
       else if(ft<0){px=bx;py=by+Math.sin(t*6+p.wob)*3}
       else{const k=anim('trophyFly',ft).k,cx=(bx+tx_)/2+(bx-ox)*.6,cy=Math.min(by,ty_)-60;
         px=(1-k)*(1-k)*bx+2*(1-k)*k*cx+k*k*tx_;py=(1-k)*(1-k)*by+2*(1-k)*k*cy+k*k*ty_;s=1-.35*k;
-        if(k>=1){p.done=true;arrived++;SHOWN_TRO=from+(to-from)*arrived/P.length;updateBar();continue}}
+        if(k>=1){p.done=true;arrived++;try{sfx('trophyPop',.03)}catch(_){}SHOWN_TRO=from+(to-from)*arrived/P.length;updateBar();continue}}
       p.trail.push([px,py]);if(p.trail.length>F.trail)p.trail.shift();
       for(let j=1;j<p.trail.length;j++){const q=j/p.trail.length;x.strokeStyle=`rgba(255,214,60,${q*.7})`;x.lineWidth=F.size*.42*q;x.lineCap='round';
         x.beginPath();x.moveTo(p.trail[j-1][0],p.trail[j-1][1]);x.lineTo(p.trail[j][0],p.trail[j][1]);x.stroke()}
@@ -311,7 +314,7 @@ function levelUp(id){
   const it=AI[id];if(!it||it.locked){toast(U.notAvailable);return}
   const k=it.metaKey,L=META.lv[k]||1;if(L>=META_CFG.maxLv){toast(U.maxLevel);return}
   const c=cost(L);if(META.gold<c){toast(U.noGold);try{sfx('treeHit',.05)}catch(_){}return}
-  META.gold-=c;META.lv[k]=L+1;saveMeta();try{sfx('upgrade',.05)}catch(_){}invalidate();
+  META.gold-=c;META.lv[k]=L+1;saveMeta();try{sfx('levelUpBtn',.05)}catch(_){}invalidate();
 }
 function equip(id){const it=AI[id];if(!it||it.locked)return;META.equip[it.group]=id;saveMeta();sfxUI();invalidate()}
 

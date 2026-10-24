@@ -21,7 +21,7 @@ function stepCannon(s,dt){
   }
   if(s.flasks.length===0&&s.pending>0){
     s.pending--;const types=drawPair(s),xs=placeFlasks(s);
-    s.flasks=types.map((t,i)=>({type:t,tf:[tempoF(),tempoF(1)],x:xs[i],z:s.flaskZ,hp:CFG.flask.hp,hit:0,born:0}));
+    s.flasks=types.map((t,i)=>({type:t,tf:[tempoF(),tempoF(1)],x:xs[i],z:s.flaskZ,hp:CFG.flask.hp,hit:0,born:0}));if(s===G.P)Ev.sfx('flaskSpawn',.2);
     s.choice=-1;
   }
   for(const f of s.flasks){f.born+=dt;if(f.hit>0)f.hit-=dt}
@@ -116,8 +116,8 @@ function stepBullets(dt){
           if(owner===G.P)Ev.text({x:o.x,z:o.z,txt:'+'+v,col:o.g?'goldTree':'greenTree',size:o.g?15:12})}
         break;
       case'unit':o.dmgAcc+=b.dmg*(o.giant?CFG.cannon.vsGiant:CFG.cannon.vsSoldier);o.killer=b.side;o.hit=.1;break;
-      case'rocket':o.hp-=b.dmg;o.hit=.1;if(o.hp<=0){o.dead=true;Ev.sfx('pop',.05);Ev.burst(o.x,o.z,'fireOrange',20)}break;
-      case'barrel':if(o.hp===undefined)o.hp=CFG.barrel.hp;o.hp-=b.dmg;o.hit=.12;if(o.hp<=0){o.done=true;Ev.burst(o.x,o.z,'barrel',14);Ev.burst(o.x,o.z,'soot',8);Ev.sfx('pop',.05)}break;
+      case'rocket':o.hp-=b.dmg;o.hit=.1;if(o.hp<=0){o.dead=true;Ev.sfx('rocketBoom',.05);Ev.burst(o.x,o.z,'fireOrange',20)}break;
+      case'barrel':if(o.hp===undefined)o.hp=CFG.barrel.hp;o.hp-=b.dmg;o.hit=.12;if(o.hp<=0){o.done=true;Ev.burst(o.x,o.z,'barrel',14);Ev.burst(o.x,o.z,'soot',8);Ev.sfx('barrelBoom',.05)}break;
       case'shell':o.hp-=b.dmg;o.hit=.1;if(o.hp<=0){o.done=true;Ev.burst(o.x,o.z,'brass',14);Ev.burst(o.x,o.z,'ash',8);Ev.sfx('pop',.05)}break;
       case'ped':o.hp-=b.dmg;o.hit=.12;if(o.hp<=0){o.dead=true;Ev.burst(o.x,o.z,'pedRed',20);launchRocket(owner,o)}break;
       case'fence':o.dmgAcc+=b.dmg;o.hitT=.1;break;
@@ -138,7 +138,7 @@ function stepRockets(dt){
     r.z+=r.dir*R.speed*dt;
     r.vx=(r.x-ox)/dt; // heading is derived by the view from (vx, dir*speed)
     const foe=r.side==='p'?G.E:G.P;
-    if((foe.front-r.z)*r.dir<=R.halfLen){damageBase(foe,R.dmg,r.x);Ev.sfx('bigBoom',.05);Ev.burst(r.x,foe.front,'fireOrange',40);Ev.burst(r.x,foe.front,'sparkYellow',30);Ev.burst(r.x,foe.front,'c333',24);
+    if((foe.front-r.z)*r.dir<=R.halfLen){damageBase(foe,R.dmg,r.x);Ev.sfx('rocketBoom',.05);Ev.burst(r.x,foe.front,'fireOrange',40);Ev.burst(r.x,foe.front,'sparkYellow',30);Ev.burst(r.x,foe.front,'c333',24);
       Ev.shake(.6);Ev.haptic('rocket');Ev.rocketBoom(r.x,foe.front);Ev.boom(r.x,foe.front,1.6);
       Ev.text({x:r.x,z:foe.front,dy:r.dir>0?-20:20,txt:'-'+R.dmg,col:'fireOrange',size:20});r.dead=true}
   }
@@ -182,7 +182,7 @@ function stepArmies(dt){
     if(u.giant){
       // tank: drives forward, doesn't fight soldiers in melee; every 1.5 s fires a heavy shell at the first enemy in its lane
       u.gunCd=(u.gunCd??Gc.gun.firstShot)-dt; // first shot 1 s after spawning, then every 2 s
-      if(u.gunCd<=0){u.gunCd+=Gc.gun.interval;u.fire=.2;Ev.sfx('tankShot',.05);
+      if(u.gunCd<=0){u.gunCd+=Gc.gun.interval;u.fire=.2;Ev.sfx(u.side==='p'?'tankShot':'tankShotFoe',.05);
         G.shells.push({side:u.side,dir,x:u.x,z:u.z+dir*u.r,dmg:CFG.baseHp*Gc.shotBasePct*(u.F||1),dist:0,hp:Gc.shellHp,hit:0})}
     }else{
       let best=null,bd=1e9;nearUnits(u.x,u.z,1,NB);
@@ -277,7 +277,7 @@ function stepArmies(dt){
   for(const u of units)if(u.hp<=0&&!u.gone){u.gone=true;
     const killer=sideById(u.killer||(u.side==='p'?'e':'p'));
     addGold(killer,u.giant?CFG.killGold.giant:CFG.killGold.soldier);
-    if(u.giant)Ev.burst(u.x,u.z,u.side==='p'?'c6cc4ff':'teamE',24);if(CFG.splats&&!u.giant&&G.splats.length<140)G.splats.push({x:u.x,z:u.z,side:u.side,t:0,seed:RNG.next()*100,rot:RNG.next()*6.28,big:u.giant?2.2:1});if(u.giant){Ev.shake(.2,true);Ev.hit(u.x,u.z,true,.35)}Ev.sfx(u.giant?'giantDie':'unitDie',u.giant?.05:.04)}
+    if(u.giant)Ev.burst(u.x,u.z,u.side==='p'?'c6cc4ff':'teamE',24);if(CFG.splats&&!u.giant&&G.splats.length<140)G.splats.push({x:u.x,z:u.z,side:u.side,t:0,seed:RNG.next()*100,rot:RNG.next()*6.28,big:u.giant?2.2:1});if(u.giant){Ev.shake(.35,true);Ev.hit(u.x,u.z,true,.45);Ev.boom(u.x,u.z,1.3);Ev.burst(u.x,u.z,'fireOrange',30);Ev.burst(u.x,u.z,'sparkYellow',22);Ev.burst(u.x,u.z,'soot',18);Ev.burst(u.x,u.z,'c333',14)}Ev.sfx(u.giant?'giantDie':'unitDie',u.giant?.05:.04)}
   G.units=units.filter(u=>!u.gone);
   for(const p of G.splats)p.t+=dt;if(G.splats.length&&G.splats[0].t>=CFG.splatTime)G.splats=G.splats.filter(p=>p.t<CFG.splatTime);
 }
@@ -319,7 +319,7 @@ function stepBarrels(dt){
     for(const f of G.fences)if(f.side!==b.side&&Math.abs(b.x-f.x)<f.w/2+C.blastR&&Math.abs(b.z-f.z)<C.blastR){f.dmgAcc+=C.blastDmg;f.hitT=.12}
     const SR=C.slickR*k,sz=clamp(b.z,Math.min(G.E.front,G.P.front)+SR*.4,Math.max(G.E.front,G.P.front)-SR*.4);
     G.slicks.push({side:b.side,x:b.x,z:sz,r:SR,k:b.dmgK||k,t:0,seed:RNG.next()*100});
-    Ev.boom(b.x,b.z,C.blastR);Ev.burst(b.x,b.z,'fireOrange',18);Ev.burst(b.x,b.z,'soot',14);Ev.sfx('boom',.05);
+    Ev.boom(b.x,b.z,C.blastR);Ev.burst(b.x,b.z,'fireOrange',18);Ev.burst(b.x,b.z,'soot',14);Ev.sfx('barrelBoom',.05);
   }
   G.barrels=G.barrels.filter(b=>!b.done);
   for(const o of G.slicks){o.t+=dt;o.burn=(o.burn||0)+dt;

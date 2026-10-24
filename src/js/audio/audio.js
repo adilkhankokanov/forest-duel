@@ -60,9 +60,17 @@ async function prerender(){
     for(let v=0;v<3;v++){try{const oc=new OfflineAudioContext(1,Math.ceil(sr*.7),sr);A_CTX=oc;A_OUT=oc.destination;synth(name);A_CTX=null;A_OUT=null;
       BUF[name].push(await oc.startRendering())}catch(e){A_CTX=null;A_OUT=null}}}
 }
+// event names added later play one of the original synth sounds (data/audio.json alias: to, vol, lowpass)
+function aliasOut(al){const ac=SND.ac,g=ac.createGain();g.gain.value=al.vol==null?1:al.vol;let out=g;
+  if(al.lowpass){const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=al.lowpass;f.connect(g);out=f}
+  g.connect(SND.out);return out}
 function sfx(name,gap=.03){
   if(!SND.ac||!SND.on||Flow.paused())return;
   const now=SND.ac.currentTime;if(now-(SND.last[name]||0)<gap)return;SND.last[name]=now;
+  const al=AUD.alias&&AUD.alias[name];
+  if(al){const out=aliasOut(al),bs=BUF[al.to];
+    if(bs&&bs.length){const src=SND.ac.createBufferSource();src.buffer=bs[Math.floor(Math.random()*bs.length)];src.playbackRate.value=.96+Math.random()*.08;src.connect(out);src.start();return}
+    if(PRE.includes(al.to))return;A_OUT=out;try{synth(al.to)}finally{A_OUT=null}return}
   const big=AUD.alwaysPlay.includes(name);
   if(ACTIVE>=MAX_VOICES&&!big)return;
   ACTIVE++;setTimeout(()=>ACTIVE--,name in BUF?AUD.voiceHoldMs.prerendered:AUD.voiceHoldMs.live);

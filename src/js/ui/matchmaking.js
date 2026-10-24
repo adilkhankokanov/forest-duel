@@ -75,7 +75,7 @@ function tickMatchmaking(now){
   // FIGHT! in and out, then the match starts
   const fg=q('.mm-word--fight');
   if(t>=TL.fightIn&&t<TL.fightOut){const A=anim('mmFightIn',t-TL.fightIn);set(fg,{display:'flex',transform:`translate(-50%,-50%) scale(${A.scale})`,opacity:A.alpha});
-    if(MMS.phase==='out'){MMS.phase='fight';try{sfx('rush',.1)}catch(_){}}}
+    if(MMS.phase==='out'){MMS.phase='fight';try{sfx('fight',.1)}catch(_){}}}
   else if(t>=TL.fightOut){const A=anim('mmTextOut',t-TL.fightOut);set(fg,{transform:`translate(-50%,-50%) scale(${A.scale})`,opacity:A.alpha})}
   if(t>=TL.start){closeMatchmaking();if(Flow.state==='intro')Flow.go('battle')}
 }

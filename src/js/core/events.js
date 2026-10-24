@@ -14,5 +14,6 @@ const Ev={
   hit:(x,z,big,life)=>emit('hit',{x,z,big,life}),
   boom:(x,z,r)=>emit('boom',{x,z,r}),
   rocketBoom:(x,z)=>emit('rocketBoom',{x,z}),
+  levelUp:(x,z)=>emit('levelUp',{x,z}),   // player level up: gold sparkle burst + rising stars around the cannon
   shake:(v,max)=>emit('shake',{v,max})  // max: keep the stronger shake instead of replacing it
 };

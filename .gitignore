@@ -3,3 +3,6 @@ node_modules/
 .DS_Store
 tests/screens/unity/
 tests/screens/diff/
+.elevenlabs_key
+audio_raw/
+audio_raw_old/

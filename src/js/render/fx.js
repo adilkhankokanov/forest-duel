@@ -3,7 +3,7 @@
 //  Nothing here affects the match; it may use Math.random freely.
 //  Unity: pooled particle systems / floating-text prefabs spawned by an EventView.
 // =====================================================================
-const VIS={parts:[],texts:[],fx:[],booms:[],shake:0};
+const VIS={parts:[],texts:[],fx:[],booms:[],rings:[],shake:0};
 // screen-space text anchors used by the HUD-style floating texts
 const TA=DATA.layout.textAnchors;
 function textPos(e){
@@ -30,16 +30,20 @@ function drainEvents(){
       case'hit':hitFx(e.x,e.z,e.big,e.life);break;
       case'boom':VIS.booms.push({x:e.x,z:e.z,r:e.r,t:0});break;
       case'rocketBoom':{const R=FXD.rocketBoom;for(let k=0;k<R.stars;k++)VIS.fx.push({x:sx(e.x)+rnd(-R.spreadX,R.spreadX),y:sy(e.z)+rnd(-R.spreadY,R.spreadY),t:-k*R.stagger,life:R.life,rot:VR()*6,big:true});break}
+      case'levelUp':{const L=FXD.levelUp,x=sx(e.x),y=sy(e.z);burst(e.x,e.z,col('gold'),L.gold);burst(e.x,e.z,col('sparkYellow'),L.sparks);
+        for(let k=0;k<L.rings;k++)VIS.rings.push({x,y,t:-k*L.stagger});
+        for(let k=0;k<L.stars;k++)VIS.fx.push({x:x+rnd(-L.spreadX,L.spreadX),y:y+rnd(-L.spreadY,L.spreadY)-10,t:-k*L.starStagger,life:L.starLife,rot:VR()*6,big:false});break}
       case'shake':VIS.shake=e.max?Math.max(VIS.shake,e.v):e.v;break;
     }
   }
   EVQ.length=0;
 }
-function clearVis(){VIS.parts.length=0;VIS.texts.length=0;VIS.fx.length=0;VIS.booms.length=0;VIS.shake=0;EVQ.length=0}
+function clearVis(){VIS.parts.length=0;VIS.texts.length=0;VIS.fx.length=0;VIS.booms.length=0;VIS.rings.length=0;VIS.shake=0;EVQ.length=0}
 // effects age with real time while the match is running (they freeze on pause)
 function updateVis(dt){
   for(const t of VIS.texts)t.t+=dt;VIS.texts=VIS.texts.filter(t=>t.t<animLen('floatText'));
   for(const p of VIS.parts){p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=FXD.burst.dragPerFrame;p.vy*=FXD.burst.dragPerFrame}VIS.parts=VIS.parts.filter(p=>p.t<p.life);
+  for(const r of VIS.rings)r.t+=dt;VIS.rings=VIS.rings.filter(r=>r.t<FXD.levelUp.life);
   for(const b of VIS.booms)b.t+=dt;VIS.booms=VIS.booms.filter(b=>b.t<animLen('boom'));
   for(const f of VIS.fx)f.t+=Math.min(.05,dt);VIS.fx=VIS.fx.filter(f=>f.t<f.life);
   if(VIS.shake>0)VIS.shake=Math.max(0,VIS.shake-dt);

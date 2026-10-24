@@ -5,7 +5,7 @@ const foeOf=s=>s===G.P?G.E:G.P;
 const sideById=id=>id==='p'?G.P:G.E;
 const levelCost=s=>s.lvl===1?CFG.level.first:CFG.level.second+CFG.level.step*(s.lvl-2);
 function addGold(s,v){s.gold+=v;while(s.gold>=levelCost(s)){s.gold-=levelCost(s);s.lvl++;s.pending++;
-  if(s===G.P){Ev.text({anchor:'levelUp',txt:tx(T.game.levelUp,s.lvl),col:'gold',size:17});Ev.sfx('level',.2)}}}
+  if(s===G.P){Ev.text({anchor:'levelUp',txt:tx(T.game.levelUp,s.lvl),col:'gold',size:17});Ev.sfx('level',.2);Ev.levelUp(s.x,s.muzzle)}}}
 const aliveUnits=id=>G.units.filter(u=>u.side===id).length;
 const fencesOf=id=>G.fences.filter(f=>f.side===id).length;
 

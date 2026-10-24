@@ -346,6 +346,9 @@ function L_shells(){
     drawShell(sx(sh.x),sy(sh.z),sh.dir,sh.side,sh.hit>0);if(sh.hp<(CFG.giant.shellHp||1))bar(sx(sh.x)-10,sy(sh.z)-(sh.dir<0?30:-24),20,3,sh.hp/CFG.giant.shellHp,PAL.hpGreen)}
 }
 function L_booms(){
+  const LU=DATA.fx.levelUp; // level-up rings: expanding gold ellipses that fade out
+  for(const r of VIS.rings){if(r.t<0)continue;const k=r.t/LU.life,e=1-(1-k)*(1-k);ctx.globalAlpha=1-k;ctx.strokeStyle=LU.col;ctx.lineWidth=LU.line*(1-k*.6);
+    ctx.beginPath();ctx.ellipse(r.x,r.y,LU.radius*e,LU.radius*.45*e,0,0,7);ctx.stroke();ctx.globalAlpha=1}
   for(const b of VIS.booms){const A=anim('boom',b.t),R=b.r||.6,x=sx(b.x),y=sy(b.z),e=A.spread;
     ctx.fillStyle=pa('boomFill',A.fill);ctx.beginPath();ctx.ellipse(x,y,R*PX*e,R*PZ*e,0,0,7);ctx.fill();
     ctx.strokeStyle=pa('boomRing',A.stroke);ctx.lineWidth=A.line;ctx.beginPath();ctx.ellipse(x,y,R*PX*e,R*PZ*e,0,0,7);ctx.stroke();
